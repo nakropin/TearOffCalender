@@ -16,10 +16,13 @@ def generateMockData():
             filenameList.append(currFilename)
     filenameList.append("first")
     filenameList.append("last")
+    filenameList.append("refresh")
+    filenameList.append("imprint")
+
 
     for i in range(0, len(filenameList)):
-        if (filenameList[i] == "first") | (filenameList[i] == "last"):
-            fontsize = "150px"
+        if (filenameList[i] == "first") | (filenameList[i] == "last") | (filenameList[i] == "refresh") | (filenameList[i] == "imprint"):
+            fontsize = "120px"
         else:
             fontsize = "300px"
         svgData = '<?xml version="1.0" encoding="utf-8"?><svg viewBox="0 0 500 500" width="50" height="50" xmlns="http://www.w3.org/2000/svg"><text style="fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: '+ fontsize +'; font-weight: 700; white-space: pre;" x="30" y="350">'+ filenameList[i] +'</text></svg>'

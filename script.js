@@ -24,9 +24,9 @@ function makeFileList(){
   return randomizedList;
 };
 
-// randomizedList length is 26 + 2 (first, last)
+// randomfiles = randomizedList length is 26 + 2 (first, last)
 function handleClick(e) {
-  if(renderPageCallCounter < filenames.length){
+  if(renderPageCallCounter < randomfiles.length){
     updateCalendar(e.target);
   };
 };
@@ -54,7 +54,8 @@ function renderPage() {
 }
 //<img src='Folder/`+$(filenames[renderPageCallCounter-1])+`></img>
 
-const filenames = makeFileList();
+/* start execution TODO: make function? */
+const randomfiles = makeFileList();
 var renderPageCallCounter = 0;
 renderPage();
 
