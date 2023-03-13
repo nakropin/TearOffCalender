@@ -5,5 +5,5 @@ tearoffpad is a simple web component that contains a tear off calendar animation
 run svgmockdatagenerator.py
 
 # use
-insert all pictures that shall appear in the calendar in the "img"-folder in svg-format. adjust the makeFileList function according to your needs. right now the function is set up to handle 4 images per letter of the alphabet with following naming convention: "a-1.svg".
+insert all pictures that shall appear in the calendar in the "img"-folder in svg-format. adjust the makeFileList function according to your needs. right now the function is set up to handle 4 images per letter of the alphabet with following naming convention: "[a-z]-[1-4].svg", e.g. "a-1.svg".
 also place first and last image in folder "imgfirstlast" and name the img that shall appear first "first.svg" and the last img "last.svg".
