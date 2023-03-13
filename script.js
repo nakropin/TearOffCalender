@@ -1,27 +1,35 @@
 const pages = document.querySelector('.pages');
+const pagesAmount = 26;
+const subPageAmount = 4;
 
 // generate matrix for the path + filenames, then randomize
 function makeFileList(){
   let filenameList = [];  
-  for (let i = 0; i < 26; i++){
-    let sublist = []
-    for (let j = 0; j < 4; j++){
-      let currFilename = "img/" + String.fromCharCode((97+i)) + "-" + (j+1)  + ".svg"
-      sublist.push(currFilename)
-    };
+  for (let i = 0; i < pagesAmount; i++){
+    let sublist = [];
+    for (let j = 0; j < subPageAmount; j++){
+      let currFilename = "SVG/" + String.fromCharCode((97+i)) + " (" + (j+1)  + ").svg"
+      sublist.push(currFilename);
+    }
     filenameList.push(sublist)
-  };
+  }
+
+
   let randomizedList = []
-  for (let i = 0; i < 26; i++){
+  for (let i = 0; i < pagesAmount; i++){
     let randomElement = (filenameList[i])[Math.floor(Math.random() * (filenameList[i]).length)];
     randomizedList.push(randomElement)
-  };
+  }
+  console.log(randomizedList);
   return randomizedList;
-};
+}
 
 function handleClick(e) {
-  // TODO: if last page do nothing
-  updateCalendar(e.target);
+  // Plus 2 wegen Start und Endseite.
+  // Evtl Matrix ausbauen, sodass Anfangs- und Endelement der Liste die Start- und Endbilder sind?
+  if(renderPageCallCounter < pagesAmount + 2){
+    updateCalendar(e.target);
+  }
 }
 
 function updateCalendar(target) {
@@ -40,19 +48,17 @@ function renderPage() {
   let currentSrc; 
   // pick curr svg
   if (renderPageCallCounter === 0){
-   currentSrc = "imgfirstlast/last.svg";
+   currentSrc = "SVG/start.svg";
   } else if(renderPageCallCounter > filenames.length){
-   currentSrc = "imgfirstlast/first.svg";
+   currentSrc = "SVG/end.svg";
   } else {
    currentSrc = filenames[renderPageCallCounter-1];
   }
-  currentSrc = "img/loose_leaf_paper.svg"
 
   const newPage = document.createElement('div');
   newPage.classList.add('page');
-  newPage.innerHTML = `
-    <img src="${currentSrc}"></img>
-  `;
+  // TODO: alt Tag richtig setzen
+  newPage.innerHTML = `<img src="${currentSrc}" alt="pages">`;
     
   pages.appendChild(newPage);
   renderPageCallCounter++;
