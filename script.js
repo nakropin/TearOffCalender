@@ -2,35 +2,34 @@ const pages = document.querySelector('.pages');
 const pagesAmount = 26;
 const subPageAmount = 4;
 
-// generate matrix for the path + filenames, then randomize
+/* Generate Matrix for Path + Filenames, then randomize */
 function makeFileList(){
   let filenameList = [];  
   for (let i = 0; i < pagesAmount; i++){
     let sublist = [];
     for (let j = 0; j < subPageAmount; j++){
-      let currFilename = "SVG/" + String.fromCharCode((97+i)) + " (" + (j+1)  + ").svg"
+      let currFilename = "img/" + String.fromCharCode((97+i)) + "-" + (j+1)  + ".svg";
       sublist.push(currFilename);
-    }
-    filenameList.push(sublist)
-  }
+    };
+    filenameList.push(sublist);
+  };
 
-
-  let randomizedList = []
+  let randomizedList = [];
+  randomizedList.push("img/first.svg")
   for (let i = 0; i < pagesAmount; i++){
     let randomElement = (filenameList[i])[Math.floor(Math.random() * (filenameList[i]).length)];
     randomizedList.push(randomElement)
-  }
-  console.log(randomizedList);
+  };
+  randomizedList.push("img/last.svg")
   return randomizedList;
-}
+};
 
+// randomizedList length is 26 + 2 (first, last)
 function handleClick(e) {
-  // Plus 2 wegen Start und Endseite.
-  // Evtl Matrix ausbauen, sodass Anfangs- und Endelement der Liste die Start- und Endbilder sind?
-  if(renderPageCallCounter < pagesAmount + 2){
+  if(renderPageCallCounter < filenames.length){
     updateCalendar(e.target);
-  }
-}
+  };
+};
 
 function updateCalendar(target) {
   if (target && target.classList.contains('page')) {
@@ -40,26 +39,16 @@ function updateCalendar(target) {
     }, 800);
   } else {
     return;
-  }
+  };
   renderPage();
-}
+};
 
 function renderPage() {
-  let currentSrc; 
-  // pick curr svg
-  if (renderPageCallCounter === 0){
-   currentSrc = "SVG/start.svg";
-  } else if(renderPageCallCounter > filenames.length){
-   currentSrc = "SVG/end.svg";
-  } else {
-   currentSrc = filenames[renderPageCallCounter-1];
-  }
-
+  let currentSrc = filenames[renderPageCallCounter];
   const newPage = document.createElement('div');
   newPage.classList.add('page');
   // TODO: alt Tag richtig setzen
   newPage.innerHTML = `<img src="${currentSrc}" alt="pages">`;
-    
   pages.appendChild(newPage);
   renderPageCallCounter++;
 }

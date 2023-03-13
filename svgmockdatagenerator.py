@@ -22,7 +22,7 @@ def generateMockData():
             fontsize = "150px"
         else:
             fontsize = "300px"
-        svgData = '<?xml version="1.0" encoding="utf-8"?><svg viewBox="0 0 500 500" width="500" height="500" xmlns="http://www.w3.org/2000/svg"><text style="fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: '+ fontsize +'; font-weight: 700; white-space: pre;" x="30" y="350">'+ filenameList[i] +'</text></svg>'
+        svgData = '<?xml version="1.0" encoding="utf-8"?><svg viewBox="0 0 500 500" width="50" height="50" xmlns="http://www.w3.org/2000/svg"><text style="fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: '+ fontsize +'; font-weight: 700; white-space: pre;" x="30" y="350">'+ filenameList[i] +'</text></svg>'
         curFile = str(filenameList[i]) + ".svg"
         with open(os.path.join(path, curFile), "w+") as f:
             f.write(svgData)
