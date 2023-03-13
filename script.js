@@ -44,7 +44,7 @@ function updateCalendar(target) {
 };
 
 function renderPage() {
-  let currentSrc = filenames[renderPageCallCounter];
+  let currentSrc = randomfiles[renderPageCallCounter];
   const newPage = document.createElement('div');
   newPage.classList.add('page');
   // TODO: alt Tag richtig setzen
