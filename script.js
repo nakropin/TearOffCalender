@@ -1,6 +1,6 @@
 const pages = document.querySelector('.pages');
 
-// generate matrix for the path + filenames. then randomize
+// generate matrix for the path + filenames, then randomize
 function makeFileList(){
   let filenameList = [];  
   for (let i = 0; i < 26; i++){
