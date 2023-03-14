@@ -8,3 +8,6 @@
 - [ ] compatibility
   - [ ] chrome, ff, edge, safari
   - [ ] mobile android, ios
+- [ ] make jquery local (dsgvo)
+- [ ] random color background
+- [ ] make it component
