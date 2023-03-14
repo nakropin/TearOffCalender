@@ -95,19 +95,19 @@ class TearOffPad extends HTMLElement {
       // <img src='Folder/`+$(filenames[renderPageCallCounter-1])+`></img>
       pages.appendChild(newPage);
       renderPageCallCounter++;
-    }
+    };
 
     function refreshbtn(){
       window.location.reload();
     }
     function imprintbtn(){
       // TODO: show imprint: ffw through all animations until last side
-    }
+    };
 
     function randomBackgroundColor() {
       let randomColor = bgColors[Math.floor(Math.random() * bgColors.length)];
       document.body.style.background = randomColor;
-    }
+    };
 
     pages.addEventListener('click', handleClick);
     refresh.addEventListener('click', refreshbtn);
@@ -120,7 +120,12 @@ class TearOffPad extends HTMLElement {
     //Über Rotate(X) und Rotate(Y) in Radians rotiert. Hierbei muss die Arctan-Formel(y/x) angewandt werden
     //
 
+  /* Custom Attributes */
+  connectedCallback() {
+    console.log(this.getAttribute('data-bgcolors'));
+    console.log(this.getAttribute('data-subpageamount'));
+    console.log(this.getAttribute('data-pagesamount'));
   };
-}
+};
 
 customElements.define('tear-off-pad', TearOffPad);
