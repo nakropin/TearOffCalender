@@ -133,18 +133,18 @@ p {
   }
 }
 
-.button.refresh, button.imprint{
+.refresh, .imprint{
   position: absolute;
   width:100px;
   height:40px;
 }
 
-.button.imprint{
+.imprint{
   top: 10px;
   left: 150px;
 }
 
-button.refresh{
+.refresh{
   top: 10px;
   left: 10px;
 }
