@@ -1,4 +1,8 @@
-*,
+*{
+  margin:0;
+  padding:0;
+}
+
 *::before,
 *::after {
   box-sizing: border-box;
@@ -10,13 +14,6 @@ body {
   align-items: center;
   height: 100vh;
   overflow: hidden;
-}
-
-p {
-  margin: 0 0 3px;
-  line-height: 1;
-  letter-spacing: 1px;
-  pointer-events: none;
 }
 
 .calendar {
@@ -48,7 +45,7 @@ p {
   position: relative;
   text-align: center;
   background: #eee;
-  box-shadow: 0 10px 0 0px #a5a4a4;
+  box-shadow: 0 10px 0 0 #a5a4a4;
 }
 .pages::before {
   content: "";
