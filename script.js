@@ -43,7 +43,7 @@ class TearOffPad extends HTMLElement {
       const imprintimg = imprintButton.appendChild(document.createElement('img'));
       refreshimg.src = path + "refresh.svg";
       imprintimg.src = path + "imprint.svg";
-    };
+    }
 
     /* Generate Matrix for Path + Filenames, then randomize */
     function makeRandomizedFileList(){
@@ -53,26 +53,26 @@ class TearOffPad extends HTMLElement {
         for (let j = 0; j < subPageAmount; j++){
           let curFilename = path + String.fromCharCode((97+i)) + "-" + (j+1)  + fileending;
           sublist.push(curFilename);
-        };
+        }
         filenameList.push(sublist);
-      };
+      }
 
       let randomizedList = [];
       randomizedList.push(path + "first" + fileending)
       for (let i = 0; i < pagesAmount; i++){
         let randomElement = (filenameList[i])[Math.floor(Math.random() * (filenameList[i]).length)];
         randomizedList.push(randomElement)
-      };
+      }
       randomizedList.push(path + "last" + fileending)
       return randomizedList;
-    };
+    }
 
     // randomfiles = randomizedList length is 26 + 2 (first, last)
     function handleClick(e) {
       if(renderPageCallCounter < randomfiles.length){
         updateCalendar(e.target);
-      };
-    };
+      }
+    }
 
     function updateCalendar(target) {
       if (target && target.classList.contains('page')) {
@@ -82,16 +82,16 @@ class TearOffPad extends HTMLElement {
         }, 800);
       } else {
         return;
-      };
+      }
       renderPage();
-    };
+    }
 
     function renderPage() {
       let currentSrc = randomfiles[renderPageCallCounter];
       const newPage = document.createElement('div');
       newPage.classList.add('page');
       // TODO: alt Tag richtig setzen
-      newPage.innerHTML = `<img src="${currentSrc}" alt="">`;
+      newPage.innerHTML = `<img src="${currentSrc}" alt="pages">`;
       // <img src='Folder/`+$(filenames[renderPageCallCounter-1])+`></img>
       pages.appendChild(newPage);
       renderPageCallCounter++;
@@ -112,7 +112,14 @@ class TearOffPad extends HTMLElement {
     pages.addEventListener('click', handleClick);
     refresh.addEventListener('click', refreshbtn);
     imprint.addEventListener('click', imprintbtn);
-  };
+
+
+    //TODO: Funktion implementieren womit Koordinaten des Kalenders + Mauskoordinaten abgefangen werden
+    //Diese bilden durch die Subtraktion in den jeweiligen Achsen einen Bewegunsvektor
+    //Über translateX(x) und translateY(y) wird page verschoben
+    //Über Rotate(X) und Rotate(Y) in Radians rotiert. Hierbei muss die Arctan-Formel(y/x) angewandt werden
+    //
+
   /* Custom Attributes */
   connectedCallback() {
     console.log(this.getAttribute('data-bgcolors'));
