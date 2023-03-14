@@ -121,6 +121,7 @@ class TearOffPad extends HTMLElement {
     //
 
   /* Custom Attributes */
+  };
   connectedCallback() {
     console.log(this.getAttribute('data-bgcolors'));
     console.log(this.getAttribute('data-subpageamount'));
