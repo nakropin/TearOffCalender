@@ -2,14 +2,14 @@
 class TearOffPad extends HTMLElement {
   constructor() {
     super();
-    
+
     const path = "img/";
     const body = document.body;
     /* Set Background Colors (hex) */
-
     const bgColors = ['#9532a8', '#6ef0e3', '#e0d255'];
     
     createBasicPage();
+    buttonposition();
 
     const pages = document.querySelector('.pages');
     const refresh = document.querySelector('.refresh');
@@ -24,25 +24,19 @@ class TearOffPad extends HTMLElement {
     renderPage();
 
     function createBasicPage(){
-      /* Calender, Pages */
-      const calTag = document.createElement('div');
-      body.appendChild(calTag)
+      /* TearOffPad, Pages */
+      const calTag = body.appendChild(document.createElement('div'));
       const pagesTag = calTag.appendChild(document.createElement('div'));
-      calTag.appendChild(pagesTag)
       calTag.classList.add("calendar");
       pagesTag.classList.add("pages");
 
       /* Buttons */
-      const refreshButton = document.createElement('button');
-      const imprintButton = document.createElement('button');
-      refreshButton.classList.add('refresh')
-      imprintButton.classList.add('imprint')
-      body.appendChild(refreshButton)
-      body.appendChild(imprintButton)
-      const refreshimg = refreshButton.appendChild(document.createElement('img'));
-      const imprintimg = imprintButton.appendChild(document.createElement('img'));
-      refreshimg.src = path + "refresh.svg";
-      imprintimg.src = path + "imprint.svg";
+      const refreshButton = body.appendChild(document.createElement('button'));
+      const imprintButton = body.appendChild(document.createElement('button'));
+      refreshButton.classList.add('refresh');
+      imprintButton.classList.add('imprint');
+      refreshButton.appendChild(document.createElement('img')).src = path + "refresh.svg";
+      imprintButton.appendChild(document.createElement('img')).src = path + "imprint.svg";  
     }
 
     /* Generate Matrix for Path + Filenames, then randomize */
@@ -69,15 +63,17 @@ class TearOffPad extends HTMLElement {
 
     // randomfiles = randomizedList length is 26 + 2 (first, last)
     function handleClick(e) {
-      if(renderPageCallCounter < randomfiles.length){
-        updateCalendar(e.target);
-      }
-    }
+        disabledsetter();
+        if(renderPageCallCounter < randomfiles.length){
+          updateCalendar(e.target);
+        };
+    };
 
     function updateCalendar(target) {
       if (target && target.classList.contains('page')) {
         target.classList.add('tear');
         setTimeout(() => {
+          // TODO: transform instead of remove. also rename or make up new naming convention
           pages.removeChild(target);
         }, 800);
       } else {
@@ -98,9 +94,13 @@ class TearOffPad extends HTMLElement {
     };
 
     function refreshbtn(){
-      window.location.reload();
-    }
+      // TODO: problem when click other button while tear is ongoing, doubles the page
+      renderPageCallCounter = 0;
+      document.getElementsByClassName('page')[0].click();
+    };
+
     function imprintbtn(){
+      renderPageCallCounter = randomfiles.length;
       // TODO: show imprint: ffw through all animations until last side
     };
 
@@ -109,10 +109,48 @@ class TearOffPad extends HTMLElement {
       document.body.style.background = randomColor;
     };
 
+    /* Setters to disable/enable pad and button clicks while action */
+    function disabledsetter(){
+      $(".refresh").attr("disabled", "disabled");
+      $(".imprint").attr("disabled", "disabled");
+        //$("div[class='page']").attr("disabled", "disabled");
+      // TODO: change to event instead of timeout
+      setTimeout('$(".refresh").removeAttr("disabled"); $(".imprint").removeAttr("disabled");', 1100);
+    };
+
+    function buttonposition(){ // + input = data-buttonposition
+      let currPos = 0;
+      if (0 === 0){
+
+      }
+      let pos = {
+        upperleft: ["10","0","10","0"],
+        upperright: ["10","0","0","10"],
+        lowerleft: ["0","10","10","0"],
+        lowerright: ["0","10","0","10"],
+      };
+      let stylespos = [ "top", "bottom", "left", "right" ]
+      let keys = Object.keys(pos);
+      currPos = keys[currPos];
+      let unit = "px";
+
+      // TODO: for right change values
+      for (let i = 0; i < pos[currPos].length; i++){
+        if (pos[currPos][i] != "0"){
+          document.getElementsByClassName("refresh")[0].style[stylespos[i]] = pos[keys[0]][i] + unit;
+          if( i === 2 | i === 3 ){
+            document.getElementsByClassName("imprint")[0].style[stylespos[i]] = "125" + unit;
+          }
+          else{
+            document.getElementsByClassName("imprint")[0].style[stylespos[i]] = pos[keys[0]][i] + unit;
+          };
+        };
+      };
+    };
+
     pages.addEventListener('click', handleClick);
     refresh.addEventListener('click', refreshbtn);
     imprint.addEventListener('click', imprintbtn);
-
 
     //TODO: Funktion implementieren womit Koordinaten des Kalenders + Mauskoordinaten abgefangen werden
     //Diese bilden durch die Subtraktion in den jeweiligen Achsen einen Bewegunsvektor
@@ -121,11 +159,14 @@ class TearOffPad extends HTMLElement {
     //
 
   /* Custom Attributes */
+  // TODO: not in use yet, needs to be implemented correctly with constructor
   };
   connectedCallback() {
     console.log(this.getAttribute('data-bgcolors'));
     console.log(this.getAttribute('data-subpageamount'));
     console.log(this.getAttribute('data-pagesamount'));
+    console.log(this.getAttribute('data-buttonposition'));
+    // TODO: function for buttonposition: upper/lower left,right
   };
 };
 

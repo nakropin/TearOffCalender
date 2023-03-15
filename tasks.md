@@ -1,7 +1,8 @@
 # tasks
 - [ ] animations
-  - [ ] 6 x fall and lay on the floor, 3l/3r
+  - [ ] animation module to let every sheet fall differently ~~min 6 x fall and lay on the floor, 3l/3r~~
   - [ ] (tear off all animation for button)
+  - [ ] should turn back when not full hover
 - [ ] buttons with svg
   - [ ] refresh-button
   - [ ] tear off all button
@@ -10,4 +11,5 @@
   - [ ] mobile android, ios
 - [ ] make jquery local (dsgvo)
 - [x] random color background
-- [ ] make it component: auch refreshfunktion?
+- [x] make it component
+- [ ] buttonposition
