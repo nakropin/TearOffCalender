@@ -4,15 +4,11 @@ class TearOffPad extends HTMLElement {
     super();
     this.shadow = this.attachShadow({mode: "open"});
   };
-  get bgColors() {
-    return this.getAttribute('data-bgcolors');
-  };
+
+  // TODO: getter, setter. observer?
+
   connectedCallback(){
-    const bgColors = this.getAttribute('data-bgcolors');
     this.renderPage();
-    // console.log(this.getAttribute('data-subpageamount'));
-    // console.log(this.getAttribute('data-pagesamount'));
-    // console.log(this.getAttribute('data-buttonposition'));
   }
   
   renderPage(){
@@ -21,22 +17,24 @@ class TearOffPad extends HTMLElement {
 
     const path = "img/";
     const body = document.body;
-    /* Set Background Colors (hex) */
-    const bgColors = ['#9532a8', '#6ef0e3', '#e0d255'];
-    
+    const bgColors = $('tear-off-pad')[0].getAttribute('data-bgcolors').split(",");
+    const pagesAmount = $('tear-off-pad')[0].getAttribute('data-pagesamount');
+    const subPageAmount = $('tear-off-pad')[0].getAttribute('data-subpageamount');
+    const btnpos = $('tear-off-pad')[0].getAttribute('data-buttonposition');
+
     createBasicPage();
-    buttonposition("upperleft");
+    randomBackgroundColor();
+
+    buttonposition(btnpos);
 
     const pages = document.querySelector('.pages');
     const refresh = document.querySelector('.refresh');
     const imprint = document.querySelector('.imprint');
-    const pagesAmount = 26;
-    const subPageAmount = 4;
+
     const fileending = ".svg";
     const randomfiles = makeRandomizedFileList();
     var renderPageCallCounter = 0;
     
-    randomBackgroundColor();
     renderCalendarPage();
 
     function createBasicPage(){
@@ -77,6 +75,8 @@ class TearOffPad extends HTMLElement {
       return randomizedList;
     };
 
+    /* Functionality */
+
     function handleClick(e) {
         if(renderPageCallCounter < randomfiles.length){
           updateCalendar(e.target);
@@ -97,7 +97,7 @@ class TearOffPad extends HTMLElement {
     };
 
     function renderCalendarPage() {
-      let currentSrc = randomfiles[renderPageCallCounter];
+      const currentSrc = randomfiles[renderPageCallCounter];
       const newPage = document.createElement('div');
       newPage.classList.add('page');
       // TODO: alt Tag richtig setzen
@@ -119,7 +119,6 @@ class TearOffPad extends HTMLElement {
         document.querySelectorAll('.page:not(.tear)')[0].click();
       }
       renderPageCallCounter = randomfiles.length;
-      // TODO: show imprint: ffw through all animations until last side
     };
 
     function randomBackgroundColor() {
@@ -127,33 +126,32 @@ class TearOffPad extends HTMLElement {
       document.body.style.background = randomColor;
     };
 
-    function buttonposition(input){ // + input = data-buttonposition
-      let checkInput = ["upperLeft", "upperRight", "lowerLeft", "lowerRight"];
-      let currPos = 0;
+    function buttonposition(input){
+      const checkInput = ["upperLeft", "upperRight", "lowerLeft", "lowerRight"];
+      let currPos = 0; /* preset value 0 */
       for (let i = 0; i < checkInput.length; i++){
         if (input === checkInput[i]){
           currPos = i
         };
       };
-      let pos = {
-        upperleft: ["10","0","10","0"],
-        upperright: ["10","0","0","10"],
-        lowerleft: ["0","10","10","0"],
-        lowerright: ["0","10","0","10"],
+      const pos = {
+        upperLeft: ["10","0","10","0"],
+        upperRight: ["10","0","0","10"],
+        lowerLeft: ["0","10","10","0"],
+        lowerRight: ["0","10","0","10"],
       };
-      let stylespos = [ "top", "bottom", "left", "right" ]
-      let keys = Object.keys(pos);
-      let unit = "px";
+      const unit = "px";
+      const stylespos = [ "top", "bottom", "left", "right" ];
+      const keys = Object.keys(pos);
       currPos = keys[currPos];
 
       for (let i = 0; i < pos[currPos].length; i++){
-        let imprint = document.getElementsByClassName("imprint")[0];
-        let refresh = document.getElementsByClassName("refresh")[0];
+        const imprint = document.getElementsByClassName("imprint")[0];
+        const refresh = document.getElementsByClassName("refresh")[0];
         if (pos[currPos][i] != "0"){
-          console.log(currPos, stylespos[i], pos[currPos][i])
           imprint.style[stylespos[i]] = pos[currPos][i] + unit;
           if( i === 0 | i === 1 ){
-            refresh.style[stylespos[i]] = "125" + unit;
+            refresh.style[stylespos[i]] = "100" + unit;
           }
           else{
             refresh.style[stylespos[i]] = pos[currPos][i] + unit;
