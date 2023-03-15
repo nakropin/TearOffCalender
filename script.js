@@ -9,7 +9,7 @@ class TearOffPad extends HTMLElement {
     const bgColors = ['#9532a8', '#6ef0e3', '#e0d255'];
     
     createBasicPage();
-    buttonposition();
+    buttonposition("upperleft");
 
     const pages = document.querySelector('.pages');
     const refresh = document.querySelector('.refresh');
@@ -118,10 +118,13 @@ class TearOffPad extends HTMLElement {
       setTimeout('$(".refresh").removeAttr("disabled"); $(".imprint").removeAttr("disabled");', 1100);
     };
 
-    function buttonposition(){ // + input = data-buttonposition
+    function buttonposition(input){ // + input = data-buttonposition
+      let checkInput = ["upperleft", "upperright", "lowerleft", "lowerright"]
       let currPos = 0;
-      if (0 === 0){
-
+      for (let i = 0; i < checkInput.length; i++){
+        if (input === checkInput[i]){
+          currPos = i
+        }
       }
       let pos = {
         upperleft: ["10","0","10","0"],
@@ -131,8 +134,8 @@ class TearOffPad extends HTMLElement {
       };
       let stylespos = [ "top", "bottom", "left", "right" ]
       let keys = Object.keys(pos);
-      currPos = keys[currPos];
       let unit = "px";
+      currPos = keys[currPos];
 
       // TODO: for right change values
       for (let i = 0; i < pos[currPos].length; i++){
