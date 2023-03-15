@@ -100,6 +100,7 @@ class TearOffPad extends HTMLElement {
     };
 
     function imprintbtn(){
+      disabledsetter();
       renderPageCallCounter = randomfiles.length;
       // TODO: show imprint: ffw through all animations until last side
     };
