@@ -12,4 +12,4 @@
 - [ ] make jquery local (dsgvo)
 - [x] random color background
 - [x] make it component
-- [ ] buttonposition
+- [x] buttonposition

@@ -114,7 +114,10 @@ class TearOffPad extends HTMLElement {
     function disabledsetter(){
       $(".refresh").attr("disabled", "disabled");
       $(".imprint").attr("disabled", "disabled");
-        //$("div[class='page']").attr("disabled", "disabled");
+      // TODO: Problem: if pad gets clicked fast then buttons get activated, probably overlapping
+      //                b/c timeout activation is right after next disabled sets in.
+      //                should be obsolete if function becomes event driven
+      // obsolet: turn off $("div[class='page']").attr("disabled", "disabled");
       // TODO: change to event instead of timeout
       setTimeout('$(".refresh").removeAttr("disabled"); $(".imprint").removeAttr("disabled");', 1100);
     };
