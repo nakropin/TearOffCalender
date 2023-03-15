@@ -108,8 +108,10 @@ class TearOffPad extends HTMLElement {
     };
 
     function refreshbtn(){
-      renderPageCallCounter = 0;
-      document.querySelectorAll('.page:not(.tear)')[0].click();
+      if (renderPageCallCounter != 1){
+        renderPageCallCounter = 0;
+        document.querySelectorAll('.page:not(.tear)')[0].click();
+      };
     };
 
     function imprintbtn(){
@@ -144,15 +146,17 @@ class TearOffPad extends HTMLElement {
       let unit = "px";
       currPos = keys[currPos];
 
-      // TODO: for right change values
       for (let i = 0; i < pos[currPos].length; i++){
+        let imprint = document.getElementsByClassName("imprint")[0];
+        let refresh = document.getElementsByClassName("refresh")[0];
         if (pos[currPos][i] != "0"){
-          document.getElementsByClassName("refresh")[0].style[stylespos[i]] = pos[keys[0]][i] + unit;
-          if( i === 2 | i === 3 ){
-            document.getElementsByClassName("imprint")[0].style[stylespos[i]] = "125" + unit;
+          console.log(currPos, stylespos[i], pos[currPos][i])
+          imprint.style[stylespos[i]] = pos[currPos][i] + unit;
+          if( i === 0 | i === 1 ){
+            refresh.style[stylespos[i]] = "125" + unit;
           }
           else{
-            document.getElementsByClassName("imprint")[0].style[stylespos[i]] = pos[keys[0]][i] + unit;
+            refresh.style[stylespos[i]] = pos[currPos][i] + unit;
           };
         };
       };
@@ -167,12 +171,7 @@ class TearOffPad extends HTMLElement {
     //Über translateX(x) und translateY(y) wird page verschoben
     //Über Rotate(X) und Rotate(Y) in Radians rotiert. Hierbei muss die Arctan-Formel(y/x) angewandt werden
     //
-
-  /* Custom Attributes */
-  // TODO: not in use yet, needs to be implemented correctly with constructor
-
   };
-
 };
 
 customElements.define('tear-off-pad', TearOffPad);
