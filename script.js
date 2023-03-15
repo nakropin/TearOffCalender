@@ -13,7 +13,8 @@ class TearOffPad extends HTMLElement {
   
   renderPage(){
 
-    // TODO: create shadow dom
+    // TODO: create shadow dom? (internetexplorer has no shadow dom support)
+    // accessing attributes probably would not work then
 
     const path = "img/";
     const body = document.body;
@@ -128,7 +129,7 @@ class TearOffPad extends HTMLElement {
 
     function buttonposition(input){
       const checkInput = ["upperLeft", "upperRight", "lowerLeft", "lowerRight"];
-      let currPos = 0; /* preset value 0 */
+      let currPos = 0; /* preset value 0, used if no/incorrect input*/
       for (let i = 0; i < checkInput.length; i++){
         if (input === checkInput[i]){
           currPos = i
