@@ -119,7 +119,7 @@ class TearOffPad extends HTMLElement {
     };
 
     function buttonposition(input){ // + input = data-buttonposition
-      let checkInput = ["upperleft", "upperright", "lowerleft", "lowerright"]
+      let checkInput = ["upperLeft", "upperRight", "lowerLeft", "lowerRight"]
       let currPos = 0;
       for (let i = 0; i < checkInput.length; i++){
         if (input === checkInput[i]){
@@ -165,11 +165,10 @@ class TearOffPad extends HTMLElement {
   // TODO: not in use yet, needs to be implemented correctly with constructor
   };
   connectedCallback() {
-    console.log(this.getAttribute('data-bgcolors'));
-    console.log(this.getAttribute('data-subpageamount'));
-    console.log(this.getAttribute('data-pagesamount'));
-    console.log(this.getAttribute('data-buttonposition'));
-    // TODO: function for buttonposition: upper/lower left,right
+    // console.log(this.getAttribute('data-bgcolors'));
+    // console.log(this.getAttribute('data-subpageamount'));
+    // console.log(this.getAttribute('data-pagesamount'));
+    // console.log(this.getAttribute('data-buttonposition'));
   };
 };
 
