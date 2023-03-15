@@ -79,7 +79,6 @@ class TearOffPad extends HTMLElement {
 
     function handleClick(e) {
         if(renderPageCallCounter < randomfiles.length){
-          disabledsetter();
           updateCalendar(e.target);
         };
     };
@@ -124,18 +123,6 @@ class TearOffPad extends HTMLElement {
     function randomBackgroundColor() {
       let randomColor = bgColors[Math.floor(Math.random() * bgColors.length)];
       document.body.style.background = randomColor;
-    };
-
-    /* Setters to disable/enable pad and button clicks while action */
-    function disabledsetter(){
-      $(".refresh").attr("disabled", "disabled");
-      $(".imprint").attr("disabled", "disabled");
-      // TODO: Problem: if pad gets clicked fast then buttons get activated, probably overlapping
-      //                b/c timeout activation is right after next disabled sets in.
-      //                should be obsolete if function becomes event driven
-      // obsolet: turn off $("div[class='page']").attr("disabled", "disabled");
-      // TODO: change to event instead of timeout
-      setTimeout('$(".refresh").removeAttr("disabled"); $(".imprint").removeAttr("disabled");', 1100);
     };
 
     function buttonposition(input){ // + input = data-buttonposition
