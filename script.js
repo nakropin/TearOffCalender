@@ -2,6 +2,22 @@
 class TearOffPad extends HTMLElement {
   constructor() {
     super();
+    this.shadow = this.attachShadow({mode: "open"});
+  };
+  get bgColors() {
+    return this.getAttribute('data-bgcolors');
+  };
+  connectedCallback(){
+    const bgColors = this.getAttribute('data-bgcolors');
+    this.renderPage();
+    // console.log(this.getAttribute('data-subpageamount'));
+    // console.log(this.getAttribute('data-pagesamount'));
+    // console.log(this.getAttribute('data-buttonposition'));
+  }
+  
+  renderPage(){
+
+    // TODO: create shadow dom
 
     const path = "img/";
     const body = document.body;
@@ -21,7 +37,7 @@ class TearOffPad extends HTMLElement {
     var renderPageCallCounter = 0;
     
     randomBackgroundColor();
-    renderPage();
+    renderCalendarPage();
 
     function createBasicPage(){
       /* TearOffPad, Pages */
@@ -37,7 +53,7 @@ class TearOffPad extends HTMLElement {
       imprintButton.classList.add('imprint');
       refreshButton.appendChild(document.createElement('img')).src = path + "refresh.svg";
       imprintButton.appendChild(document.createElement('img')).src = path + "imprint.svg";  
-    }
+    };
 
     /* Generate Matrix for Path + Filenames, then randomize */
     function makeRandomizedFileList(){
@@ -47,24 +63,23 @@ class TearOffPad extends HTMLElement {
         for (let j = 0; j < subPageAmount; j++){
           let curFilename = path + String.fromCharCode((97+i)) + "-" + (j+1)  + fileending;
           sublist.push(curFilename);
-        }
+        };
         filenameList.push(sublist);
-      }
+      };
 
-      let randomizedList = [];
-      randomizedList.push(path + "first" + fileending)
+    let randomizedList = [];
+      randomizedList.push(path + "first" + fileending);
       for (let i = 0; i < pagesAmount; i++){
         let randomElement = (filenameList[i])[Math.floor(Math.random() * (filenameList[i]).length)];
-        randomizedList.push(randomElement)
-      }
-      randomizedList.push(path + "last" + fileending)
+        randomizedList.push(randomElement);
+      };
+      randomizedList.push(path + "last" + fileending);
       return randomizedList;
-    }
+    };
 
-    // randomfiles = randomizedList length is 26 + 2 (first, last)
     function handleClick(e) {
-        disabledsetter();
         if(renderPageCallCounter < randomfiles.length){
+          disabledsetter();
           updateCalendar(e.target);
         };
     };
@@ -73,16 +88,16 @@ class TearOffPad extends HTMLElement {
       if (target && target.classList.contains('page')) {
         target.classList.add('tear');
         setTimeout(() => {
-          // TODO: transform instead of remove. also rename or make up new naming convention
+          // TODO: transform instead of remove? also rename or make up new naming convention
           pages.removeChild(target);
         }, 800);
       } else {
         return;
       }
-      renderPage();
-    }
+      renderCalendarPage();
+    };
 
-    function renderPage() {
+    function renderCalendarPage() {
       let currentSrc = randomfiles[renderPageCallCounter];
       const newPage = document.createElement('div');
       newPage.classList.add('page');
@@ -94,13 +109,14 @@ class TearOffPad extends HTMLElement {
     };
 
     function refreshbtn(){
-      // TODO: problem when click other button while tear is ongoing, doubles the page
       renderPageCallCounter = 0;
-      document.getElementsByClassName('page')[0].click();
+      document.querySelectorAll('.page:not(.tear)')[0].click();
     };
 
     function imprintbtn(){
-      disabledsetter();
+      for (let i = 0; i < randomfiles.length; i++){
+        document.querySelectorAll('.page:not(.tear)')[0].click();
+      }
       renderPageCallCounter = randomfiles.length;
       // TODO: show imprint: ffw through all animations until last side
     };
@@ -123,13 +139,13 @@ class TearOffPad extends HTMLElement {
     };
 
     function buttonposition(input){ // + input = data-buttonposition
-      let checkInput = ["upperLeft", "upperRight", "lowerLeft", "lowerRight"]
+      let checkInput = ["upperLeft", "upperRight", "lowerLeft", "lowerRight"];
       let currPos = 0;
       for (let i = 0; i < checkInput.length; i++){
         if (input === checkInput[i]){
           currPos = i
-        }
-      }
+        };
+      };
       let pos = {
         upperleft: ["10","0","10","0"],
         upperright: ["10","0","0","10"],
@@ -167,13 +183,9 @@ class TearOffPad extends HTMLElement {
 
   /* Custom Attributes */
   // TODO: not in use yet, needs to be implemented correctly with constructor
+
   };
-  connectedCallback() {
-    // console.log(this.getAttribute('data-bgcolors'));
-    // console.log(this.getAttribute('data-subpageamount'));
-    // console.log(this.getAttribute('data-pagesamount'));
-    // console.log(this.getAttribute('data-buttonposition'));
-  };
+
 };
 
 customElements.define('tear-off-pad', TearOffPad);
