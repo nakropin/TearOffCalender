@@ -15,3 +15,8 @@
 - [x] make it component
 - [x] buttonposition
 - [ ] Code-Minification
+- [ ] lighthouse:
+  - [ ] eliminate render blocking resources (make essential CSS inline) [https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery]
+  - [ ] widht + heihgt image all elements
+  - [ ] does not have a meta name viewport iwth width or initial scale
+  - [ ] 
