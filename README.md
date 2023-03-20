@@ -5,6 +5,7 @@ tearoffpad is a simple web component that contains a tearoffpad animation. tearo
 run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z-4" and "first", "last", "refresh", "imprint" (ending ".svg") in folder img/.
 
 # use
+* implement component like shown below in your html file as html tag with attributes and insert .js as script. Set the attributes according to your needs. if no attributes are set, standard values are provided.
 * example code:
     
       <tear-off-pad 
@@ -14,8 +15,7 @@ run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z
         data-buttonposition = "upperLeft"
       >
       </tear-off-pad>
-
-* implement component like shown above. Set the attributes according to your needs. if no attributes are set, standard values are provided.
+      <script src="./tearoffscript.js"></script>
 
 * **Attributes**
   * **bgcolors**: background colors, randomly picked except if u only provide single color. there must be only comma as separator within the quotes, no whitespace.

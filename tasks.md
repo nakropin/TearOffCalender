@@ -14,3 +14,4 @@
 - [x] random color background
 - [x] make it component
 - [x] buttonposition
+- [ ] Code-Minification
