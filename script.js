@@ -100,7 +100,7 @@ class TearOffPad extends HTMLElement {
     };
 
     function refreshbtn(){
-      if (renderPageCallCounter != 1){
+      if ( renderPageCallCounter != 1 ){
         renderPageCallCounter = 0;
         document.querySelectorAll('.page:not(.tear)')[0].click();
       };

@@ -16,18 +16,18 @@ def generateMockData():
         for j in range(0, letterVersions):
             currFilename = chr((97+i)) + "-" + str((j+1))
             filenameList.append(currFilename)
-    nonrandomfiles = ["first", "last", "refresh", "imprint"]
-    for i in range(0, len(nonrandomfiles)):
-        filenameList.append(nonrandomfiles[i])
+    nonRandomFileList = [ "first", "last", "refresh", "imprint" ]
+    for nonRandomFile in nonRandomFileList:
+        filenameList.append(nonRandomFile)
 
     # create svg files in path
-    for i in range(0, len(filenameList)):
-        if (filenameList[i] == "first") | (filenameList[i] == "last") | (filenameList[i] == "refresh") | (filenameList[i] == "imprint"):
+    for filename in filenameList:
+        if filename in nonRandomFileList:
             fontsize = "120px"
         else:
             fontsize = "250px"
-        svgData = '<?xml version="1.0" encoding="utf-8"?><svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><text style="fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: '+ fontsize +'; font-weight: 700; white-space: pre;" x="30" y="350">'+ filenameList[i] +'</text></svg>'
-        curFile = str(filenameList[i]) + ".svg"
+        svgData = '<?xml version="1.0" encoding="utf-8"?><svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><text style="fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: '+ fontsize +'; font-weight: 700; white-space: pre;" x="30" y="350">'+ filename +'</text></svg>'
+        curFile = str(filename) + ".svg"
         with open(os.path.join(path, curFile), "w+") as f:
             f.write(svgData)
             f.close()

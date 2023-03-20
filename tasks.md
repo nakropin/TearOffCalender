@@ -1,5 +1,6 @@
 # tasks
 - [ ] animations
+  - [ ] implement animation in component
   - [ ] animation module to let every sheet fall differently ~~min 6 x fall and lay on the floor, 3l/3r~~
   - [ ] (tear off all animation for button)
   - [ ] should turn back when not full hover
