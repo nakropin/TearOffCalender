@@ -132,6 +132,14 @@ body {
 
 .refresh, .imprint{
   position: absolute;
-  width:100px;
-  height:40px;
+  width: 100px;
+  display: block;
+}
+
+.pageimg{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  pointer-events: none;
 }

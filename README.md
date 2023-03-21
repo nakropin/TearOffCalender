@@ -5,8 +5,8 @@ tearoffpad is a simple web component that contains a tearoffpad animation. tearo
 run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z-4" and "first", "last", "refresh", "imprint" (ending ".svg") in folder img/.
 
 # use
-* implement component like shown below in your html file as child node of body element. insert html tag with attributes and insert .js as script like shown below. Set the attributes according to your needs. if no attributes are set, standard values are provided.
-* example code:
+* implement component like shown below in your html file as child node of body element. insert html tag with attributes and tearoffscript.js as script like shown below. Set the attributes according to your needs. if no attributes are set, standard values are provided.
+* example code body:
     
       <tear-off-pad 
         data-bgcolors = "#9532a8,#6ef0e3,#e0d255"
@@ -16,6 +16,19 @@ run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z
       >
       </tear-off-pad>
       <script src="./tearoffscript.js"></script>
+
+* set head like in example with css, metaname, jquery [https://jquery.com/], normalize [https://necolas.github.io/normalize.css/] and image preload.
+* example code head:
+* 
+      <head>
+      <link rel="preload" fetchpriority="high" as="image" href="/img/refresh.svg" type="image/svg+xml">
+      <meta name="description" content="Tear-off pad animation.">
+      <meta name="viewport" content="width=device-width initial-scale=1"charset="UTF-8">
+      <title>Tear-off Pad</title>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css"/>
+      <link rel="stylesheet" href="./style.css">
+      </head>
 
 * **Attributes**
   * **bgcolors**: background colors, randomly picked except if u only provide single color. there must be only comma as separator within the quotes, no whitespace.

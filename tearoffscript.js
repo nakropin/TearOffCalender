@@ -15,10 +15,14 @@ class TearOffPad extends HTMLElement {
     /* Set Values and render initial component state */
     const path = "img/";
     const body = document.body;
-    const bgColors      = $( 'tear-off-pad' )[0].getAttribute( 'data-bgcolors' ).split(",");
-    const pagesAmount   = $( 'tear-off-pad' )[0].getAttribute( 'data-pagesamount' );
-    const subPageAmount = $( 'tear-off-pad' )[0].getAttribute( 'data-subpageamount' );
-    const btnpos        = $( 'tear-off-pad' )[0].getAttribute( 'data-buttonposition' );
+    const bgColors              = $( 'tear-off-pad' )[0].getAttribute( 'data-bgcolors' ).split(",");
+    const pagesAmount           = $( 'tear-off-pad' )[0].getAttribute( 'data-pagesamount' );
+    const subPageAmount         = $( 'tear-off-pad' )[0].getAttribute( 'data-subpageamount' );
+    const btnpos                = $( 'tear-off-pad' )[0].getAttribute( 'data-buttonposition' );
+    const pageImgAltText        = $( 'tear-off-pad' )[0].getAttribute( 'data-pageimgalttext' );
+    const refreshButtonAltText  = $( 'tear-off-pad' )[0].getAttribute( 'data-refreshbuttonalttext' );
+    const imprintButtonAltText  = $( 'tear-off-pad' )[0].getAttribute( 'data-imprintbuttonalttext' );
+
     createBasicPage();
     randomBackgroundColor();
     buttonposition(btnpos);
@@ -42,8 +46,16 @@ class TearOffPad extends HTMLElement {
       const imprintButton = body.appendChild( document.createElement( 'button' ) );
       refreshButton.classList.add( 'refresh' );
       imprintButton.classList.add( 'imprint' );
-      refreshButton.appendChild( document.createElement('img') ).src = path + "refresh.svg";
-      imprintButton.appendChild( document.createElement('img') ).src = path + "imprint.svg";  
+      const imgrefreshbutton = refreshButton.appendChild( document.createElement('img') );
+      imgrefreshbutton.setAttribute('src', (path + "refresh.svg"));
+      imgrefreshbutton.setAttribute('width', "100px");
+      imgrefreshbutton.setAttribute('height', "40px");
+      imgrefreshbutton.setAttribute('alt', refreshButtonAltText);
+      const imgimprintbutton = imprintButton.appendChild( document.createElement('img') );
+      imgimprintbutton.setAttribute("src", (path + "imprint.svg"));  
+      imgimprintbutton.setAttribute('width', "100px");
+      imgimprintbutton.setAttribute('height', "40px");
+      imgimprintbutton.setAttribute('alt', imprintButtonAltText);
     };
 
     /* Generate Matrix for Path + Filenames, then randomize */
@@ -89,11 +101,13 @@ class TearOffPad extends HTMLElement {
     };
 
     function renderCalendarPage() {
-      const currentSrc = randomfiles[renderPageCallCounter];
+      const currentSrc = randomfiles[ renderPageCallCounter ];
       const newPage = document.createElement('div');
+      const curPageWidth = "500px";
+      const curPageHeight = "";
       newPage.classList.add('page');
       // TODO: alt Tag richtig setzen
-      newPage.innerHTML = `<img src="${currentSrc}" alt="pages">`;
+      newPage.innerHTML = `<img class="pageimg" src="${currentSrc}" alt=` + pageImgAltText + ` `+ curPageWidth + ` ` + curPageHeight + `>`;
       // <img src='Folder/`+$(filenames[renderPageCallCounter-1])+`></img>
       pages.appendChild(newPage);
       renderPageCallCounter++;
