@@ -1,5 +1,7 @@
 # tearoffpad
-tearoffpad is a simple web component that contains a tearoffpad animation. tearoffpad gives users the possibility to select sets of pictures. one picture from the selected sets will be randomly chosen to appear in the tearoffpad. reusability in this case does not mean reuseability for webdevs but for designers, for they can simply provide svgs and easily implement the component into existing structure.
+tearoffpad is a simple web component that contains a tearoffpad animation. tearoffpad gives users the possibility to select sets of pictures in svg format. one picture per selected set will be randomly chosen to appear on tearoffpad in given order. tearoffpad aims to be used by people who are not developers. focus of resusability 
+
+reusability in this case does not mean reuseability for webdevs but for designers, for they can simply provide svgs and easily implement the component into existing structure.
 
 # generate mockdata
 run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z-4" and "first", "last", "refresh", "imprint" (ending ".svg") in folder img/.
@@ -19,7 +21,7 @@ run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z
 
 * set head like in example with css, metaname, jquery [https://jquery.com/], normalize [https://necolas.github.io/normalize.css/] and image preload.
 * example code head:
-* 
+
       <head>
       <link rel="preload" fetchpriority="high" as="image" href="/img/refresh.svg" type="image/svg+xml">
       <meta name="description" content="Tear-off pad animation.">
@@ -29,6 +31,12 @@ run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css"/>
       <link rel="stylesheet" href="./style.css">
       </head>
+
+* minify resources [https://developers.google.com/speed/docs/insights/MinifyResources?hl=en]
+
+* host libraries (jquery, normalize) yourself
+
+* to make your page screenreader-accessible use accessibility tags in the svg (e.g. title, desc, aria-labeledby="title", aria-describedby="desc", for text: role="presentation" aria-hidden="true") [https://www.amberddesign.com/make-svg-file-accessible/], like the data from the mockdatagenerator.
 
 * **Attributes**
   * **bgcolors**: background colors, randomly picked except if u only provide single color. there must be only comma as separator within the quotes, no whitespace.

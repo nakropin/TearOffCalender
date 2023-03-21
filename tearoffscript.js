@@ -7,7 +7,7 @@ class TearOffPad extends HTMLElement {
 
   connectedCallback(){
     this.renderPage();
-  }
+  };
   
   renderPage(){
     // TODO: create shadow dom? (no shadowdom for IE) | access attributes need to be changed then too
@@ -29,8 +29,8 @@ class TearOffPad extends HTMLElement {
     const pages         = document.querySelector( '.pages' );
     const refresh       = document.querySelector( '.refresh' );
     const imprint       = document.querySelector( '.imprint' );
-    const fileending = ".svg";
-    const randomfiles = makeRandomizedFileList();
+    const fileending    = ".svg";
+    const randomfiles   = makeRandomizedFileList();
     var renderPageCallCounter = 0;
     renderCalendarPage();
 
@@ -44,6 +44,8 @@ class TearOffPad extends HTMLElement {
       /* Buttons */
       const refreshButton = body.appendChild( document.createElement( 'button' ) );
       const imprintButton = body.appendChild( document.createElement( 'button' ) );
+      refreshButton.setAttribute('tabindex', '0');
+      imprintButton.setAttribute('tabindex', '0');
       refreshButton.classList.add( 'refresh' );
       imprintButton.classList.add( 'imprint' );
       const imgrefreshbutton = refreshButton.appendChild( document.createElement('img') );
@@ -106,10 +108,9 @@ class TearOffPad extends HTMLElement {
       const curPageWidth = "500px";
       const curPageHeight = "";
       newPage.classList.add('page');
-      // TODO: alt Tag richtig setzen
       newPage.innerHTML = `<img class="pageimg" src="${currentSrc}" alt=` + pageImgAltText + ` `+ curPageWidth + ` ` + curPageHeight + `>`;
-      // <img src='Folder/`+$(filenames[renderPageCallCounter-1])+`></img>
       pages.appendChild(newPage);
+      newPage.setAttribute('tabindex', '0');
       renderPageCallCounter++;
     };
 

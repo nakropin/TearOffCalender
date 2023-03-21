@@ -10,6 +10,10 @@
 - [ ] compatibility
   - [ ] chrome, ff, edge, safari
   - [ ] mobile android, ios
+- [ ] accessibility
+  - [x] make tabable
+    - [ ] make 
+  - [ ] screenreader-test
 - [ ] make jquery local (dsgvo)
 - [x] random color background
 - [x] make it component
@@ -19,3 +23,5 @@
   - [ ] eliminate render blocking resources (make essential CSS inline) [https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery]
   - [ ] widht + heihgt image all elements
   - [ ] LCP
+- [ ] make first image optional
+- [ ] remove jquery for performance?
