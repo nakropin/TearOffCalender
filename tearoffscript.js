@@ -110,7 +110,8 @@ class TearOffPad extends HTMLElement {
       newPage.classList.add('page');
       newPage.innerHTML = `<img class="pageimg" src="${currentSrc}" alt=` + pageImgAltText + ` `+ curPageWidth + ` ` + curPageHeight + `>`;
       pages.appendChild(newPage);
-      newPage.setAttribute('tabindex', '0');
+      // TODO: fix tabindex for accessibility
+      pages.setAttribute('tabindex', '0');
       renderPageCallCounter++;
     };
 

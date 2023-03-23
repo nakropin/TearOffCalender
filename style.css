@@ -112,7 +112,7 @@ body {
 
 @keyframes tear-animation {
   0% {
-    transform: rotate(0deg);
+    transform: rotate(00deg);
     top: 0;
     opacity: 1;
   }
