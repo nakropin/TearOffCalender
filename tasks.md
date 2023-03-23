@@ -25,3 +25,4 @@
   - [ ] LCP
 - [ ] make first image optional
 - [ ] remove jquery for performance?
+- [ ] scrollen verhindern (overflow hidden)

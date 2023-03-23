@@ -1,3 +1,10 @@
+import handleClick from "./handleClick.js"
+import refreshbtn from "./refreshbtn.js"
+import imprintbtn from "./imprintbtn.js"
+
+export default renderPageCallCounter;
+
+
 class TearOffPad extends HTMLElement {
   constructor() {
     super();
@@ -15,7 +22,6 @@ class TearOffPad extends HTMLElement {
     /* Set Values and render initial component state */
     const path = "img/";
     const body = document.body;
-    // TODO: check for best practice - getAttribute
     const bgColors              = $( 'tear-off-pad' )[0].getAttribute( 'data-bgcolors' ).split(",");
     const pagesAmount           = $( 'tear-off-pad' )[0].getAttribute( 'data-pagesamount' );
     const subPageAmount         = $( 'tear-off-pad' )[0].getAttribute( 'data-subpageamount' );
@@ -27,7 +33,6 @@ class TearOffPad extends HTMLElement {
     createBasicPage();
     randomBackgroundColor();
     buttonposition(btnpos);
-
     const pages         = document.querySelector( '.pages' );
     const refresh       = document.querySelector( '.refresh' );
     const imprint       = document.querySelector( '.imprint' );
@@ -38,7 +43,9 @@ class TearOffPad extends HTMLElement {
 
     function createBasicPage(){
       /* TearOffPad, Pages */
-      const pagesTag = body.appendChild( document.createElement('div') );
+      const calTag = body.appendChild( document.createElement('div') );
+      const pagesTag = calTag.appendChild( document.createElement('div') );
+      calTag.classList.add( "calendar" );
       pagesTag.classList.add( "pages" );
 
       /* Buttons */
@@ -48,10 +55,16 @@ class TearOffPad extends HTMLElement {
       imprintButton.setAttribute('tabindex', '0');
       refreshButton.classList.add( 'refresh' );
       imprintButton.classList.add( 'imprint' );
-      refreshButton.setAttribute('style', 'background-image: url(' + path + 'refresh.svg)');
-      imprintButton.setAttribute('style', 'background-image: url(' + path + 'imprint.svg)');
-      refreshButton.setAttribute('alt', refreshButtonAltText);
-      imprintButton.setAttribute('alt', imprintButtonAltText);
+      const imgrefreshbutton = refreshButton.appendChild( document.createElement('img') );
+      imgrefreshbutton.setAttribute('src', (path + "refresh.svg"));
+      imgrefreshbutton.setAttribute('width', "100px");
+      imgrefreshbutton.setAttribute('height', "40px");
+      imgrefreshbutton.setAttribute('alt', refreshButtonAltText);
+      const imgimprintbutton = imprintButton.appendChild( document.createElement('img') );
+      imgimprintbutton.setAttribute("src", (path + "imprint.svg"));  
+      imgimprintbutton.setAttribute('width', "100px");
+      imgimprintbutton.setAttribute('height', "40px");
+      imgimprintbutton.setAttribute('alt', imprintButtonAltText);
     };
 
     /* Generate Matrix for Path + Filenames, then randomize */
@@ -60,7 +73,7 @@ class TearOffPad extends HTMLElement {
       for (let i = 0; i < pagesAmount; i++){
         let sublist = [];
         for (let j = 0; j < subPageAmount; j++){
-          let curFilename = path + String.fromCharCode( 97 + i ) + "-" + ( j + 1 )  + fileending;
+          let curFilename = path + String.fromCharCode( 97+i ) + "-" + ( j + 1 )  + fileending;
           sublist.push( curFilename );
         };
         filenameList.push( sublist );
@@ -76,12 +89,13 @@ class TearOffPad extends HTMLElement {
       return randomizedList;
     };
 
-    /* Functionality */
+    /* Functionality 
     function handleClick( e ) {
         if( renderPageCallCounter < randomfiles.length ){
           updateCalendar( e.target );
         };
     };
+    */
 
     function updateCalendar( target ) {
       if ( target && target.classList.contains('page') ) {
@@ -99,20 +113,23 @@ class TearOffPad extends HTMLElement {
     function renderCalendarPage() {
       const currentSrc = randomfiles[ renderPageCallCounter ];
       const newPage = document.createElement('div');
-      newPage.style.backgroundImage = "url("+ currentSrc +")"
+      const curPageWidth = "500px";
+      const curPageHeight = "";
       newPage.classList.add('page');
+      newPage.innerHTML = `<img class="pageimg" src="${currentSrc}" alt=` + pageImgAltText + ` `+ curPageWidth + ` ` + curPageHeight + `>`;
       pages.appendChild(newPage);
-      newPage.setAttribute('alt', pageImgAltText);
+      // TODO: fix tabindex for accessibility
       pages.setAttribute('tabindex', '0');
       renderPageCallCounter++;
     };
-
+/*
     function refreshbtn(){
       if ( renderPageCallCounter != 1 ){
         renderPageCallCounter = 0;
         document.querySelectorAll('.page:not(.tear)')[0].click();
       };
     };
+   
 
     function imprintbtn(){
       for ( let i = 0; i < randomfiles.length; i++ ){
@@ -120,6 +137,7 @@ class TearOffPad extends HTMLElement {
       }
       renderPageCallCounter = randomfiles.length;
     };
+     */
 
     function randomBackgroundColor() {
       let randomColor = bgColors[ Math.floor( Math.random() * bgColors.length) ];
@@ -168,48 +186,7 @@ class TearOffPad extends HTMLElement {
     //Diese bilden durch die Subtraktion in den jeweiligen Achsen einen Bewegunsvektor
     //Über translateX(x) und translateY(y) wird page verschoben
     //Über Rotate(X) und Rotate(Y) in Radians rotiert. Hierbei muss die Arctan-Formel(y/x) angewandt werden
-//Element mit einer ID auswählen
-//const meinDiv = document.getElementById("container");
-
-//Globale Hilfsvariablen
-let centerX = window.innerWidth / 2;
-let centerY = window.innerHeight / 2;
-let offsetX;
-let offsetY;
-let animate = false;
-
-
-// Elemente mit der Klasse auswählen
-const elemente = document.getElementsByClassName('page');
-// Auf jedes Element zugreifen und bearbeiten
-for (let i = 0; i < elemente.length; i++) {
-    const meinDiv = elemente[i];
-
-    // Mausunten
-    meinDiv.addEventListener("mousedown", function (event) {
-        animate = true;
-    });
-
-    // Mausoben
-    document.addEventListener('mouseup', function (event) {
-        if (animate) {
-            offsetX = event.clientX - centerX;
-            offsetY = event.clientY - centerY;
-
-            let rotationAngle = Math.atan2(offsetX, offsetY) * 180 / Math.PI;
-            // Länge des Vektors als Multiplikator
-            let vectorLength = Math.sqrt(Math.abs(offsetX) + Math.abs(offsetY)) / 35;
-
-            meinDiv.style.transform = `translate(${offsetX}px, ${offsetY}px) rotateY(${rotationAngle * vectorLength}deg) rotateZ(${rotationAngle * vectorLength}deg)`;
-            meinDiv.style.opacity = 0;
-            animate = false;
-        }
-    });
-}
-
-
-
-
+    //
   };
 };
 
