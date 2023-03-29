@@ -76,20 +76,48 @@ class TearOffPad extends HTMLElement {
       return randomizedList;
     };
 
+    //Globale Hilfsvariablen
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let centerX = width / 2;
+    let centerY = height / 2;
+    let offsetX;
+    let offsetY;
+
+
     /* Functionality */
-    function handleClick( e ) {
-        if( renderPageCallCounter < randomfiles.length ){
-          updateCalendar( e.target );
-        };
+    //ist nur aktiv wenn auch innerhalb der Page geklickt wird
+    function handleClick() {
+      //Während mousedown wird ein Listener auf den body gesetzt um Koordinaten mithilfe der Hilfsunktion zu erhalten
+      body.addEventListener('mouseup', getCoordinates)
     };
+
+    function getCoordinates(event){
+      offsetX = event.clientX - centerX;
+      offsetY = event.clientY - centerY;
+      animatePage(offsetX, offsetY);
+    }
+
+
+    function animatePage(x, y){
+      const divElements = document.querySelectorAll('.page:not(.tear)');
+      for (let i = 0; i < divElements.length; i++) {
+        let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
+        // Länge des Vektors als Multiplikator
+        let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
+
+        divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
+        body.removeEventListener("mouseup", getCoordinates)
+
+        if( renderPageCallCounter < randomfiles.length ){
+          updateCalendar( divElements[i] );
+        }
+      }
+    }
 
     function updateCalendar( target ) {
       if ( target && target.classList.contains('page') ) {
         target.classList.add( 'tear' );
-        setTimeout(() => {
-          // TODO: transform instead of remove? also rename or make up new naming convention
-          pages.removeChild( target );
-        }, 800);
       } else {
         return;
       }
@@ -111,14 +139,16 @@ class TearOffPad extends HTMLElement {
       if ( renderPageCallCounter != 1 ){
         renderPageCallCounter = 0;
         document.querySelectorAll('.page:not(.tear)')[0].click();
+        let randomCoordinates = generateRandomCoordinates();
+        animatePage(randomCoordinates.x, randomCoordinates.y);
       };
     };
 
     function imprintbtn(){
-      for ( let i = 0; i < randomfiles.length; i++ ){
         document.querySelectorAll('.page:not(.tear)')[0].click();
-      }
-      renderPageCallCounter = randomfiles.length;
+        renderPageCallCounter = randomfiles.length-1;
+        let randomCoordinates = generateRandomCoordinates();
+        animatePage(randomCoordinates.x, randomCoordinates.y);
     };
 
     function randomBackgroundColor() {
@@ -160,56 +190,15 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-    pages.addEventListener('click', handleClick);
+    pages.addEventListener('mousedown', handleClick);
     refresh.addEventListener('click', refreshbtn);
     imprint.addEventListener('click', imprintbtn);
 
-    //TODO: Funktion implementieren womit Koordinaten des Kalenders + Mauskoordinaten abgefangen werden
-    //Diese bilden durch die Subtraktion in den jeweiligen Achsen einen Bewegunsvektor
-    //Über translateX(x) und translateY(y) wird page verschoben
-    //Über Rotate(X) und Rotate(Y) in Radians rotiert. Hierbei muss die Arctan-Formel(y/x) angewandt werden
-//Element mit einer ID auswählen
-//const meinDiv = document.getElementById("container");
-
-//Globale Hilfsvariablen
-let centerX = window.innerWidth / 2;
-let centerY = window.innerHeight / 2;
-let offsetX;
-let offsetY;
-let animate = false;
-
-
-// Elemente mit der Klasse auswählen
-const elemente = document.getElementsByClassName('page');
-// Auf jedes Element zugreifen und bearbeiten
-for (let i = 0; i < elemente.length; i++) {
-    const meinDiv = elemente[i];
-
-    // Mausunten
-    meinDiv.addEventListener("mousedown", function (event) {
-        animate = true;
-    });
-
-    // Mausoben
-    document.addEventListener('mouseup', function (event) {
-        if (animate) {
-            offsetX = event.clientX - centerX;
-            offsetY = event.clientY - centerY;
-
-            let rotationAngle = Math.atan2(offsetX, offsetY) * 180 / Math.PI;
-            // Länge des Vektors als Multiplikator
-            let vectorLength = Math.sqrt(Math.abs(offsetX) + Math.abs(offsetY)) / 35;
-
-            meinDiv.style.transform = `translate(${offsetX}px, ${offsetY}px) rotateY(${rotationAngle * vectorLength}deg) rotateZ(${rotationAngle * vectorLength}deg)`;
-            meinDiv.style.opacity = 0;
-            animate = false;
-        }
-    });
-}
-
-
-
-
+    function generateRandomCoordinates (){
+      let x = Math.random() * width - centerX;
+      let y = Math.random() * height - centerY;
+      return {x:x, y:y};
+    }
   };
 };
 
