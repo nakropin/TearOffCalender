@@ -76,58 +76,6 @@ class TearOffPad extends HTMLElement {
       return randomizedList;
     };
 
-    //Globale Hilfsvariablen
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    let centerX = width / 2;
-    let centerY = height / 2;
-    let offsetX;
-    let offsetY;
-    const targetX = centerX/8*5;
-    const targetY = centerY/4*3;
-
-
-    /* Functionality */
-    //ist nur aktiv wenn auch innerhalb der Page geklickt wird
-    function handleClick() {
-      //Während mousedown wird ein Listener auf den body gesetzt um Koordinaten mithilfe der Hilfsunktion zu erhalten
-      body.addEventListener('mouseup', getCoordinates)
-    };
-
-    function getCoordinates(event){
-      offsetX = event.clientX - centerX;
-      offsetY = event.clientY - centerY;
-      animatePage(offsetX, offsetY);
-    }
-
-    function animatePage(x, y){
-      const divElements = document.querySelectorAll('.page:not(.tear)');
-      if( renderPageCallCounter < randomfiles.length ){
-      for (let i = 0; i < divElements.length; i++) {
-        let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
-        // Länge des Vektors als Multiplikator
-        let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
-        divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-in';
-        divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
-        body.removeEventListener("mouseup", getCoordinates)
-        updateCalendar( divElements[i] );
-
-        divElements[i].addEventListener("transitionend", function() {
-
-          if(x > 0){
-            divElements[i].style.transform = `translate(${targetX}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${-45*vectorLength}deg)`;
-          }
-          else  {
-            divElements[i].style.transform = `translate(${-targetX}px, ${targetY}px) rotateX(${70}deg) rotateZ(${45*vectorLength}deg)`;
-
-          }
-        });
-        }
-      }
-    }
-
-
-
     function updateCalendar( target ) {
       if ( target && target.classList.contains('page') ) {
         target.classList.add( 'tear' );
@@ -201,6 +149,55 @@ class TearOffPad extends HTMLElement {
           else{
             refresh.style[stylespos[i]] = pos[currPos][i] + unit;
           };
+        };
+      };
+    };
+
+    //Globale Hilfsvariablen
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let centerX = width / 2;
+    let centerY = height / 2;
+    let offsetX;
+    let offsetY;
+    const targetX = centerX/8*5;
+    const targetY = centerY/4*3;
+
+    /* Functionality */
+    //ist nur aktiv wenn auch innerhalb der Page geklickt wird
+    function handleClick() {
+      //Während mousedown wird ein Listener auf den body gesetzt um Koordinaten mithilfe der Hilfsunktion zu erhalten
+      body.addEventListener('mouseup', getCoordinates)
+    };
+
+    function getCoordinates(event){
+      offsetX = event.clientX - centerX;
+      offsetY = event.clientY - centerY;
+      animatePage(offsetX, offsetY);
+    }
+
+    function animatePage(x, y){
+      const divElements = document.querySelectorAll('.page:not(.tear)');
+      if( renderPageCallCounter < randomfiles.length ){
+      for (let i = 0; i < divElements.length; i++) {
+        let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
+        // Länge des Vektors als Multiplikator
+        let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
+        divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-in';
+        divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
+        body.removeEventListener("mouseup", getCoordinates)
+        updateCalendar( divElements[i] );
+
+        divElements[i].addEventListener("transitionend", function() {
+
+          if(x > 0){
+            divElements[i].style.transform = `translate(${targetX}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${-45*vectorLength}deg)`;
+          }
+          else  {
+            divElements[i].style.transform = `translate(${-targetX}px, ${targetY}px) rotateX(${70}deg) rotateZ(${45*vectorLength}deg)`;
+
+          };
+        });
         };
       };
     };
