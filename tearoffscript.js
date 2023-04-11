@@ -8,10 +8,10 @@ class TearOffPad extends HTMLElement {
   connectedCallback(){
     this.renderPage();
   };
-  
+
   renderPage(){
     // TODO: create shadow dom? (no shadowdom for IE) | access attributes need to be changed then too
-    
+
     /* Set Values and render initial component state */
     const path = "img/";
     const body = document.body;
@@ -56,7 +56,7 @@ class TearOffPad extends HTMLElement {
 
     /* Generate Matrix for Path + Filenames, then randomize */
     function makeRandomizedFileList(){
-      let filenameList = [];  
+      let filenameList = [];
       for (let i = 0; i < pagesAmount; i++){
         let sublist = [];
         for (let j = 0; j < subPageAmount; j++){
@@ -163,6 +163,9 @@ class TearOffPad extends HTMLElement {
     const targetX = centerX/8*5;
     const targetY = centerY/4*3;
 
+    let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
+
+
     /* Functionality */
     //ist nur aktiv wenn auch innerhalb der Page geklickt wird
     function handleClick() {
@@ -173,34 +176,41 @@ class TearOffPad extends HTMLElement {
     function getCoordinates(event){
       offsetX = event.clientX - centerX;
       offsetY = event.clientY - centerY;
+      if(offsetX > 0){
+        bezierPoints = [{ x: centerX, y: centerY }, { x: offsetX, y: offsetY }, { x: centerX, y: targetY }, { x: targetX, y: targetY }];
+      }
+      else {
+        bezierPoints = [{ x: centerX, y: centerY }, { x: offsetX, y: offsetY }, { x: centerX, y: targetY }, { x: -targetX, y: targetY }];
+      }
+      console.log(bezierPoints);
       animatePage(offsetX, offsetY);
     }
 
     function animatePage(x, y){
       const divElements = document.querySelectorAll('.page:not(.tear)');
       if( renderPageCallCounter < randomfiles.length ){
-      for (let i = 0; i < divElements.length; i++) {
-        let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
-        // Länge des Vektors als Multiplikator
-        let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
-        divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-in';
-        divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
-        body.removeEventListener("mouseup", getCoordinates)
-        updateCalendar( divElements[i] );
+        for (let i = 0; i < divElements.length; i++) {
+          let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
+          // Länge des Vektors als Multiplikator
+          let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
+          divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-in';
+          divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
+          body.removeEventListener("mouseup", getCoordinates)
+          updateCalendar( divElements[i] );
 
-        divElements[i].addEventListener("transitionend", function() {
+          divElements[i].addEventListener("transitionend", function() {
 
-          if(x > 0){
-            divElements[i].style.transform = `translate(${targetX}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${-45*vectorLength}deg)`;
-          }
-          else  {
-            divElements[i].style.transform = `translate(${-targetX}px, ${targetY}px) rotateX(${70}deg) rotateZ(${45*vectorLength}deg)`;
+            if(x > 0){
+              divElements[i].style.transform = `translate(${targetX}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${-45*vectorLength}deg)`;
+            }
+            else  {
+              divElements[i].style.transform = `translate(${-targetX}px, ${targetY}px) rotateX(${70}deg) rotateZ(${45*vectorLength}deg)`;
 
-          };
-        });
-        };
-      };
-    };
+            }
+          });
+        }
+      }
+    }
 
     pages.addEventListener('mousedown', handleClick);
     refresh.addEventListener('click', refreshbtn);
