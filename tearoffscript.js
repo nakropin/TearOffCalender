@@ -193,20 +193,18 @@ class TearOffPad extends HTMLElement {
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
           // Länge des Vektors als Multiplikator
           let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
+
           divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-in';
           divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
           body.removeEventListener("mouseup", getCoordinates)
           updateCalendar( divElements[i] );
 
           divElements[i].addEventListener("transitionend", function() {
+          
+          const xValue = 45
+          const arr = ( x > 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ]
+          divElements[i].style.transform = `translate(${arr[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${arr[0]*vectorLength}deg)`;
 
-            if(x > 0){
-              divElements[i].style.transform = `translate(${targetX}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${-45*vectorLength}deg)`;
-            }
-            else  {
-              divElements[i].style.transform = `translate(${-targetX}px, ${targetY}px) rotateX(${70}deg) rotateZ(${45*vectorLength}deg)`;
-
-            }
           });
         }
       }
