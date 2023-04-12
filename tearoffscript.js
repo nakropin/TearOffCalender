@@ -22,8 +22,8 @@ class TearOffPad extends HTMLElement {
     const subPageAmount         = componentElement.getAttribute( 'data-subpageamount' );
     const btnpos                = componentElement.getAttribute( 'data-buttonposition' );
     const pageImgAltText        = componentElement.getAttribute( 'data-pageimgalttext' );
-    const refreshBtnAltText  = componentElement.getAttribute( 'data-refreshBtnalttext' );
-    const imprintBtnAltText  = componentElement.getAttribute( 'data-imprintBtnalttext' );
+    const refreshBtnAltText     = componentElement.getAttribute( 'data-refreshBtnalttext' );
+    const imprintBtnAltText     = componentElement.getAttribute( 'data-imprintBtnalttext' );
 
     createBasicPage();
     randomBackgroundColor();
@@ -69,8 +69,9 @@ class TearOffPad extends HTMLElement {
 
     let randomizedList = [];
       randomizedList.push( imgPath + "first" + fileending );
+
       for ( let i = 0; i < pagesAmount; i++ ){
-        let randomElement = ( filenameList[i] )[ Math.floor( Math.random() * ( filenameList[i] ).length )];
+        let randomElement = ( filenameList[i] )[Math.floor( Math.random() * ( filenameList[i] ).length )];
         randomizedList.push( randomElement );
       };
       randomizedList.push( imgPath + "last" + fileending );
@@ -101,26 +102,17 @@ class TearOffPad extends HTMLElement {
       if ( renderPageCallCounter != 1 ){
         renderPageCallCounter = 0;
         document.querySelectorAll("[class='page']")[0].click();
-
         let randomCoordinates = generateRandomCoordinates();
         animatePage(randomCoordinates.x, randomCoordinates.y);
-
-        deleteAllFloorElements();
       };
-    };
-
-    function deleteAllFloorElements(){
-      document.querySelectorAll('.floor').forEach(e => e.remove());
     };
 
     function imprintbtn(){
       if(renderPageCallCounter != randomfiles.length){
         document.querySelectorAll("[class='page']")[0].click();
-        renderPageCallCounter = randomfiles.length - 1;
-
+        renderPageCallCounter = randomfiles.length-1;
         let randomCoordinates = generateRandomCoordinates();
         animatePage(randomCoordinates.x, randomCoordinates.y);
-
       }
     };
 
@@ -175,6 +167,7 @@ class TearOffPad extends HTMLElement {
 
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
 
+
     /* Functionality */
     //ist nur aktiv wenn auch innerhalb der Page geklickt wird
     function handleClick() {
@@ -204,22 +197,25 @@ class TearOffPad extends HTMLElement {
 
     function animatePage(x, y){
       const divElements = document.querySelectorAll("[class='page']");
-  
       if( renderPageCallCounter < randomfiles.length ){
         for (let i = 0; i < divElements.length; i++) {
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
           // Länge des Vektors als Multiplikator
           let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
-
-          divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.6s ease-in';
+          divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-in';
           divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
           body.removeEventListener("mouseup", getCoordinates)
           updateCalendar( divElements[i] );
 
           divElements[i].addEventListener("transitionend", function() {
-            const xValue = 45
-            const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ]
-            divElements[i].style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
+
+            if(x > 0){
+              divElements[i].style.transform = `translate(${targetX}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${-45*vectorLength}deg)`;
+            }
+            else  {
+              divElements[i].style.transform = `translate(${-targetX}px, ${targetY}px) rotateX(${70}deg) rotateZ(${45*vectorLength}deg)`;
+
+            }
           });
           makeFloorElement(divElements[0]);
         };
@@ -236,6 +232,12 @@ class TearOffPad extends HTMLElement {
     pages.addEventListener('mousedown', handleClick);
     refresh.addEventListener('click', refreshbtn);
     imprint.addEventListener('click', imprintbtn);
+
+    function generateRandomCoordinates (){
+      let x = Math.random() * width - centerX;
+      let y = Math.random() * height - centerY;
+      return {x:x, y:y};
+    }
   };
 };
 
