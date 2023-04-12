@@ -162,23 +162,24 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-    //Globale Hilfsvariablen
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    let centerX = width / 2;
-    let centerY = height / 2;
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+    /* global vars for animation */
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const targetX = centerX / 8 * 5;
+    const targetY = centerY / 4 * 3;
     let offsetX;
     let offsetY;
-    const targetX = centerX/8*5;
-    const targetY = centerY/4*3;
 
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
 
-
     /* Functionality */
-    //ist nur aktiv wenn auch innerhalb der Page geklickt wird
+    /* only active if page gets clicked */
     function handleClick() {
-      //Während mousedown wird ein Listener auf den body gesetzt um Koordinaten mithilfe der Hilfsunktion zu erhalten
+      /* while mousedown add listener to body (other one is at pages) to get coordinates with getCoordinates funct */
       body.addEventListener('mouseup', getCoordinates)
     };
 
@@ -207,7 +208,7 @@ class TearOffPad extends HTMLElement {
       if( renderPageCallCounter < randomfiles.length ){
         for (let i = 0; i < divElements.length; i++) {
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
-          // Länge des Vektors als Multiplikator
+          /* Vector length as multiplicator */
           let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
           divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-in';
           divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
@@ -221,7 +222,6 @@ class TearOffPad extends HTMLElement {
             }
             else  {
               divElements[i].style.transform = `translate(${-targetX}px, ${targetY}px) rotateX(${70}deg) rotateZ(${45*vectorLength}deg)`;
-
             }
           });
           makeFloorElement(divElements[0]);
