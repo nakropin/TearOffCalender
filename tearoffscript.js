@@ -71,7 +71,7 @@ class TearOffPad extends HTMLElement {
       randomizedList.push( imgPath + "first" + fileending );
 
       for ( let i = 0; i < pagesAmount; i++ ){
-        let randomElement = ( filenameList[i] )[Math.floor( Math.random() * ( filenameList[i] ).length )];
+        let randomElement = ( filenameList[i] )[ Math.floor( Math.random() * ( filenameList[i] ).length )];
         randomizedList.push( randomElement );
       };
       randomizedList.push( imgPath + "last" + fileending );
@@ -102,9 +102,16 @@ class TearOffPad extends HTMLElement {
       if ( renderPageCallCounter != 1 ){
         renderPageCallCounter = 0;
         document.querySelectorAll("[class='page']")[0].click();
+        
         let randomCoordinates = generateRandomCoordinates();
         animatePage(randomCoordinates.x, randomCoordinates.y);
+        
+        deleteAllFloorElements();
       };
+    };
+
+    function deleteAllFloorElements(){
+      document.querySelectorAll('.floor').forEach(e => e.remove());
     };
 
     function imprintbtn(){
