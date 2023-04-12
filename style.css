@@ -39,6 +39,15 @@ body {
   z-index: 1;
 }
 
+.floor {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 1;
+}
+
 .refresh, .imprint{
   position: absolute;
   height: 40px;
