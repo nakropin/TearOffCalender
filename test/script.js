@@ -6,18 +6,19 @@ let centerY = height / 2;
 
 const targetX = centerX/8*5;
 const targetY = centerY/4*3;
+const bezierObject = document.getElementById("container");
+console.log(bezierObject);
 let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
 let progress = 0;
 
 // Mauskoordinaten beim Start berücksichtigen
-var mouseX;
-var mouseY;
+let mouseX;
+let mouseY;
 document.addEventListener('mousemove', function(event) {
     mouseX = event.clientX - centerX;
     mouseY = event.clientY - centerY;
     if(mouseX > 0){
         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: centerX, y: targetY }, { x: targetX, y: targetY }];
-        console.log(mouseX, mouseY);
     }
     else {
         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: centerX, y: targetY }, { x: -targetX, y: targetY }];

@@ -163,7 +163,7 @@ class TearOffPad extends HTMLElement {
     const targetX = centerX/8*5;
     const targetY = centerY/4*3;
 
-    let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
+    //let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
 
 
     /* Functionality */
@@ -176,12 +176,14 @@ class TearOffPad extends HTMLElement {
     function getCoordinates(event){
       offsetX = event.clientX - centerX;
       offsetY = event.clientY - centerY;
+      /*
       if(offsetX > 0){
         bezierPoints = [{ x: centerX, y: centerY }, { x: offsetX, y: offsetY }, { x: centerX, y: targetY }, { x: targetX, y: targetY }];
       }
       else {
         bezierPoints = [{ x: centerX, y: centerY }, { x: offsetX, y: offsetY }, { x: centerX, y: targetY }, { x: -targetX, y: targetY }];
       }
+       */
       console.log(bezierPoints);
       animatePage(offsetX, offsetY);
     }
@@ -205,7 +207,6 @@ class TearOffPad extends HTMLElement {
             }
             else  {
               divElements[i].style.transform = `translate(${-targetX}px, ${targetY}px) rotateX(${70}deg) rotateZ(${45*vectorLength}deg)`;
-
             }
           });
         }
