@@ -1,7 +1,8 @@
 class TearOffPad extends HTMLElement {
   constructor() {
     super();
-    this.shadow = this.attachShadow( { mode: "open" } );
+    /* TODO:  Use shadow dom */
+    // this.shadow = this.attachShadow( { mode: "open" } );
   };
   // TODO: getter, setter. observer?, enhance constructor?
 
@@ -10,19 +11,19 @@ class TearOffPad extends HTMLElement {
   };
 
   renderPage(){
-    // TODO: create shadow dom? (no shadowdom for IE) | access attributes need to be changed then too
-
     /* Set Values and render initial component state */
-    const path = "img/";
+    const imgPath = "img/";
     const body = document.body;
-    // TODO: check for best practice - getAttribute
-    const bgColors              = $( 'tear-off-pad' )[0].getAttribute( 'data-bgcolors' ).split(",");
-    const pagesAmount           = $( 'tear-off-pad' )[0].getAttribute( 'data-pagesamount' );
-    const subPageAmount         = $( 'tear-off-pad' )[0].getAttribute( 'data-subpageamount' );
-    const btnpos                = $( 'tear-off-pad' )[0].getAttribute( 'data-buttonposition' );
-    const pageImgAltText        = $( 'tear-off-pad' )[0].getAttribute( 'data-pageimgalttext' );
-    const refreshButtonAltText  = $( 'tear-off-pad' )[0].getAttribute( 'data-refreshbuttonalttext' );
-    const imprintButtonAltText  = $( 'tear-off-pad' )[0].getAttribute( 'data-imprintbuttonalttext' );
+
+        /* Get custom values from component Element */
+    const componentElement      = document.getElementsByTagName('tear-off-pad')[0];
+    const bgColors              = componentElement.getAttribute( 'data-bgcolors' ).split(",");
+    const pagesAmount           = componentElement.getAttribute( 'data-pagesamount' );
+    const subPageAmount         = componentElement.getAttribute( 'data-subpageamount' );
+    const btnpos                = componentElement.getAttribute( 'data-buttonposition' );
+    const pageImgAltText        = componentElement.getAttribute( 'data-pageimgalttext' );
+    const refreshBtnAltText  = componentElement.getAttribute( 'data-refreshBtnalttext' );
+    const imprintBtnAltText  = componentElement.getAttribute( 'data-imprintBtnalttext' );
 
     createBasicPage();
     randomBackgroundColor();
@@ -42,37 +43,37 @@ class TearOffPad extends HTMLElement {
       pagesTag.classList.add( "pages" );
 
       /* Buttons */
-      const refreshButton = body.appendChild( document.createElement( 'button' ) );
-      const imprintButton = body.appendChild( document.createElement( 'button' ) );
-      refreshButton.setAttribute('tabindex', '0');
-      imprintButton.setAttribute('tabindex', '0');
-      refreshButton.classList.add( 'refresh' );
-      imprintButton.classList.add( 'imprint' );
-      refreshButton.setAttribute('style', 'background-image: url(' + path + 'refresh.svg)');
-      imprintButton.setAttribute('style', 'background-image: url(' + path + 'imprint.svg)');
-      refreshButton.setAttribute('alt', refreshButtonAltText);
-      imprintButton.setAttribute('alt', imprintButtonAltText);
+      const refreshBtn = body.appendChild( document.createElement( 'button' ) );
+      const imprintBtn = body.appendChild( document.createElement( 'button' ) );
+      refreshBtn.setAttribute('tabindex', '0');
+      imprintBtn.setAttribute('tabindex', '0');
+      refreshBtn.classList.add( 'refresh' );
+      imprintBtn.classList.add( 'imprint' );
+      refreshBtn.setAttribute('style', 'background-image: url(' + imgPath + 'refresh.svg)');
+      imprintBtn.setAttribute('style', 'background-image: url(' + imgPath + 'imprint.svg)');
+      refreshBtn.setAttribute('alt', refreshBtnAltText);
+      imprintBtn.setAttribute('alt', imprintBtnAltText);
     };
 
-    /* Generate Matrix for Path + Filenames, then randomize */
+    /* Generate Matrix for imgPath + Filenames, then randomize */
     function makeRandomizedFileList(){
       let filenameList = [];
       for (let i = 0; i < pagesAmount; i++){
         let sublist = [];
         for (let j = 0; j < subPageAmount; j++){
-          let curFilename = path + String.fromCharCode( 97 + i ) + "-" + ( j + 1 )  + fileending;
+          let curFilename = imgPath + String.fromCharCode( 97 + i ) + "-" + ( j + 1 )  + fileending;
           sublist.push( curFilename );
         };
         filenameList.push( sublist );
       };
 
     let randomizedList = [];
-      randomizedList.push( path + "first" + fileending );
+      randomizedList.push( imgPath + "first" + fileending );
       for ( let i = 0; i < pagesAmount; i++ ){
         let randomElement = ( filenameList[i] )[ Math.floor( Math.random() * ( filenameList[i] ).length )];
         randomizedList.push( randomElement );
       };
-      randomizedList.push( path + "last" + fileending );
+      randomizedList.push( imgPath + "last" + fileending );
       return randomizedList;
     };
 
@@ -181,6 +182,7 @@ class TearOffPad extends HTMLElement {
       body.addEventListener('mouseup', getCoordinates)
     };
 
+    /* declares offset values from pointer location, calls animatePage offset describes the coordinate system */
     function getCoordinates(event){
       offsetX = event.clientX - centerX;
       offsetY = event.clientY - centerY;
@@ -192,20 +194,18 @@ class TearOffPad extends HTMLElement {
       }
       console.log(bezierPoints);
       animatePage(offsetX, offsetY);
-    }
+    };
 
     function generateRandomCoordinates (){
       let x = Math.random() * width - centerX;
       let y = Math.random() * height - centerY;
       return {x:x, y:y};
-    }
+    };
 
     function animatePage(x, y){
-
       const divElements = document.querySelectorAll("[class='page']");
-      
+  
       if( renderPageCallCounter < randomfiles.length ){
-
         for (let i = 0; i < divElements.length; i++) {
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
           // Länge des Vektors als Multiplikator
@@ -222,14 +222,15 @@ class TearOffPad extends HTMLElement {
             divElements[i].style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
           });
           makeFloorElement(divElements[0]);
-        }
-      }
+        };
+      };
     };
 
-    function makeFloorElement(givenElement){
-      givenElement.classList.remove('tear');
-      givenElement.classList.add('floor');
-      givenElement.classList.add('floor');
+    function makeFloorElement( element ){
+      const floorElementAltText = "A page that was torn off now laying on the floor.";
+      element.setAttribute('alt', floorElementAltText);
+      element.classList.remove('tear');
+      element.classList.add('floor');
     };
 
     pages.addEventListener('mousedown', handleClick);

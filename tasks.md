@@ -4,17 +4,15 @@
   - [ ] animation module to let every sheet fall differently ~~min 6 x fall and lay on the floor, 3l/3r~~
   - [ ] (tear off all animation for button)
   - [ ] should turn back when not full hover
-- [ ] buttons with svg
-  - [ ] refresh-button
-  - [ ] tear off all button
+- [x] buttons with svg
+  - [x] refresh-button
+  - [x] tear off all button
 - [ ] compatibility
   - [ ] chrome, ff, edge, safari
   - [ ] mobile android, ios
 - [ ] accessibility
   - [x] make tabable
-    - [ ] make 
   - [ ] screenreader-test
-- [ ] make jquery local (dsgvo)
 - [x] random color background
 - [x] make it component
 - [x] buttonposition
@@ -24,5 +22,6 @@
   - [ ] widht + heihgt image all elements
   - [ ] LCP
 - [ ] make first image optional
-- [ ] remove jquery for performance?
-- [ ] scrollen verhindern (overflow hidden)
+- [x] ~~make jquery local (dsgvo)~~
+- [ ] remove jquery for performance
+- [ ] prevent scrolldown (overflow hidden)
