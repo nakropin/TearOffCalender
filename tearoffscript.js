@@ -231,8 +231,8 @@ class TearOffPad extends HTMLElement {
     };
 
     function makeFloorElement( element ){
-      const floorElementAltText = "A page that was torn off now laying on the floor.";
-      element.setAttribute('title', floorElementAltText);
+      const floorElementTitle = "A page that was torn off now laying on the floor.";
+      element.setAttribute('title', floorElementTitle);
       element.classList.remove('tear');
       element.classList.add('floor');
     };
