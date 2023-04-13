@@ -16,14 +16,14 @@ class TearOffPad extends HTMLElement {
     const body = document.body;
 
         /* Get custom values from component Element */
-    const componentElement      = document.getElementsByTagName('tear-off-pad')[0];
-    const bgColors              = componentElement.getAttribute( 'data-bgcolors' ).split(",");
-    const pagesAmount           = componentElement.getAttribute( 'data-pagesamount' );
-    const subPageAmount         = componentElement.getAttribute( 'data-subpageamount' );
-    const btnpos                = componentElement.getAttribute( 'data-buttonposition' );
-    const pageImgAltText        = componentElement.getAttribute( 'data-pageimgalttext' );
-    const refreshBtnAltText     = componentElement.getAttribute( 'data-refreshBtnalttext' );
-    const imprintBtnAltText     = componentElement.getAttribute( 'data-imprintBtnalttext' );
+    const componentElement        = document.getElementsByTagName( 'tear-off-pad' )[0];
+    const bgColors                = componentElement.getAttribute( 'data-bgcolors' ).split(",");
+    const pagesAmount             = componentElement.getAttribute( 'data-pagesamount' );
+    const subPageAmount           = componentElement.getAttribute( 'data-subpageamount' );
+    const btnpos                  = componentElement.getAttribute( 'data-buttonposition' );
+    const pageImgTitle            = componentElement.getAttribute( 'data-pageimgtitle' );
+    const refreshBtnAriaLabel     = componentElement.getAttribute( 'data-refreshbuttonarialabel' );
+    const imprintBtnAriaLabel     = componentElement.getAttribute( 'data-imprintbuttonarialabel' );
 
     createBasicPage();
     randomBackgroundColor();
@@ -51,8 +51,8 @@ class TearOffPad extends HTMLElement {
       imprintBtn.classList.add( 'imprint' );
       refreshBtn.setAttribute('style', 'background-image: url(' + imgPath + 'refresh.svg)');
       imprintBtn.setAttribute('style', 'background-image: url(' + imgPath + 'imprint.svg)');
-      refreshBtn.setAttribute('alt', refreshBtnAltText);
-      imprintBtn.setAttribute('alt', imprintBtnAltText);
+      refreshBtn.setAttribute('aria-label', refreshBtnAriaLabel);
+      imprintBtn.setAttribute('aria-label', imprintBtnAriaLabel);
     };
 
     /* Generate Matrix for imgPath + Filenames, then randomize */
@@ -93,7 +93,7 @@ class TearOffPad extends HTMLElement {
       newPage.style.backgroundImage = "url("+ currentSrc +")"
       newPage.classList.add('page');
       pages.appendChild(newPage);
-      newPage.setAttribute('alt', pageImgAltText);
+      pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
       renderPageCallCounter++;
     };
@@ -115,9 +115,10 @@ class TearOffPad extends HTMLElement {
     };
 
     function imprintbtn(){
-      if(renderPageCallCounter != randomfiles.length){
+      if( renderPageCallCounter != randomfiles.length ){
         document.querySelectorAll("[class='page']")[0].click();
-        renderPageCallCounter = randomfiles.length-1;
+        renderPageCallCounter = randomfiles.length - 1;
+
         let randomCoordinates = generateRandomCoordinates();
         animatePage(randomCoordinates.x, randomCoordinates.y);
       }
@@ -231,20 +232,20 @@ class TearOffPad extends HTMLElement {
 
     function makeFloorElement( element ){
       const floorElementAltText = "A page that was torn off now laying on the floor.";
-      element.setAttribute('alt', floorElementAltText);
+      element.setAttribute('title', floorElementAltText);
       element.classList.remove('tear');
       element.classList.add('floor');
     };
-
-    pages.addEventListener('mousedown', handleClick);
-    refresh.addEventListener('click', refreshbtn);
-    imprint.addEventListener('click', imprintbtn);
 
     function generateRandomCoordinates (){
       let x = Math.random() * width - centerX;
       let y = Math.random() * height - centerY;
       return {x:x, y:y};
     }
+
+    pages.addEventListener('mousedown', handleClick);
+    refresh.addEventListener('click', refreshbtn);
+    imprint.addEventListener('click', imprintbtn);
   };
 };
 
