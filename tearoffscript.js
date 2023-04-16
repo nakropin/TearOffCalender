@@ -29,18 +29,22 @@ class TearOffPad extends HTMLElement {
     randomBackgroundColor();
     buttonposition(btnpos);
 
-    const pages         = document.querySelector( '.pages' );
-    const refresh       = document.querySelector( '.refresh' );
-    const imprint       = document.querySelector( '.imprint' );
-    const fileending    = ".svg";
-    const randomfiles   = makeRandomizedFileList();
-    var renderPageCallCounter = 0;
+    const pages                   = document.querySelector( '.pages' );
+    // const floorpages             = document.querySelector( '.floorpages' );
+    const refresh                 = document.querySelector( '.refresh' );
+    const imprint                 = document.querySelector( '.imprint' );
+    const fileending              = ".svg";
+    const randomfiles             = makeRandomizedFileList();
+    var renderPageCallCounter     = 0;
     renderCalendarPage();
 
     function createBasicPage(){
       /* TearOffPad, Pages */
       const pagesTag = body.appendChild( document.createElement('div') );
       pagesTag.classList.add( "pages" );
+
+      // const floorPagesTag = body.appendChild( document.createElement('div') );
+      // floorPagesTag.classList.add( "floorpages" );
 
       /* Buttons */
       const refreshBtn = body.appendChild( document.createElement( 'button' ) );
@@ -215,15 +219,11 @@ class TearOffPad extends HTMLElement {
           divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
           body.removeEventListener("mouseup", getCoordinates)
           updateCalendar( divElements[i] );
-
+          
           divElements[i].addEventListener("transitionend", function() {
-
-            if(x > 0){
-              divElements[i].style.transform = `translate(${targetX}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${-45*vectorLength}deg)`;
-            }
-            else  {
-              divElements[i].style.transform = `translate(${-targetX}px, ${targetY}px) rotateX(${70}deg) rotateZ(${45*vectorLength}deg)`;
-            }
+            const xValue = 45
+            const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ]
+            divElements[i].style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
           });
           makeFloorElement(divElements[0]);
         };
@@ -231,17 +231,12 @@ class TearOffPad extends HTMLElement {
     };
 
     function makeFloorElement( element ){
-      const floorElementTitle = "A page that was torn off now laying on the floor.";
-      element.setAttribute('title', floorElementTitle);
+      // const floorElementTitle = "A page that was torn off now laying on the floor.";
+      // element.setAttribute('title', floorElementTitle);
       element.classList.remove('tear');
       element.classList.add('floor');
+      /* TODO: append element to different parentnode for readability screenreader? */
     };
-
-    function generateRandomCoordinates (){
-      let x = Math.random() * width - centerX;
-      let y = Math.random() * height - centerY;
-      return {x:x, y:y};
-    }
 
     pages.addEventListener('mousedown', handleClick);
     refresh.addEventListener('click', refreshbtn);
