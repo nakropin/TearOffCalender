@@ -47,12 +47,12 @@ class TearOffPad extends HTMLElement {
       // floorPagesTag.classList.add( "floorpages" );
 
       /* Buttons */
-      const refreshBtn = body.appendChild( document.createElement( 'button' ) );
       const imprintBtn = body.appendChild( document.createElement( 'button' ) );
-      refreshBtn.setAttribute('tabindex', '0');
-      imprintBtn.setAttribute('tabindex', '0');
+      const refreshBtn = body.appendChild( document.createElement( 'button' ) );
       refreshBtn.classList.add( 'refresh' );
       imprintBtn.classList.add( 'imprint' );
+      refreshBtn.setAttribute('tabindex', '0');
+      imprintBtn.setAttribute('tabindex', '0');
       refreshBtn.setAttribute('style', 'background-image: url(' + imgPath + 'refresh.svg)');
       imprintBtn.setAttribute('style', 'background-image: url(' + imgPath + 'imprint.svg)');
       refreshBtn.setAttribute('aria-label', refreshBtnAriaLabel);
@@ -62,16 +62,16 @@ class TearOffPad extends HTMLElement {
     /* Generate Matrix for imgPath + Filenames, then randomize */
     function makeRandomizedFileList(){
       let filenameList = [];
-      for (let i = 0; i < pagesAmount; i++){
+      for ( let i = 0; i < pagesAmount; i++ ){
         let sublist = [];
-        for (let j = 0; j < subPageAmount; j++){
+        for ( let j = 0; j < subPageAmount; j++ ){
           let curFilename = imgPath + String.fromCharCode( 97 + i ) + "-" + ( j + 1 )  + fileending;
           sublist.push( curFilename );
         };
         filenameList.push( sublist );
       };
 
-    let randomizedList = [];
+      let randomizedList = [];
       randomizedList.push( imgPath + "first" + fileending );
 
       for ( let i = 0; i < pagesAmount; i++ ){
@@ -93,39 +93,34 @@ class TearOffPad extends HTMLElement {
 
     function renderCalendarPage() {
       const currentSrc = randomfiles[ renderPageCallCounter ];
-      const newPage = document.createElement('div');
-      newPage.style.backgroundImage = "url("+ currentSrc +")"
+      const newPage = document.createElement('img');
       newPage.classList.add('page');
+      newPage.src = currentSrc
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
       renderPageCallCounter++;
     };
 
+    function imprintbtn(){
+      if( renderPageCallCounter != randomfiles.length ){
+        document.querySelectorAll("[class='page']")[0].click();
+        renderPageCallCounter = randomfiles.length - 1;
+        generateRandomCoordinatesAndAnimate();
+      }
+    };
+
     function refreshbtn(){
       if ( renderPageCallCounter != 1 ){
         renderPageCallCounter = 0;
         document.querySelectorAll("[class='page']")[0].click();
-        
-        let randomCoordinates = generateRandomCoordinates();
-        animatePage(randomCoordinates.x, randomCoordinates.y);
-        
+        generateRandomCoordinatesAndAnimate();        
         deleteAllFloorElements();
       };
     };
 
     function deleteAllFloorElements(){
       document.querySelectorAll('.floor').forEach(e => e.remove());
-    };
-
-    function imprintbtn(){
-      if( renderPageCallCounter != randomfiles.length ){
-        document.querySelectorAll("[class='page']")[0].click();
-        renderPageCallCounter = randomfiles.length - 1;
-
-        let randomCoordinates = generateRandomCoordinates();
-        animatePage(randomCoordinates.x, randomCoordinates.y);
-      }
     };
 
     function randomBackgroundColor() {
@@ -158,7 +153,7 @@ class TearOffPad extends HTMLElement {
         if (pos[currPos][i] != null){
           imprint.style[stylespos[i]] = pos[currPos][i] + unit;
           if( i === 0 | i === 1 ){
-            refresh.style[stylespos[i]] = "100" + unit;
+            refresh.style[stylespos[i]] = "70" + unit;
           }
           else{
             refresh.style[stylespos[i]] = pos[currPos][i] + unit;
@@ -192,20 +187,18 @@ class TearOffPad extends HTMLElement {
     function getCoordinates(event){
       offsetX = event.clientX - centerX;
       offsetY = event.clientY - centerY;
-      if(offsetX > 0){
-        bezierPoints = [{ x: centerX, y: centerY }, { x: offsetX, y: offsetY }, { x: centerX, y: targetY }, { x: targetX, y: targetY }];
-      }
-      else {
-        bezierPoints = [{ x: centerX, y: centerY }, { x: offsetX, y: offsetY }, { x: centerX, y: targetY }, { x: -targetX, y: targetY }];
-      }
+      
+      const curTargetX = ( offsetX > 0 ) ? targetX : -targetX
+      bezierPoints = [{ x: centerX, y: centerY }, { x: offsetX, y: offsetY }, { x: centerX, y: targetY }, { x: curTargetX, y: targetY }];
+
       console.log(bezierPoints);
       animatePage(offsetX, offsetY);
     };
 
-    function generateRandomCoordinates (){
+    function generateRandomCoordinatesAndAnimate (){
       let x = Math.random() * width - centerX;
       let y = Math.random() * height - centerY;
-      return {x:x, y:y};
+      animatePage(x, y);
     };
 
     function animatePage(x, y){
@@ -215,13 +208,15 @@ class TearOffPad extends HTMLElement {
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
           /* Vector length as multiplicator */
           let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
-          divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-in';
+          divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out';
           divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
+
           body.removeEventListener("mouseup", getCoordinates)
           updateCalendar( divElements[i] );
-          
+
           divElements[i].addEventListener("transitionend", function() {
             const xValue = 45
+            /* transVal defines in which direction page falls and in which dir it lays down */
             const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ]
             divElements[i].style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
           });

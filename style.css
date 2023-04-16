@@ -1,6 +1,6 @@
 *{
-  margin:0;
-  padding:0;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -14,17 +14,13 @@ body {
 .pages {
   position: relative;
   text-align: center;
-  background: #eee;
 }
 
 .page {
+  border: 1px solid black;
   position: relative;
-  width: 200px;
-  height: 200px;
+  box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
   justify-content: center;
-  background-repeat: no-repeat;
-  background-size: 80% 80%;
-  background-position: center;
   background-color: white;
   transform-origin: center;
   backface-visibility: visible;
@@ -32,8 +28,6 @@ body {
 
 .tear {
   position: absolute;
-  width: 100%;
-  height: 100%;
   box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
   pointer-events: none;
   z-index: 1;
@@ -41,8 +35,6 @@ body {
 
 .floor {
   position: absolute;
-  width: 100%;
-  height: 100%;
   box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
   pointer-events: none;
   z-index: 1;
@@ -56,4 +48,19 @@ body {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-position: center;
+}
+
+/* Standard Mobile */
+.page, .tear, .floor{
+  /* 60% in px for browser compatibility*/
+  width: 191.3px;
+  height: 255.1px;
+}
+
+/* Desktop */
+@media only screen and (min-width: 1000px) {
+  .page, .tear, .floor{
+    width: 318.9px;
+    height: 425.2px;
+  }
 }
