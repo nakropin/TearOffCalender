@@ -20,17 +20,16 @@ class TearOffPad extends HTMLElement {
     const bgColors                = componentElement.getAttribute( 'data-bgcolors' ).split(",");
     const pagesAmount             = componentElement.getAttribute( 'data-pagesamount' );
     const subPageAmount           = componentElement.getAttribute( 'data-subpageamount' );
-    const btnpos                  = componentElement.getAttribute( 'data-buttonposition' );
+    const btnpos                  = componentElement.getAttribute( 'data-buttonPosition' );
     const pageImgTitle            = componentElement.getAttribute( 'data-pageimgtitle' );
     const refreshBtnAriaLabel     = componentElement.getAttribute( 'data-refreshbuttonarialabel' );
     const imprintBtnAriaLabel     = componentElement.getAttribute( 'data-imprintbuttonarialabel' );
 
     createBasicPage();
     randomBackgroundColor();
-    buttonposition(btnpos);
+    buttonPosition(btnpos);
 
     const pages                   = document.querySelector( '.pages' );
-    // const floorpages             = document.querySelector( '.floorpages' );
     const refresh                 = document.querySelector( '.refresh' );
     const imprint                 = document.querySelector( '.imprint' );
     const fileending              = ".svg";
@@ -42,9 +41,6 @@ class TearOffPad extends HTMLElement {
       /* TearOffPad, Pages */
       const pagesTag = body.appendChild( document.createElement('div') );
       pagesTag.classList.add( "pages" );
-
-      // const floorPagesTag = body.appendChild( document.createElement('div') );
-      // floorPagesTag.classList.add( "floorpages" );
 
       /* Buttons */
       const imprintBtn = body.appendChild( document.createElement( 'button' ) );
@@ -62,10 +58,10 @@ class TearOffPad extends HTMLElement {
     /* Generate Matrix for imgPath + Filenames, then randomize */
     function makeRandomizedFileList(){
       let filenameList = [];
-      for ( let i = 0; i < pagesAmount; i++ ){
+      for ( let char = 97; char < (parseInt(pagesAmount) + 97); char++ ){
         let sublist = [];
-        for ( let j = 0; j < subPageAmount; j++ ){
-          let curFilename = imgPath + String.fromCharCode( 97 + i ) + "-" + ( j + 1 )  + fileending;
+        for ( let nr = 1; nr < ( parseInt(subPageAmount) + 1); nr++ ){
+          let curFilename = imgPath + String.fromCharCode( char ) + "-" + ( nr )  + fileending;
           sublist.push( curFilename );
         };
         filenameList.push( sublist );
@@ -82,15 +78,6 @@ class TearOffPad extends HTMLElement {
       return randomizedList;
     };
 
-    function updateCalendar( target ) {
-      if ( target && target.classList.contains('page') ) {
-        target.classList.add( 'tear' );
-      } else {
-        return;
-      }
-      renderCalendarPage();
-    };
-
     function renderCalendarPage() {
       const currentSrc = randomfiles[ renderPageCallCounter ];
       const newPage = document.createElement('img');
@@ -102,24 +89,29 @@ class TearOffPad extends HTMLElement {
       renderPageCallCounter++;
     };
 
-    function imprintbtn(){
+    function imprintbtn() {
+      animateNext();
+    };
+
+    /* recursive */
+    function animateNext() {
+      const delay = 150;
       if( renderPageCallCounter != randomfiles.length ){
         document.querySelectorAll("[class='page']")[0].click();
-        renderPageCallCounter = randomfiles.length - 1;
-        generateRandomCoordinatesAndAnimate();
-      }
+        setTimeout(animateNext, delay);
+      };
     };
 
     function refreshbtn(){
       if ( renderPageCallCounter != 1 ){
         renderPageCallCounter = 0;
         document.querySelectorAll("[class='page']")[0].click();
-        generateRandomCoordinatesAndAnimate();        
-        deleteAllFloorElements();
+        animatePage();        
+        removeAllFloorElements();
       };
     };
 
-    function deleteAllFloorElements(){
+    function removeAllFloorElements(){
       document.querySelectorAll('.floor').forEach(e => e.remove());
     };
 
@@ -128,7 +120,7 @@ class TearOffPad extends HTMLElement {
       document.body.style.background = randomColor;
     };
 
-    function buttonposition( input ){
+    function buttonPosition( input ){
       const checkInput = [ "upperLeft", "upperRight", "lowerLeft", "lowerRight" ];
       let currPos = 0; /* preset value 0, used if no/incorrect input*/
       for ( let i = 0; i < checkInput.length; i++){
@@ -162,78 +154,56 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    /* global vars for animation */
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const targetX = centerX / 8 * 5;
-    const targetY = centerY / 4 * 3;
-    let offsetX;
-    let offsetY;
-
-    let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
-
-    /* Functionality */
-    /* only active if page gets clicked */
-    function handleClick() {
-      /* while mousedown add listener to body (other one is at pages) to get coordinates with getCoordinates funct */
-      body.addEventListener('mouseup', getCoordinates)
-    };
-
-    /* declares offset values from pointer location, calls animatePage offset describes the coordinate system */
-    function getCoordinates(event){
-      offsetX = event.clientX - centerX;
-      offsetY = event.clientY - centerY;
-      
-      const curTargetX = ( offsetX > 0 ) ? targetX : -targetX
-      bezierPoints = [{ x: centerX, y: centerY }, { x: offsetX, y: offsetY }, { x: centerX, y: targetY }, { x: curTargetX, y: targetY }];
-
-      console.log(bezierPoints);
-      animatePage(offsetX, offsetY);
-    };
-
-    function generateRandomCoordinatesAndAnimate (){
+    /* declares offset values randomly, x and y describes the coordinate system */
+    function generateRandomCoordinates (width, height, centerX, centerY){
       let x = Math.random() * width - centerX;
       let y = Math.random() * height - centerY;
-      animatePage(x, y);
+      return({x: x, y: y});
     };
 
-    function animatePage(x, y){
+    function animatePage(){    
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const targetX = centerX / 8 * 5;
+      const targetY = centerY / 4 * 3;
+
+      let randomCoords = generateRandomCoordinates(width, height, centerX, centerY)
+      let x = randomCoords.x
+      let y = randomCoords.y
+      // let bezierPoints = [{ x: centerX, y: centerY }, { x: x, y: y }, { x: centerX, y: targetY }, { x: curTargetX, y: targetY }];
+      // console.log(bezierPoints);
+      
       const divElements = document.querySelectorAll("[class='page']");
       if( renderPageCallCounter < randomfiles.length ){
         for (let i = 0; i < divElements.length; i++) {
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
           /* Vector length as multiplicator */
           let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
+          
           divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out';
           divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
 
-          body.removeEventListener("mouseup", getCoordinates)
-          updateCalendar( divElements[i] );
-
+          renderCalendarPage();
+        
           divElements[i].addEventListener("transitionend", function() {
-            const xValue = 45
+            const xValue = 45;
             /* transVal defines in which direction page falls and in which dir it lays down */
-            const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ]
+            const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ];
             divElements[i].style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
           });
           makeFloorElement(divElements[0]);
         };
       };
+
     };
 
     function makeFloorElement( element ){
-      // const floorElementTitle = "A page that was torn off now laying on the floor.";
-      // element.setAttribute('title', floorElementTitle);
-      element.classList.remove('tear');
       element.classList.add('floor');
-      /* TODO: append element to different parentnode for readability screenreader? */
     };
 
-    pages.addEventListener('mousedown', handleClick);
+    pages.addEventListener('click', animatePage);
     refresh.addEventListener('click', refreshbtn);
     imprint.addEventListener('click', imprintbtn);
   };
