@@ -25,3 +25,4 @@
 - [x] ~~make jquery local (dsgvo)~~
 - [ ] remove jquery for performance
 - [ ] prevent scrolldown (overflow hidden)
+- [ ] Dark mode does not work

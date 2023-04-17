@@ -24,6 +24,7 @@ class TearOffPad extends HTMLElement {
     const pageImgTitle            = componentElement.getAttribute( 'data-pageimgtitle' );
     const refreshBtnAriaLabel     = componentElement.getAttribute( 'data-refreshbuttonarialabel' );
     const imprintBtnAriaLabel     = componentElement.getAttribute( 'data-imprintbuttonarialabel' );
+    const delay = 150;
 
     createBasicPage();
     randomBackgroundColor();
@@ -91,21 +92,21 @@ class TearOffPad extends HTMLElement {
 
     function imprintbtn() {
       animateNext();
+      turnOffEventListenersWhileClickAction();
     };
 
-    /* recursive */
+    /* recursively call animation */
     function animateNext() {
-      const delay = 150;
       if( renderPageCallCounter != randomfiles.length ){
-        document.querySelectorAll("[class='page']")[0].click();
+        animatePage();
         setTimeout(animateNext, delay);
       };
     };
 
     function refreshbtn(){
       if ( renderPageCallCounter != 1 ){
+        animatePage();
         renderPageCallCounter = 0;
-        document.querySelectorAll("[class='page']")[0].click();
         animatePage();        
         removeAllFloorElements();
       };
@@ -203,9 +204,34 @@ class TearOffPad extends HTMLElement {
       element.classList.add('floor');
     };
 
-    pages.addEventListener('click', animatePage);
-    refresh.addEventListener('click', refreshbtn);
-    imprint.addEventListener('click', imprintbtn);
+    function activateEventListeners(){
+    // pages.addEventListener('mouseover', console.log("yes"), false);
+      pages.addEventListener('click', animatePage);
+      refresh.addEventListener('click', refreshbtn);
+      imprint.addEventListener('click', imprintbtn);
+    };
+
+    function turnOffEventListenersWhileClickAction(){
+      const clickableElements = [ pages, refresh, imprint ]
+      clickableElements.forEach(element => element.setAttribute('disabled', 'disabled'));
+      const currentDelay = delay * ( (randomfiles.length - renderPageCallCounter)+3 );
+      setTimeout(function() {
+        clickableElements.forEach(element => element.removeAttribute('disabled'));
+      }, currentDelay );
+    };    
+
+    activateEventListeners();
+
+    function checkDarkMode(){
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      // Dark mode is enabled
+        document.body.classList.add('dark-mode');
+      } else {
+        // Light mode is enabled
+        document.body.classList.remove('dark-mode');
+      }
+    };
+    checkDarkMode()
   };
 };
 
