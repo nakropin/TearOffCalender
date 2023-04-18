@@ -60,20 +60,21 @@ body {
   background-color: #FFFFFF;
 }
 
-/* Standard Mobile */
-.pages, .page, .tear, .floor{
-  /* 60% in px for browser compatibility*/
-  width: 191.3px;
-  height: 255.1px;
+/* very small screen */
+@media only screen and (min-width: 1px) and (max-width: 600px){
+  .pages, .page, .tear, .floor{
+    width: 191.3px;
+    height: 255.1px;
+  }
 }
 
-@media (prefers-color-scheme: dark) and (pointer: coarse) and (hover: none) and (min-width: 600px) and (-webkit-min-device-pixel-ratio: 2) and (device-pixel-ratio: 2) {
-  /* Reset all styles for Firefox on Android with dark mode enabled */
-  body {
-    background-color: white;
-    color: black;
+/* Standard Mobile */
+@media only screen and (min-width: 600px) and (max-width: 1000px) {
+  .pages, .page, .tear, .floor{
+    /* 80% in px for browser compatibility*/
+    width: 255.1px;
+    height: 340.2px;
   }
-  /* Add your own styles here */
 }
 
 /* Desktop */
