@@ -21,8 +21,9 @@
   - [ ] eliminate render blocking resources (make essential CSS inline) [https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery]
   - [ ] widht + heihgt image all elements
   - [ ] LCP
-- [ ] make first image optional
+- [x] ~~make first image optional~~
 - [x] ~~make jquery local (dsgvo)~~
-- [ ] remove jquery for performance
-- [ ] prevent scrolldown (overflow hidden)
-- [ ] Dark mode does not work
+- [x] remove jquery for performance
+- [x] prevent scrolldown
+- [ ] landscape for mobile does not work
+- [ ] prevent Dark mode does not work on few browsers

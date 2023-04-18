@@ -23,6 +23,9 @@ class TearOffPad extends HTMLElement {
     const pageImgTitle            = componentElement.getAttribute( 'data-pageimgtitle' );
     const refreshBtnAriaLabel     = componentElement.getAttribute( 'data-refreshbuttonarialabel' );
     const imprintBtnAriaLabel     = componentElement.getAttribute( 'data-imprintbuttonarialabel' );
+    const altTextFrontPage        = componentElement.getAttribute( 'data-alttextfrontpage' );
+    const altTextMostImages       = componentElement.getAttribute( 'data-alttextmostimages' );
+    const altTextImprint          = componentElement.getAttribute( 'data-alttextimprint' );
 
     createBasicPage();
     randomBackgroundColor();
@@ -86,10 +89,20 @@ class TearOffPad extends HTMLElement {
       const newPage = document.createElement('img');
       newPage.classList.add('page');
       newPage.src = currentSrc;
+      let altText = setAltText();
+      newPage.setAttribute('alt', altText);
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
       renderPageCallCounter++;
+    };
+    
+    function setAltText(){
+      let initialAltTexts = [ altTextFrontPage, altTextMostImages, altTextImprint ];
+      let usedAltTags = []
+      initialAltTexts.forEach(e => e === null ? usedAltTags.push("An image, not further described."): usedAltTags.push(e))
+      let result = renderPageCallCounter === 0 ? usedAltTags[0] : renderPageCallCounter != randomFiles.length-1 ? usedAltTags[1] : usedAltTags[2];
+      return result
     };
 
     function imprintbtn() {
