@@ -99,7 +99,7 @@ class TearOffPad extends HTMLElement {
       newPage.src = currentSrc;
       let altText = setAltText();
       newPage.setAttribute('alt', altText);
-      newPage.setAttribute('id', 'tearhint');
+      // newPage.setAttribute('id', 'tearhint');
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
@@ -238,8 +238,8 @@ class TearOffPad extends HTMLElement {
     };    
 
     function handleMouseLeave(){
-      const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
-      curPage.id= "tearhint";
+      // const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+      // curPage.id= "tearhint";
     };
 
     function turnOffEventListenersWhileEventAction(){
