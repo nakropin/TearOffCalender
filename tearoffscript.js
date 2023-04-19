@@ -5,14 +5,14 @@ class TearOffPad extends HTMLElement {
   };
 
   connectedCallback(){
-    this.renderPage();
+    this.render();
   };
 
-  renderPage(){
+  render(){
     /* Set up ShadowRoot */
     const template = document.createElement('link');
     template.setAttribute('rel', "stylesheet");
-    template.setAttribute('href', './style.css');
+    template.setAttribute('href', './shadowstyle.css');
     template.setAttribute('type', 'text/css');
     
     const shadowRoot = this.shadowRoot;
@@ -40,6 +40,7 @@ class TearOffPad extends HTMLElement {
 
     /* Get selectors etc */
     const pages                   = shadowRoot.querySelector( '.pages' );
+    // TODO: ShadowRoot
     const refresh                 = document.body.querySelector( '.refresh' );
     const imprint                 = document.body.querySelector( '.imprint' );
     const fileEnding              = ".svg";
@@ -49,7 +50,7 @@ class TearOffPad extends HTMLElement {
     
     renderPage(); /* renders the first page */
     activateEventListeners();
-
+    // setInterval(handleMouseEnter(pages.event), 5000)
     /*  Functions */
 
     function createBasicPage(){
@@ -64,6 +65,7 @@ class TearOffPad extends HTMLElement {
     function makeButton(btnName, ariaLabel, imgPath){
       let newButton = document.body.appendChild( document.createElement( 'button' ) );
       newButton.classList.add( btnName );
+      newButton.setAttribute('title', ariaLabel);
       newButton.setAttribute('tabindex', '0');
       newButton.setAttribute('style', 'background-image: url(' + imgPath + btnName + '.svg)');
       newButton.setAttribute('aria-label', ariaLabel);
@@ -72,7 +74,7 @@ class TearOffPad extends HTMLElement {
     /* Generate Matrix for imgPath + Filenames, then randomize */
     function makeRandomizedFileList(){
       let filenameList = [];
-      for ( let char = 97; char < (parseInt(pagesAmount) + 97); char++ ){
+      for ( let char = 97; char < ( parseInt(pagesAmount) + 97); char++ ){
         let sublist = [];
         for ( let nr = 1; nr < ( parseInt(subPageAmount) + 1); nr++ ){
           let curFilename = imgPath + String.fromCharCode( char ) + "-" + ( nr )  + fileEnding;
@@ -80,10 +82,8 @@ class TearOffPad extends HTMLElement {
         };
         filenameList.push( sublist );
       };
-
       let randomizedList = [];
       randomizedList.push( imgPath + "first" + fileEnding );
-
       for ( let i = 0; i < pagesAmount; i++ ){
         let randomElement = filenameList[i][ Math.floor( Math.random() * filenameList[i].length )];
         randomizedList.push( randomElement );
@@ -97,7 +97,7 @@ class TearOffPad extends HTMLElement {
       const newPage = document.createElement('img');
       newPage.classList.add('page');
       newPage.src = currentSrc;
-      let altText = setAltText();
+      const altText = setAltText();
       newPage.setAttribute('alt', altText);
       // newPage.setAttribute('id', 'tearhint');
       pages.appendChild(newPage);
@@ -107,10 +107,10 @@ class TearOffPad extends HTMLElement {
     };
     
     function setAltText(){
-      let initialAltTexts = [ altTextFrontPage, altTextImages, altTextImprint ];
+      const initialAltTexts = [ altTextFrontPage, altTextImages, altTextImprint ];
       let useAltTags = []
-      initialAltTexts.forEach(e => e === null ? useAltTags.push("An image, not further described."): useAltTags.push(e))
-      let result = renderPageCallCounter === 0 ? useAltTags[0] : renderPageCallCounter != randomFiles.length-1 ? useAltTags[1] : useAltTags[2];
+      initialAltTexts.forEach(e => e === null ? useAltTags.push("An image which has not been described yet."): useAltTags.push(e))
+      const result = renderPageCallCounter === 0 ? useAltTags[0] : renderPageCallCounter != randomFiles.length-1 ? useAltTags[1] : useAltTags[2];
       return result
     };
 
@@ -145,11 +145,11 @@ class TearOffPad extends HTMLElement {
       document.body.style.background = randomColor;
     };
 
-    function buttonPosition( input ){
+    function buttonPosition( position ){
       const checkInput = [ "upperLeft", "upperRight", "lowerLeft", "lowerRight" ];
-      let currPos = 0; /* preset value 0, used if no/incorrect input*/
+      let currPos = 0; /* preset value 0, used if no/incorrect input*/      
       for ( let i = 0; i < checkInput.length; i++){
-        if ( input === checkInput[i] ){
+        if ( position === checkInput[i] ){
           currPos = i
         };
       };
@@ -200,26 +200,24 @@ class TearOffPad extends HTMLElement {
       // let bezierPoints = [{ x: centerX, y: centerY }, { x: x, y: y }, { x: centerX, y: targetY }, { x: curTargetX, y: targetY }];
       // console.log(bezierPoints);
       
-      const divElements = shadowRoot.querySelectorAll("[class='page']");
+      const upperPage = shadowRoot.querySelectorAll("[class='page']")[0];
       if( renderPageCallCounter < randomFiles.length ){
-        for (let i = 0; i < divElements.length; i++) {
+          renderPage();
+          makeFloorElement( upperPage );
+
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
           /* Vector length as multiplicator */
           let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
-          divElements[i].removeAttribute("id")
-          divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out';
-          divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
+          upperPage.removeAttribute("id")
+          upperPage.style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out';
+          upperPage.style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
 
-          renderPage();
-        
-          divElements[i].addEventListener("transitionend", function() {
+          upperPage.addEventListener("transitionend", function() {
             const xValue = 45;
             /* transVal defines in which direction page falls and in which dir it lays down */
             const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ];
-            divElements[i].style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
+            upperPage.style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
           });
-          makeFloorElement( divElements[0] );
-        };
       };
     };
 
@@ -229,16 +227,20 @@ class TearOffPad extends HTMLElement {
 
     /* detect from which pos hover over page */
     function handleMouseEnter( event ) {
-      const element = event.target;
-      const boundingRect = element.getBoundingClientRect();
-      const mouseX = event.clientX - boundingRect.left;
-      const elementWidth = boundingRect.width;
-      const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
-      const pos = ( mouseX < elementWidth / 2 ) ? curPage.id= "left" : curPage.id= "right";
+      if ( renderPageCallCounter < randomFiles.length ){
+        const element = event.target;
+        const boundingRect = element.getBoundingClientRect();
+        const mouseX = event.clientX - boundingRect.left;
+        const elementWidth = boundingRect.width;
+        const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+        curPage.removeAttribute("id");
+        const pos = ( mouseX < elementWidth / 2 ) ? curPage.id= "left" : curPage.id= "right";
+      };
     };    
 
     function handleMouseLeave(){
-      // const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+      const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+      curPage.removeAttribute('id');
       // curPage.id= "tearhint";
     };
 
@@ -254,7 +256,7 @@ class TearOffPad extends HTMLElement {
     function activateEventListeners(){
       pages.addEventListener('click', animatePage);
       pages.addEventListener('mouseenter', handleMouseEnter);
-      pages.addEventListener('mouseleave', handleMouseLeave);
+      pages.addEventListener('mouseout', handleMouseLeave);
       refresh.addEventListener('click', refreshbtn);
       imprint.addEventListener('click', imprintbtn);
     };
