@@ -1,4 +1,6 @@
-*{
+
+
+/* *{
   margin: 0;
   padding: 0;
 }
@@ -9,7 +11,7 @@ body {
   align-items: center;
   height: 90vh;
   overflow: hidden;
-}
+} */
 
 .pages {
   box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
@@ -26,14 +28,42 @@ body {
   background-color: white;
   transform-origin: center;
   backface-visibility: visible;
+  box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
 }
 
-/* .page:hover {
-  transform-origin: 0px 0px;
+#tearhint {
+  animation-name: tearhint-animation;
+  animation-duration: 5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes tearhint-animation {
+  70% {
+    transform-origin: top right;
+    transform: rotate(0deg);
+  }
+  85% {
+    transform-origin: top right;
+    transform: rotate(-2.2deg);
+  }
+  100% {
+    transform-origin: top right;
+    transform: rotate(0deg);
+  }
+}
+
+#left:hover {
+  transform-origin: top right;
+  transform: rotate(-2.2deg);
+  transition: all 0.1s ease 0s;
+}
+
+#right:hover {
+  transform-origin: top left;
   transform: rotate(2.2deg);
   transition: all 0.1s ease 0s;
-} */
-
+}
 
 .floor {
   position: absolute;

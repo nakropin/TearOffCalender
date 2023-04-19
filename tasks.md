@@ -2,21 +2,20 @@
 - [ ] animations
   - [ ] implement animation in component
   - [ ] animation module to let every sheet fall differently ~~min 6 x fall and lay on the floor, 3l/3r~~
-  - [ ] (tear off all animation for button)
+  - [x] (tear off all animation for button)
   - [ ] should turn back when not full hover
 - [x] buttons with svg
   - [x] refresh-button
   - [x] tear off all button
-- [ ] compatibility
-  - [ ] chrome, ff, edge, safari
-  - [ ] mobile android, ios
+- [x] compatibility
+  - [x] chrome, ff, edge, safari
+  - [x] mobile android, ios
 - [ ] accessibility
   - [x] make tabable
   - [ ] screenreader-test
 - [x] random color background
 - [x] make it component
 - [x] buttonposition
-- [ ] Code-Minification
 - [ ] lighthouse:
   - [ ] eliminate render blocking resources (make essential CSS inline) [https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery]
   - [ ] widht + heihgt image all elements
@@ -25,5 +24,9 @@
 - [x] ~~make jquery local (dsgvo)~~
 - [x] remove jquery for performance
 - [x] prevent scrolldown
+- [ ] set css to absolute with margins
 - [ ] landscape for mobile does not work
 - [ ] prevent Dark mode does not work on few browsers
+- [ ] Code-Minification
+- [ ] finish shadowdom (buttons still missing, background style)
+- [ ] make floor elements adapt changed screen resolution

@@ -1,19 +1,26 @@
 class TearOffPad extends HTMLElement {
   constructor() {
     super();
-    /* TODO:  Use shadow dom */
-    // this.shadow = this.attachShadow( { mode: "open" } );
+    this.attachShadow({ mode: 'open' });
   };
-  // TODO: getter, setter. observer?, enhance constructor?
 
   connectedCallback(){
     this.renderPage();
   };
 
   renderPage(){
+    /* Set up ShadowRoot */
+    const template = document.createElement('link');
+    template.setAttribute('rel', "stylesheet");
+    template.setAttribute('href', './style.css');
+    template.setAttribute('type', 'text/css');
+    
+    const shadowRoot = this.shadowRoot;
+    shadowRoot.appendChild(template);
+
     /* Set Values and render initial component state */
     const imgPath = "img/";
-    const body = document.body;
+
     /* Get custom values from component Element */
     const componentElement        = document.getElementsByTagName( 'tear-off-pad' )[0];
     const bgColors                = componentElement.getAttribute( 'data-bgcolors' ).split(",");
@@ -24,16 +31,17 @@ class TearOffPad extends HTMLElement {
     const refreshBtnAriaLabel     = componentElement.getAttribute( 'data-refreshbuttonarialabel' );
     const imprintBtnAriaLabel     = componentElement.getAttribute( 'data-imprintbuttonarialabel' );
     const altTextFrontPage        = componentElement.getAttribute( 'data-alttextfrontpage' );
-    const altTextMostImages       = componentElement.getAttribute( 'data-alttextmostimages' );
+    const altTextImages           = componentElement.getAttribute( 'data-alttextimages' );
     const altTextImprint          = componentElement.getAttribute( 'data-alttextimprint' );
 
     createBasicPage();
     randomBackgroundColor();
     buttonPosition( btnpos );
+
     /* Get selectors etc */
-    const pages                   = document.querySelector( '.pages' );
-    const refresh                 = document.querySelector( '.refresh' );
-    const imprint                 = document.querySelector( '.imprint' );
+    const pages                   = shadowRoot.querySelector( '.pages' );
+    const refresh                 = document.body.querySelector( '.refresh' );
+    const imprint                 = document.body.querySelector( '.imprint' );
     const fileEnding              = ".svg";
     const randomFiles             = makeRandomizedFileList();
     const delay                   = 150;
@@ -46,7 +54,7 @@ class TearOffPad extends HTMLElement {
 
     function createBasicPage(){
       /* TearOffPad, Pages */
-      const pagesTag = body.appendChild( document.createElement('div') );
+      const pagesTag = shadowRoot.appendChild( document.createElement('div') );
       pagesTag.classList.add( "pages" );   
       const buttons = [  [ 'imprint', imprintBtnAriaLabel, imgPath ],
                          [ 'refresh', refreshBtnAriaLabel, imgPath ] ];
@@ -91,6 +99,7 @@ class TearOffPad extends HTMLElement {
       newPage.src = currentSrc;
       let altText = setAltText();
       newPage.setAttribute('alt', altText);
+      newPage.setAttribute('id', 'tearhint');
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
@@ -98,20 +107,20 @@ class TearOffPad extends HTMLElement {
     };
     
     function setAltText(){
-      let initialAltTexts = [ altTextFrontPage, altTextMostImages, altTextImprint ];
-      let usedAltTags = []
-      initialAltTexts.forEach(e => e === null ? usedAltTags.push("An image, not further described."): usedAltTags.push(e))
-      let result = renderPageCallCounter === 0 ? usedAltTags[0] : renderPageCallCounter != randomFiles.length-1 ? usedAltTags[1] : usedAltTags[2];
+      let initialAltTexts = [ altTextFrontPage, altTextImages, altTextImprint ];
+      let useAltTags = []
+      initialAltTexts.forEach(e => e === null ? useAltTags.push("An image, not further described."): useAltTags.push(e))
+      let result = renderPageCallCounter === 0 ? useAltTags[0] : renderPageCallCounter != randomFiles.length-1 ? useAltTags[1] : useAltTags[2];
       return result
     };
 
     function imprintbtn() {
-      animationDelayIterator( );
+      animationDelayIterator();
       turnOffEventListenersWhileEventAction();
     };
 
     /* recursively call animation */
-    function animationDelayIterator( ) {
+    function animationDelayIterator() {
       if( renderPageCallCounter != randomFiles.length ){
         animatePage();
         setTimeout(animationDelayIterator, delay);
@@ -128,7 +137,7 @@ class TearOffPad extends HTMLElement {
     };
 
     function removeAllFloorElements(){
-      document.querySelectorAll('.floor').forEach(e => e.remove());
+      shadowRoot.querySelectorAll('.floor').forEach(e => e.remove());
     };
 
     function randomBackgroundColor() {
@@ -191,13 +200,13 @@ class TearOffPad extends HTMLElement {
       // let bezierPoints = [{ x: centerX, y: centerY }, { x: x, y: y }, { x: centerX, y: targetY }, { x: curTargetX, y: targetY }];
       // console.log(bezierPoints);
       
-      const divElements = document.querySelectorAll("[class='page']");
+      const divElements = shadowRoot.querySelectorAll("[class='page']");
       if( renderPageCallCounter < randomFiles.length ){
         for (let i = 0; i < divElements.length; i++) {
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
           /* Vector length as multiplicator */
           let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
-          
+          divElements[i].removeAttribute("id")
           divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out';
           divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
 
@@ -218,11 +227,19 @@ class TearOffPad extends HTMLElement {
       element.classList.add('floor');
     };
 
-    function activateEventListeners(){
-    // pages.addEventListener('mouseover', console.log("yes"), false);
-      pages.addEventListener('click', animatePage);
-      refresh.addEventListener('click', refreshbtn);
-      imprint.addEventListener('click', imprintbtn);
+    /* detect from which pos hover over page */
+    function handleMouseEnter( event ) {
+      const element = event.target;
+      const boundingRect = element.getBoundingClientRect();
+      const mouseX = event.clientX - boundingRect.left;
+      const elementWidth = boundingRect.width;
+      const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+      const pos = ( mouseX < elementWidth / 2 ) ? curPage.id= "left" : curPage.id= "right";
+    };    
+
+    function handleMouseLeave(){
+      const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+      curPage.id= "tearhint";
     };
 
     function turnOffEventListenersWhileEventAction(){
@@ -232,6 +249,14 @@ class TearOffPad extends HTMLElement {
       setTimeout(function() {
         clickableElements.forEach(e => e.removeAttribute('disabled'));
       }, currentDelay );
+    };
+
+    function activateEventListeners(){
+      pages.addEventListener('click', animatePage);
+      pages.addEventListener('mouseenter', handleMouseEnter);
+      pages.addEventListener('mouseleave', handleMouseLeave);
+      refresh.addEventListener('click', refreshbtn);
+      imprint.addEventListener('click', imprintbtn);
     };
   };
 };
