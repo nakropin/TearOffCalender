@@ -4,6 +4,7 @@
   - [ ] animation module to let every sheet fall differently ~~min 6 x fall and lay on the floor, 3l/3r~~
   - [x] (tear off all animation for button)
   - [ ] should turn back when not full hover
+- [ ] interactivity
 - [x] buttons with svg
   - [x] refresh-button
   - [x] tear off all button
@@ -15,9 +16,9 @@
   - [ ] screenreader-test
 - [x] random color background
 - [x] make it component
-- [x] buttonposition
+- [ ] buttonposition problem: lowerleft/lowerright
 - [ ] lighthouse:
-  - [ ] eliminate render blocking resources (make essential CSS inline) [https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery]
+  - [x] eliminate render blocking resources (make essential CSS inline) [https://developers.google.com/speed/docs/insights/OptimizeCSSDelivery]
   - [ ] widht + heihgt image all elements
   - [ ] LCP
 - [x] ~~make first image optional~~
@@ -30,3 +31,16 @@
 - [ ] Code-Minification
 - [ ] finish shadowdom (buttons still missing, background style)
 - [ ] make floor elements adapt changed screen resolution
+- [ ] optimal example https://www.youtube.com/watch?v=7VFPos9clPo
+
+
+- [ ] make it mobile
+  - [ ] swipe (opacity fadeout)
+
+- [ ] component structure
+  - [ ] optimise functions
+  - [ ] change element structure?
+  - [ ] shadow dom
+
+- [ ] animation
+  - [ ] optimise flying paper animation and implement keyframes in js

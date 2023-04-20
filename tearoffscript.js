@@ -206,6 +206,10 @@ class TearOffPad extends HTMLElement {
           renderPage();
           makeFloorElement( curPage );
 
+          let chooseAnimation = 1;
+
+          if (chooseAnimation === 1){
+
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
           /* Vector length as multiplicator */
           let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
@@ -215,13 +219,27 @@ class TearOffPad extends HTMLElement {
             curPage.style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out';
             curPage.style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
 
-
             curPage.addEventListener("transitionend", function() {
               const xValue = 45;
               /* transVal defines in which direction page falls and in which dir it lays down */
               const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ];
               curPage.style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
             });
+          } else if ( chooseAnimation === 2) {
+              const keyframes = [
+                { transform: 'translate3d(0vw, 0vh, 0px)' },
+                { transform: 'translate3d(6vw, 30vh, 100px) rotateX(50deg) rotateZ(-20deg)' },
+                { transform: 'translate3d(-6vw, 40vh, 75px) rotateX(-50deg) rotateZ(20deg)' },
+                { transform: 'translate3d(6vw, 60vh, 100px) rotateX(70deg) rotateZ(-40deg)' }
+              ];
+
+              const options = {
+                duration: 3000,
+                iterations: Infinity
+              };
+              const animation = new KeyframeEffect(curPage, keyframes, options);
+              curPage.animate(animation);
+          }
       };
     };
 
