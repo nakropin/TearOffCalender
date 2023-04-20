@@ -1,127 +1,143 @@
 class TearOffPad extends HTMLElement {
   constructor() {
     super();
-    /* TODO:  Use shadow dom */
-    // this.shadow = this.attachShadow( { mode: "open" } );
+    this.attachShadow({ mode: 'open' });
   };
-  // TODO: getter, setter. observer?, enhance constructor?
 
   connectedCallback(){
-    this.renderPage();
+    this.render();
   };
 
-  renderPage(){
+  render(){
+    /* Set up ShadowRoot */
+    const template = document.createElement('link');
+    template.setAttribute('rel', "stylesheet");
+    template.setAttribute('href', './shadowstyle.css');
+    template.setAttribute('type', 'text/css');
+    
+    const shadowRoot = this.shadowRoot;
+    shadowRoot.appendChild(template);
+
     /* Set Values and render initial component state */
     const imgPath = "img/";
-    const body = document.body;
 
-        /* Get custom values from component Element */
+    /* Get custom values from component Element */
     const componentElement        = document.getElementsByTagName( 'tear-off-pad' )[0];
     const bgColors                = componentElement.getAttribute( 'data-bgcolors' ).split(",");
     const pagesAmount             = componentElement.getAttribute( 'data-pagesamount' );
     const subPageAmount           = componentElement.getAttribute( 'data-subpageamount' );
-    const btnpos                  = componentElement.getAttribute( 'data-buttonposition' );
+    const btnpos                  = componentElement.getAttribute( 'data-buttonPosition' );
     const pageImgTitle            = componentElement.getAttribute( 'data-pageimgtitle' );
     const refreshBtnAriaLabel     = componentElement.getAttribute( 'data-refreshbuttonarialabel' );
     const imprintBtnAriaLabel     = componentElement.getAttribute( 'data-imprintbuttonarialabel' );
+    const altTextFrontPage        = componentElement.getAttribute( 'data-alttextfrontpage' );
+    const altTextImages           = componentElement.getAttribute( 'data-alttextimages' );
+    const altTextImprint          = componentElement.getAttribute( 'data-alttextimprint' );
 
     createBasicPage();
     randomBackgroundColor();
-    buttonposition(btnpos);
+    buttonPosition( btnpos );
 
-    const pages         = document.querySelector( '.pages' );
-    const refresh       = document.querySelector( '.refresh' );
-    const imprint       = document.querySelector( '.imprint' );
-    const fileending    = ".svg";
-    const randomfiles   = makeRandomizedFileList();
-    var renderPageCallCounter = 0;
-    renderCalendarPage();
+    /* Get selectors etc */
+    const pages                   = shadowRoot.querySelector( '.pages' );
+    // TODO: ShadowRoot
+    const refresh                 = document.body.querySelector( '.refresh' );
+    const imprint                 = document.body.querySelector( '.imprint' );
+    const fileEnding              = ".svg";
+    const randomFiles             = makeRandomizedFileList();
+    const delay                   = 150;
+    var renderPageCallCounter     = 0;
+    
+    renderPage(); /* renders the first page */
+    activateEventListeners();
+    // setInterval(handleMouseEnter(pages.event), 5000)
+    /*  Functions */
 
     function createBasicPage(){
       /* TearOffPad, Pages */
-      const pagesTag = body.appendChild( document.createElement('div') );
-      pagesTag.classList.add( "pages" );
+      const pagesTag = shadowRoot.appendChild( document.createElement('div') );
+      pagesTag.classList.add( "pages" );   
+      const buttons = [  [ 'imprint', imprintBtnAriaLabel, imgPath ],
+                         [ 'refresh', refreshBtnAriaLabel, imgPath ] ];
+      buttons.forEach(e => makeButton( e[0], e[1], e[2] ))
+    };
 
-      /* Buttons */
-      const refreshBtn = body.appendChild( document.createElement( 'button' ) );
-      const imprintBtn = body.appendChild( document.createElement( 'button' ) );
-      refreshBtn.setAttribute('tabindex', '0');
-      imprintBtn.setAttribute('tabindex', '0');
-      refreshBtn.classList.add( 'refresh' );
-      imprintBtn.classList.add( 'imprint' );
-      refreshBtn.setAttribute('style', 'background-image: url(' + imgPath + 'refresh.svg)');
-      imprintBtn.setAttribute('style', 'background-image: url(' + imgPath + 'imprint.svg)');
-      refreshBtn.setAttribute('aria-label', refreshBtnAriaLabel);
-      imprintBtn.setAttribute('aria-label', imprintBtnAriaLabel);
+    function makeButton(btnName, ariaLabel, imgPath){
+      let newButton = document.body.appendChild( document.createElement( 'button' ) );
+      newButton.classList.add( btnName );
+      newButton.setAttribute('title', ariaLabel);
+      newButton.setAttribute('tabindex', '0');
+      newButton.setAttribute('style', 'background-image: url(' + imgPath + btnName + '.svg)');
+      newButton.setAttribute('aria-label', ariaLabel);
     };
 
     /* Generate Matrix for imgPath + Filenames, then randomize */
     function makeRandomizedFileList(){
       let filenameList = [];
-      for (let i = 0; i < pagesAmount; i++){
+      for ( let char = 97; char < ( parseInt(pagesAmount) + 97); char++ ){
         let sublist = [];
-        for (let j = 0; j < subPageAmount; j++){
-          let curFilename = imgPath + String.fromCharCode( 97 + i ) + "-" + ( j + 1 )  + fileending;
+        for ( let nr = 1; nr < ( parseInt(subPageAmount) + 1); nr++ ){
+          let curFilename = imgPath + String.fromCharCode( char ) + "-" + ( nr )  + fileEnding;
           sublist.push( curFilename );
         };
         filenameList.push( sublist );
       };
-
-    let randomizedList = [];
-      randomizedList.push( imgPath + "first" + fileending );
-
+      let randomizedList = [];
+      randomizedList.push( imgPath + "first" + fileEnding );
       for ( let i = 0; i < pagesAmount; i++ ){
-        let randomElement = ( filenameList[i] )[ Math.floor( Math.random() * ( filenameList[i] ).length )];
+        let randomElement = filenameList[i][ Math.floor( Math.random() * filenameList[i].length )];
         randomizedList.push( randomElement );
       };
-      randomizedList.push( imgPath + "last" + fileending );
+      randomizedList.push( imgPath + "last" + fileEnding );
       return randomizedList;
     };
 
-    function updateCalendar( target ) {
-      if ( target && target.classList.contains('page') ) {
-        target.classList.add( 'tear' );
-      } else {
-        return;
-      }
-      renderCalendarPage();
-    };
-
-    function renderCalendarPage() {
-      const currentSrc = randomfiles[ renderPageCallCounter ];
-      const newPage = document.createElement('div');
-      newPage.style.backgroundImage = "url("+ currentSrc +")"
+    function renderPage() {
+      const currentSrc = randomFiles[ renderPageCallCounter ];
+      const newPage = document.createElement('img');
       newPage.classList.add('page');
+      newPage.src = currentSrc;
+      const altText = setAltText();
+      newPage.setAttribute('alt', altText);
+      // newPage.setAttribute('id', 'tearhint');
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
       renderPageCallCounter++;
     };
+    
+    function setAltText(){
+      const initialAltTexts = [ altTextFrontPage, altTextImages, altTextImprint ];
+      let useAltTags = []
+      initialAltTexts.forEach(e => e === null ? useAltTags.push("An image which has not been described yet."): useAltTags.push(e))
+      const result = renderPageCallCounter === 0 ? useAltTags[0] : renderPageCallCounter != randomFiles.length-1 ? useAltTags[1] : useAltTags[2];
+      return result
+    };
 
-    function refreshbtn(){
-      if ( renderPageCallCounter != 1 ){
-        renderPageCallCounter = 0;
-        document.querySelectorAll("[class='page']")[0].click();
-        
-        let randomCoordinates = generateRandomCoordinates();
-        animatePage(randomCoordinates.x, randomCoordinates.y);
-        
-        deleteAllFloorElements();
+    function imprintbtn() {
+      animationDelayIterator();
+      turnOffEventListenersWhileEventAction();
+    };
+
+    /* recursively call animation */
+    function animationDelayIterator() {
+      if( renderPageCallCounter != randomFiles.length ){
+        animatePage();
+        setTimeout(animationDelayIterator, delay);
       };
     };
 
-    function deleteAllFloorElements(){
-      document.querySelectorAll('.floor').forEach(e => e.remove());
+    function refreshbtn(){
+      if ( renderPageCallCounter != 1 ){
+        animatePage();
+        renderPageCallCounter = 0;
+        animatePage();        
+        removeAllFloorElements();
+      };
     };
 
-    function imprintbtn(){
-      if( renderPageCallCounter != randomfiles.length ){
-        document.querySelectorAll("[class='page']")[0].click();
-        renderPageCallCounter = randomfiles.length - 1;
-
-        let randomCoordinates = generateRandomCoordinates();
-        animatePage(randomCoordinates.x, randomCoordinates.y);
-      }
+    function removeAllFloorElements(){
+      shadowRoot.querySelectorAll('.floor').forEach(e => e.remove());
     };
 
     function randomBackgroundColor() {
@@ -129,11 +145,11 @@ class TearOffPad extends HTMLElement {
       document.body.style.background = randomColor;
     };
 
-    function buttonposition( input ){
+    function buttonPosition( position ){
       const checkInput = [ "upperLeft", "upperRight", "lowerLeft", "lowerRight" ];
-      let currPos = 0; /* preset value 0, used if no/incorrect input*/
+      let currPos = 0; /* preset value 0, used if no/incorrect input*/      
       for ( let i = 0; i < checkInput.length; i++){
-        if ( input === checkInput[i] ){
+        if ( position === checkInput[i] ){
           currPos = i
         };
       };
@@ -154,7 +170,7 @@ class TearOffPad extends HTMLElement {
         if (pos[currPos][i] != null){
           imprint.style[stylespos[i]] = pos[currPos][i] + unit;
           if( i === 0 | i === 1 ){
-            refresh.style[stylespos[i]] = "100" + unit;
+            refresh.style[stylespos[i]] = "70" + unit;
           }
           else{
             refresh.style[stylespos[i]] = pos[currPos][i] + unit;
@@ -163,89 +179,109 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-
-    /* global vars for animation */
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const targetX = centerX / 8 * 5;
-    const targetY = centerY / 4 * 3;
-    let offsetX;
-    let offsetY;
-
-    let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
-
-    /* Functionality */
-    /* only active if page gets clicked */
-    function handleClick() {
-      /* while mousedown add listener to body (other one is at pages) to get coordinates with getCoordinates funct */
-      body.addEventListener('mouseup', getCoordinates)
-    };
-
-    /* declares offset values from pointer location, calls animatePage offset describes the coordinate system */
-    function getCoordinates(event){
-      offsetX = event.clientX - centerX;
-      offsetY = event.clientY - centerY;
-      if(offsetX > 0){
-        bezierPoints = [{ x: centerX, y: centerY }, { x: offsetX, y: offsetY }, { x: centerX, y: targetY }, { x: targetX, y: targetY }];
-      }
-      else {
-        bezierPoints = [{ x: centerX, y: centerY }, { x: offsetX, y: offsetY }, { x: centerX, y: targetY }, { x: -targetX, y: targetY }];
-      }
-      console.log(bezierPoints);
-      animatePage(offsetX, offsetY);
-    };
-
-    function generateRandomCoordinates (){
+    /* declares offset values randomly, x and y describe the coordinate system */
+    function generateRandomCoordinates (width, height, centerX, centerY){
       let x = Math.random() * width - centerX;
       let y = Math.random() * height - centerY;
-      return {x:x, y:y};
+      return({x: x, y: y});
     };
 
-    function animatePage(x, y){
-      const divElements = document.querySelectorAll("[class='page']");
-      if( renderPageCallCounter < randomfiles.length ){
-        for (let i = 0; i < divElements.length; i++) {
+    function animatePage(){    
+      if( renderPageCallCounter < randomFiles.length ){
+          const width = window.innerWidth;
+          const height = window.innerHeight;
+          const centerX = width / 2;
+          const centerY = height / 2;
+          const targetX = centerX / 8 * 5;
+          const targetY = centerY / 4 * 3;
+    
+          let randomCoords = generateRandomCoordinates(width, height, centerX, centerY);
+          let x = randomCoords.x;
+          let y = randomCoords.y;
+          // let bezierPoints = [{ x: centerX, y: centerY }, { x: x, y: y }, { x: centerX, y: targetY }, { x: curTargetX, y: targetY }];
+          // console.log(bezierPoints);
+          
+          const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+
+          renderPage();
+          makeFloorElement( curPage );
+
+          let chooseAnimation = 1;
+
+          if (chooseAnimation === 1){
+
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
           /* Vector length as multiplicator */
           let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
-          divElements[i].style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-in';
-          divElements[i].style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
-          body.removeEventListener("mouseup", getCoordinates)
-          updateCalendar( divElements[i] );
+            curPage.removeAttribute("id")
+            // curPage.style.transformOrigin = "top";
 
-          divElements[i].addEventListener("transitionend", function() {
+            curPage.style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out';
+            curPage.style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
 
-            if(x > 0){
-              divElements[i].style.transform = `translate(${targetX}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${-45*vectorLength}deg)`;
-            }
-            else  {
-              divElements[i].style.transform = `translate(${-targetX}px, ${targetY}px) rotateX(${70}deg) rotateZ(${45*vectorLength}deg)`;
-            }
-          });
-          makeFloorElement(divElements[0]);
-        };
+            curPage.addEventListener("transitionend", function() {
+              const xValue = 45;
+              /* transVal defines in which direction page falls and in which dir it lays down */
+              const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ];
+              curPage.style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
+            });
+          } else if ( chooseAnimation === 2) {
+              const keyframes = [
+                { transform: 'translate3d(0vw, 0vh, 0px)' },
+                { transform: 'translate3d(6vw, 30vh, 100px) rotateX(50deg) rotateZ(-20deg)' },
+                { transform: 'translate3d(-6vw, 40vh, 75px) rotateX(-50deg) rotateZ(20deg)' },
+                { transform: 'translate3d(6vw, 60vh, 100px) rotateX(70deg) rotateZ(-40deg)' }
+              ];
+
+              const options = {
+                duration: 3000,
+                iterations: Infinity
+              };
+              const animation = new KeyframeEffect(curPage, keyframes, options);
+              curPage.animate(animation);
+          }
       };
     };
 
     function makeFloorElement( element ){
-      const floorElementAltText = "A page that was torn off now laying on the floor.";
-      element.setAttribute('title', floorElementAltText);
-      element.classList.remove('tear');
       element.classList.add('floor');
     };
 
-    function generateRandomCoordinates (){
-      let x = Math.random() * width - centerX;
-      let y = Math.random() * height - centerY;
-      return {x:x, y:y};
-    }
+    /* detect from which pos hover over page */
+    function handleMouseEnter( event ) {
+      if ( renderPageCallCounter < randomFiles.length ){
+        const element = event.target;
+        const boundingRect = element.getBoundingClientRect();
+        const mouseX = event.clientX - boundingRect.left;
+        const elementWidth = boundingRect.width;
+        const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+        curPage.removeAttribute("id");
+        const pos = ( mouseX < elementWidth / 2 ) ? curPage.id= "left" : curPage.id= "right";
+      };
+    };    
 
-    pages.addEventListener('mousedown', handleClick);
-    refresh.addEventListener('click', refreshbtn);
-    imprint.addEventListener('click', imprintbtn);
+    function handleMouseLeave(){
+      const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+      setTimeout(function() {curPage.removeAttribute('id');}, 300 );
+      // curPage.id= "tearhint";
+    };
+
+    function turnOffEventListenersWhileEventAction(){
+      const clickableElements = [ pages, refresh, imprint ];
+      clickableElements.forEach(e => e.setAttribute('disabled', 'disabled'));
+      const currentDelay = delay * ( ( randomFiles.length - renderPageCallCounter ) + 3 );
+      setTimeout(function() {
+        clickableElements.forEach(e => e.removeAttribute('disabled'));
+      }, currentDelay );
+    };
+
+    function activateEventListeners(){
+      pages.addEventListener('click', animatePage);
+      pages.addEventListener('mouseenter', handleMouseEnter);
+      pages.addEventListener('mouseout', handleMouseLeave);
+      refresh.addEventListener('click', refreshbtn);
+      imprint.addEventListener('click', imprintbtn);
+    };
   };
 };
 
