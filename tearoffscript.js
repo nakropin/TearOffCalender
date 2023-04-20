@@ -187,37 +187,41 @@ class TearOffPad extends HTMLElement {
     };
 
     function animatePage(){    
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      const centerX = width / 2;
-      const centerY = height / 2;
-      const targetX = centerX / 8 * 5;
-      const targetY = centerY / 4 * 3;
-
-      let randomCoords = generateRandomCoordinates(width, height, centerX, centerY);
-      let x = randomCoords.x;
-      let y = randomCoords.y;
-      // let bezierPoints = [{ x: centerX, y: centerY }, { x: x, y: y }, { x: centerX, y: targetY }, { x: curTargetX, y: targetY }];
-      // console.log(bezierPoints);
-      
-      const upperPage = shadowRoot.querySelectorAll("[class='page']")[0];
       if( renderPageCallCounter < randomFiles.length ){
+          const width = window.innerWidth;
+          const height = window.innerHeight;
+          const centerX = width / 2;
+          const centerY = height / 2;
+          const targetX = centerX / 8 * 5;
+          const targetY = centerY / 4 * 3;
+    
+          let randomCoords = generateRandomCoordinates(width, height, centerX, centerY);
+          let x = randomCoords.x;
+          let y = randomCoords.y;
+          // let bezierPoints = [{ x: centerX, y: centerY }, { x: x, y: y }, { x: centerX, y: targetY }, { x: curTargetX, y: targetY }];
+          // console.log(bezierPoints);
+          
+          const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+
           renderPage();
-          makeFloorElement( upperPage );
+          makeFloorElement( curPage );
 
           let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
           /* Vector length as multiplicator */
           let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
-          upperPage.removeAttribute("id")
-          upperPage.style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out';
-          upperPage.style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
+            curPage.removeAttribute("id")
+            // curPage.style.transformOrigin = "top";
 
-          upperPage.addEventListener("transitionend", function() {
-            const xValue = 45;
-            /* transVal defines in which direction page falls and in which dir it lays down */
-            const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ];
-            upperPage.style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
-          });
+            curPage.style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out';
+            curPage.style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
+
+
+            curPage.addEventListener("transitionend", function() {
+              const xValue = 45;
+              /* transVal defines in which direction page falls and in which dir it lays down */
+              const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ];
+              curPage.style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
+            });
       };
     };
 
@@ -240,7 +244,7 @@ class TearOffPad extends HTMLElement {
 
     function handleMouseLeave(){
       const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
-      curPage.removeAttribute('id');
+      setTimeout(function() {curPage.removeAttribute('id');}, 300 );
       // curPage.id= "tearhint";
     };
 

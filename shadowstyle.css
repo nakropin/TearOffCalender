@@ -27,6 +27,45 @@ body {
   backface-visibility: visible;
 }
 
+.floor {
+  position: absolute;
+  box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 1;
+  position: fixed;
+  /* animation: teardown-animation 3s forwards; */
+  /* transform: cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out forwards; */
+  /* transform-origin: top; */
+}
+
+.refresh, .imprint{
+  position: absolute;
+  height: 40px;
+  width: 100px;
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+  background-color: #FFFFFF;
+}
+
+.page#left, #right{
+  box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
+  transition: 0.3s;
+}
+
+#left:hover {
+  transform-origin: top right;
+  transform: rotate(-3deg);
+}
+
+#right:hover {
+  transform-origin: top left;
+  transform: rotate(3deg);
+  transition: all 0.1s ease 0s;
+}
+
 #tearhint {
   animation-name: tearhint-animation;
   animation-duration: 5s;
@@ -49,49 +88,45 @@ body {
   }
 }
 
+/* @keyframes teardown-animation {
+  0% {
+    transform: translateY(0px) translateX(50px) rotateY(30deg) rotateX(30deg);
+  }
+  33% {
+    transform: translateY(100px) translateX(100px) rotateX(60deg) rotateZ(-30deg);
+  }
+  66% {
+    transform: translateY(150px) translateX(150px) rotateX(60deg) rotateZ(30deg);
+  }
+  100% {
+    transform: translateY(150px) translateX(150px) rotateX(60deg) rotateZ(30deg);
+  }
+} */
+
+/* @keyframes teardown-animation {
+  0% {
+    transform: translateY(0);
+  }
+  33% {
+    transform: translateY(30%) translateX(20%) rotateY(20deg) rotateX(20deg) rotateZ(-20deg);
+  }
+  66% {
+    transform: translateY(50%);
+  }
+  100% {
+    transform: translateY(80%) translateX(10%);
+  }
+} */
+
 @keyframes teardown-animation {
-  
-}
-
-#left, #right{
-  box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
-}
-
-#left:hover {
-  transform-origin: top right;
-  transform: rotate(-3deg);
-  transition: all 0.1s ease 0.1s;
-}
-
-
-#right:hover {
-  transform-origin: top left;
-  transform: rotate(3deg);
-  transition: all 0.1s ease 0s;
-}
-
-.floor {
-  position: absolute;
-  box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  z-index: 1;
-  position: fixed;
-}
-
-.refresh, .imprint{
-  position: absolute;
-  height: 40px;
-  width: 100px;
-  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-position: center;
-  background-color: #FFFFFF;
+  0%    { transform: translate3d(0vw, 0vh, 0px) ;}
+  33%   { transform: translate3d(15vw, 10vh, 25px) rotateX(40deg) rotateZ(-20deg);} 
+  66%   {transform: translate3d(-6vw, 20vh, 25px) rotateX(-40deg) rotateZ(20deg);} 
+  100%  {transform: translate3d(6vw, 40vh, 50px) rotateX(70deg) rotateZ(-40deg);;} 
 }
 
 /* very small screen */
-@media only screen and (min-width: 1px) and (max-width: 600px){
+@media only screen and (max-width: 600px){
   .pages, .page, .tear, .floor{
     width: 191.3px;
     height: 255.1px;
