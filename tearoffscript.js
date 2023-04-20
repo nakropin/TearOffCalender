@@ -1,7 +1,8 @@
 class TearOffPad extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.shadow = this.attachShadow({ mode: 'open' });
+    // this.attachShadow({ mode: 'open' });
   };
 
   connectedCallback(){
@@ -10,13 +11,18 @@ class TearOffPad extends HTMLElement {
 
   render(){
     /* Set up ShadowRoot */
+
+    // const shadowRoot = this.shadowRoot;
+    // this.shadowRoot.queryselector
+
+    const shadow = this.shadow;
+
     const template = document.createElement('link');
     template.setAttribute('rel', "stylesheet");
     template.setAttribute('href', './shadowstyle.css');
     template.setAttribute('type', 'text/css');
     
-    const shadowRoot = this.shadowRoot;
-    shadowRoot.appendChild(template);
+    shadow.appendChild(template);
 
     /* Set Values and render initial component state */
     const imgPath = "img/";
@@ -36,13 +42,14 @@ class TearOffPad extends HTMLElement {
 
     createBasicPage();
     randomBackgroundColor();
-    buttonPosition( btnpos );
 
     /* Get selectors etc */
-    const pages                   = shadowRoot.querySelector( '.pages' );
+    const pages                   = shadow.querySelector( '.pages' );
     // TODO: ShadowRoot
-    const refresh                 = document.body.querySelector( '.refresh' );
-    const imprint                 = document.body.querySelector( '.imprint' );
+    const refresh                 = shadow.querySelector( '.refresh' );
+    const imprint                 = shadow.querySelector( '.imprint' );
+    buttonPosition( btnpos );
+
     const fileEnding              = ".svg";
     const randomFiles             = makeRandomizedFileList();
     const delay                   = 150;
@@ -50,12 +57,13 @@ class TearOffPad extends HTMLElement {
     
     renderPage(); /* renders the first page */
     activateEventListeners();
+    // implementSwiper();
     // setInterval(handleMouseEnter(pages.event), 5000)
     /*  Functions */
 
     function createBasicPage(){
       /* TearOffPad, Pages */
-      const pagesTag = shadowRoot.appendChild( document.createElement('div') );
+      const pagesTag = shadow.appendChild( document.createElement('div') );
       pagesTag.classList.add( "pages" );   
       const buttons = [  [ 'imprint', imprintBtnAriaLabel, imgPath ],
                          [ 'refresh', refreshBtnAriaLabel, imgPath ] ];
@@ -63,7 +71,7 @@ class TearOffPad extends HTMLElement {
     };
 
     function makeButton(btnName, ariaLabel, imgPath){
-      let newButton = document.body.appendChild( document.createElement( 'button' ) );
+      let newButton = shadow.appendChild( document.createElement( 'button' ) );
       newButton.classList.add( btnName );
       newButton.setAttribute('title', ariaLabel);
       newButton.setAttribute('tabindex', '0');
@@ -97,8 +105,7 @@ class TearOffPad extends HTMLElement {
       const newPage = document.createElement('img');
       newPage.classList.add('page');
       newPage.src = currentSrc;
-      const altText = setAltText();
-      newPage.setAttribute('alt', altText);
+      newPage.setAttribute('alt', setAltText());
       // newPage.setAttribute('id', 'tearhint');
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
@@ -137,7 +144,7 @@ class TearOffPad extends HTMLElement {
     };
 
     function removeAllFloorElements(){
-      shadowRoot.querySelectorAll('.floor').forEach(e => e.remove());
+      shadow.querySelectorAll('.floor').forEach(e => e.remove());
     };
 
     function randomBackgroundColor() {
@@ -165,8 +172,8 @@ class TearOffPad extends HTMLElement {
       currPos = keys[currPos];
 
       for (let i = 0; i < pos[currPos].length; i++){
-        const imprint = document.getElementsByClassName("imprint")[0];
-        const refresh = document.getElementsByClassName("refresh")[0];
+        // const imprint = shadow.getElementsByClassName("imprint")[0];
+        // const refresh = shadow.getElementsByClassName("refresh")[0];
         if (pos[currPos][i] != null){
           imprint.style[stylespos[i]] = pos[currPos][i] + unit;
           if( i === 0 | i === 1 ){
@@ -201,7 +208,7 @@ class TearOffPad extends HTMLElement {
           // let bezierPoints = [{ x: centerX, y: centerY }, { x: x, y: y }, { x: centerX, y: targetY }, { x: curTargetX, y: targetY }];
           // console.log(bezierPoints);
           
-          const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+          const curPage = shadow.querySelectorAll("[class='page']")[0];
 
           renderPage();
           makeFloorElement( curPage );
@@ -254,14 +261,14 @@ class TearOffPad extends HTMLElement {
         const boundingRect = element.getBoundingClientRect();
         const mouseX = event.clientX - boundingRect.left;
         const elementWidth = boundingRect.width;
-        const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+        const curPage = shadow.querySelectorAll("[class='page']")[0];
         curPage.removeAttribute("id");
         const pos = ( mouseX < elementWidth / 2 ) ? curPage.id= "left" : curPage.id= "right";
       };
     };    
 
     function handleMouseLeave(){
-      const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+      const curPage = shadow.querySelectorAll("[class='page']")[0];
       setTimeout(function() {curPage.removeAttribute('id');}, 300 );
       // curPage.id= "tearhint";
     };
@@ -279,9 +286,40 @@ class TearOffPad extends HTMLElement {
       pages.addEventListener('click', animatePage);
       pages.addEventListener('mouseenter', handleMouseEnter);
       pages.addEventListener('mouseout', handleMouseLeave);
+      // pages.addEventListener('touch', );
+
       refresh.addEventListener('click', refreshbtn);
       imprint.addEventListener('click', imprintbtn);
     };
+
+    function implementSwiper(){
+      const shadroot = document.querySelector('#my-shadow-root').shadow;
+      const sliderEl = document.createElement('div');
+
+      shadroot.appendChild(sliderEl)
+
+      sliderEl.classList.add('swipe')
+      sliderEl.setAttribute("id", 'slider')
+
+      const sliderWrapper = document.createElement('div');
+      sliderEl.classList.add('swipe-wrap');
+      sliderEl.appendChild(sliderWrapper)
+
+    }
+
+    // var element = document.getElementById('slider');
+    // window.slider = new Swipe(element, {
+    //   startSlide: 0,
+    //   auto: 3000,
+    //   draggable: false,
+    //   autoRestart: false,
+    //   continuous: true,
+    //   disableScroll: true,
+    //   stopPropagation: true,
+    //   callback: function(index, element) {},
+    //   transitionEnd: function(index, element) {}
+    // });
+
   };
 };
 

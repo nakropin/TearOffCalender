@@ -40,7 +40,8 @@
 - [ ] component structure
   - [ ] optimise functions
   - [ ] change element structure?
-  - [ ] shadow dom
+
+- [ ] optimise shadow dom
 
 - [ ] animation
   - [ ] optimise flying paper animation and implement keyframes in js
