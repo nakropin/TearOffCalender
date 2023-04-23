@@ -287,7 +287,7 @@ class TearOffPad extends HTMLElement {
 
     function handleMouseLeave(){
       const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
-      curPage.removeAttribute('id');
+      setTimeout(function() {curPage.removeAttribute('id');}, 300 );
       // curPage.id= "tearhint";
     };
 
