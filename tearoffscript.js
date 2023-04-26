@@ -130,6 +130,7 @@ class TearOffPad extends HTMLElement {
       if( renderPageCallCounter != randomFiles.length ){
         animatePage();
         setTimeout(animationDelayIterator, delay);
+        // TODO: implement random coordinates or left-right switch for animation to work correctly
       };
     };
 
@@ -185,14 +186,8 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-    /* declares offset values randomly, x and y describe the coordinate system */
-    function generateRandomCoordinates (width, height, centerX, centerY){
-      let x = Math.random() * width - centerX;
-      let y = Math.random() * height - centerY;
-      return({x: x, y: y});
-    };
 
-
+    /////////////////////////////////////////////////////////////
 
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -200,8 +195,20 @@ class TearOffPad extends HTMLElement {
     const centerY = height / 2;
     const targetX = centerX / 8 * 5;
     const targetY = centerY / 4 * 3;
+    let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
 
-   let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
+    function getMouseCoordinates(e){
+      const mouseX = e.clientX - centerX;
+      const mouseY = e.clientY - centerY;
+      return {x: mouseX, y: mouseY};
+    }
+
+    /* declares offset values randomly, x and y describe the coordinate system */
+    // function generateRandomCoordinates (width, height, centerX, centerY){
+    //   let x = Math.random() * width - centerX;
+    //   let y = Math.random() * height - centerY;
+    //   return({x: x, y: y});
+    // };
 
     function animatePage() {
       console.log("hello");
@@ -233,20 +240,21 @@ class TearOffPad extends HTMLElement {
 
     // Mauskoordinaten beim Start berücksichtigen
     function getCoordinates(e){
-      const mouseX = e.clientX - centerX;
-      const mouseY = e.clientY - centerY;
+      let mouseX = getMouseCoordinates(e).x;
+      let mouseY = getMouseCoordinates(e).y;
       if(mouseX > 0){
-         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX+Math.random() * 100 - 50, y: targetY }];
-      }
-      else {
-         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX+Math.random() * 100 - 50, y: targetY }];
-      }
+        bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX+Math.random() * 100 - 50, y: targetY }];
+     }
+     else {
+        bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX+Math.random() * 100 - 50, y: targetY }];
+     }
       //console.log(bezierPoints);
       return bezierPoints;
     }
 
     // Funktion, um die Position entlang der Bezier-Kurve zu berechnen
     function getBezierPosition(points, progress) {
+
       var x = 0,
           y = 0;
       var n = points.length - 1;
@@ -302,8 +310,16 @@ class TearOffPad extends HTMLElement {
     //   }, currentDelay );
     // };
 
-    function handleClick(){
+    function handleClick(e){
+      let mouseX = getMouseCoordinates(e).x;
+      let mouseY = getMouseCoordinates(e).y;
       document.addEventListener('mouseup', animatePage)
+      
+      //console.log(vectorLength)
+
+      //return mouseX;
+      //let vectorLength = Math.sqrt(Math.abs(handleClick(e).x - mouseX) + Math.abs(handleClick(e).x - - mouseY));
+      //console.log(vectorLength)
     }
 
     function activateEventListeners(){
@@ -311,6 +327,8 @@ class TearOffPad extends HTMLElement {
       pages.addEventListener('mousedown', handleClick);  
       // document.addEventListener('click', animatePage);
       document.addEventListener('click', getCoordinates);
+      document.addEventListener('mousemove', getMouseCoordinates);
+
       // pages.addEventListener('mouseenter', handleMouseEnter);
       // pages.addEventListener('mouseout', handleMouseLeave);
       // pages.addEventListener('touch', );
