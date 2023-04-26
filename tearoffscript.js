@@ -57,7 +57,6 @@ class TearOffPad extends HTMLElement {
     
     renderPage(); /* renders the first page */
     activateEventListeners();
-    // implementSwiper();
     // setInterval(handleMouseEnter(pages.event), 5000)
     /*  Functions */
 
@@ -205,8 +204,9 @@ class TearOffPad extends HTMLElement {
    let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
 
     function animatePage() {
+      console.log("hello");
       if (renderPageCallCounter < randomFiles.length) {
-        const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+        const curPage = shadow.querySelectorAll("[class='page']")[0];
         const bezier = getCoordinates(event);
         let progress = 0;
         const random = 1;
@@ -221,6 +221,7 @@ class TearOffPad extends HTMLElement {
             progress += 0.01;
             requestAnimationFrame(animateOnce);
           } else {
+            document.removeEventListener('mouseup', animatePage)
             progress = 0;
           }
         };
@@ -230,9 +231,7 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-
     // Mauskoordinaten beim Start berücksichtigen
-
     function getCoordinates(e){
       const mouseX = e.clientX - centerX;
       const mouseY = e.clientY - centerY;
@@ -245,8 +244,6 @@ class TearOffPad extends HTMLElement {
       //console.log(bezierPoints);
       return bezierPoints;
     }
-
-
 
     // Funktion, um die Position entlang der Bezier-Kurve zu berechnen
     function getBezierPosition(points, progress) {
@@ -273,78 +270,54 @@ class TearOffPad extends HTMLElement {
       return coefficient;
     }
 
-
-
     function makeFloorElement( element ){
       element.classList.add('floor');
     };
 
     /* detect from which pos hover over page */
-    function handleMouseEnter( event ) {
-      if ( renderPageCallCounter < randomFiles.length ){
-        const element = event.target;
-        const boundingRect = element.getBoundingClientRect();
-        const mouseX = event.clientX - boundingRect.left;
-        const elementWidth = boundingRect.width;
-        const curPage = shadow.querySelectorAll("[class='page']")[0];
-        curPage.removeAttribute("id");
-        const pos = ( mouseX < elementWidth / 2 ) ? curPage.id= "left" : curPage.id= "right";
-      };
-    };    
+    // function handleMouseEnter( event ) {
+    //   if ( renderPageCallCounter < randomFiles.length ){
+    //     const element = event.target;
+    //     const boundingRect = element.getBoundingClientRect();
+    //     const mouseX = event.clientX - boundingRect.left;
+    //     const elementWidth = boundingRect.width;
+    //     const curPage = shadow.querySelectorAll("[class='page']")[0];
+    //     curPage.removeAttribute("id");
+    //     const pos = ( mouseX < elementWidth / 2 ) ? curPage.id= "left" : curPage.id= "right";
+    //   };
+    // };    
 
-    function handleMouseLeave(){
-      const curPage = shadow.querySelectorAll("[class='page']")[0];
-      setTimeout(function() {curPage.removeAttribute('id');}, 300 );
-      // curPage.id= "tearhint";
-    };
+    // function handleMouseLeave(){
+    //   const curPage = shadow.querySelectorAll("[class='page']")[0];
+    //   setTimeout(function() {curPage.removeAttribute('id');}, 300 );
+    //   // curPage.id= "tearhint";
+    // };
 
-    function turnOffEventListenersWhileEventAction(){
-      const clickableElements = [ pages, refresh, imprint ];
-      clickableElements.forEach(e => e.setAttribute('disabled', 'disabled'));
-      const currentDelay = delay * ( ( randomFiles.length - renderPageCallCounter ) + 3 );
-      setTimeout(function() {
-        clickableElements.forEach(e => e.removeAttribute('disabled'));
-      }, currentDelay );
-    };
+    // function turnOffEventListenersWhileEventAction(){
+    //   const clickableElements = [ pages, refresh, imprint ];
+    //   clickableElements.forEach(e => e.setAttribute('disabled', 'disabled'));
+    //   const currentDelay = delay * ( ( randomFiles.length - renderPageCallCounter ) + 3 );
+    //   setTimeout(function() {
+    //     clickableElements.forEach(e => e.removeAttribute('disabled'));
+    //   }, currentDelay );
+    // };
+
+    function handleClick(){
+      document.addEventListener('mouseup', animatePage)
+    }
 
     function activateEventListeners(){
-      document.addEventListener('click', animatePage);
+     
+      pages.addEventListener('mousedown', handleClick);  
+      // document.addEventListener('click', animatePage);
       document.addEventListener('click', getCoordinates);
-      pages.addEventListener('mouseenter', handleMouseEnter);
-      pages.addEventListener('mouseout', handleMouseLeave);
+      // pages.addEventListener('mouseenter', handleMouseEnter);
+      // pages.addEventListener('mouseout', handleMouseLeave);
       // pages.addEventListener('touch', );
 
       refresh.addEventListener('click', refreshbtn);
       imprint.addEventListener('click', imprintbtn);
     };
-
-    function implementSwiper(){
-      const shadroot = document.querySelector('#my-shadow-root').shadow;
-      const sliderEl = document.createElement('div');
-
-      shadroot.appendChild(sliderEl)
-
-      sliderEl.classList.add('swipe')
-      sliderEl.setAttribute("id", 'slider')
-
-      const sliderWrapper = document.createElement('div');
-      sliderEl.classList.add('swipe-wrap');
-      sliderEl.appendChild(sliderWrapper)
-
-    }
-
-    // var element = document.getElementById('slider');
-    // window.slider = new Swipe(element, {
-    //   startSlide: 0,
-    //   auto: 3000,
-    //   draggable: false,
-    //   autoRestart: false,
-    //   continuous: true,
-    //   disableScroll: true,
-    //   stopPropagation: true,
-    //   callback: function(index, element) {},
-    //   transitionEnd: function(index, element) {}
-    // });
 
   };
 };

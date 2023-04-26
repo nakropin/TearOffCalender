@@ -9,6 +9,7 @@ body {
   align-items: center;
   height: 90vh;
   overflow: hidden;
+  z-index: -1;
 }
 
 button:hover {
