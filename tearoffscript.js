@@ -135,10 +135,10 @@ class TearOffPad extends HTMLElement {
     };
 
     function refreshbtn(){
-      if ( renderPageCallCounter != 1 ){
-        animatePage();
+      if ( renderPageCallCounter != 0 ){
+        //animatePage();
         renderPageCallCounter = 0;
-        animatePage();        
+        //animatePage();
         removeAllFloorElements();
       };
     };
@@ -193,62 +193,87 @@ class TearOffPad extends HTMLElement {
       return({x: x, y: y});
     };
 
-    function animatePage(){    
-      if( renderPageCallCounter < randomFiles.length ){
-          const width = window.innerWidth;
-          const height = window.innerHeight;
-          const centerX = width / 2;
-          const centerY = height / 2;
-          const targetX = centerX / 8 * 5;
-          const targetY = centerY / 4 * 3;
-    
-          let randomCoords = generateRandomCoordinates(width, height, centerX, centerY);
-          let x = randomCoords.x;
-          let y = randomCoords.y;
-          // let bezierPoints = [{ x: centerX, y: centerY }, { x: x, y: y }, { x: centerX, y: targetY }, { x: curTargetX, y: targetY }];
-          // console.log(bezierPoints);
-          
-          const curPage = shadow.querySelectorAll("[class='page']")[0];
 
-          renderPage();
-          makeFloorElement( curPage );
 
-          let chooseAnimation = 1;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const targetX = centerX / 8 * 5;
+    const targetY = centerY / 4 * 3;
 
-          if (chooseAnimation === 1){
+   let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
 
-          let rotationAngle = Math.atan2(x, y) * 180 / Math.PI;
-          /* Vector length as multiplicator */
-          let vectorLength = Math.sqrt(Math.abs(x) + Math.abs(y)) / 35;
-            curPage.removeAttribute("id")
-            // curPage.style.transformOrigin = "top";
+    function animatePage() {
+      if (renderPageCallCounter < randomFiles.length) {
+        const curPage = shadowRoot.querySelectorAll("[class='page']")[0];
+        const bezier = getCoordinates(event);
+        let progress = 0;
+        const random = 1;
+        // const random = Math.random() * 20 - 10;
 
-            curPage.style.transition = 'transform cubic-bezier(0.16, 1, 0.3, 1), 0.75s ease-out';
-            curPage.style.transform = `translate(${x}px, ${y}px) rotateY(${-rotationAngle * vectorLength}deg) rotateZ(${-rotationAngle * vectorLength}deg)`;
+        const animateOnce = () => {
+          let position = getBezierPosition(bezier, progress);
+          let rotationAngle = Math.atan2(position.x, position.y) * 180 / Math.PI + random;
+          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotationAngle*progress*1.1+'deg) rotateZ('+ -rotationAngle*progress*0.8+'deg)';
 
-            curPage.addEventListener("transitionend", function() {
-              const xValue = 45;
-              /* transVal defines in which direction page falls and in which dir it lays down */
-              const transVal = ( x < 0 ) ? [ xValue, -targetX ] : [ -xValue, targetX ];
-              curPage.style.transform = `translate(${transVal[1]}px, ${targetY}px) rotateX(${70}deg)  rotateZ(${transVal[0]*vectorLength}deg)`;
-            });
-          } else if ( chooseAnimation === 2) {
-              const keyframes = [
-                { transform: 'translate3d(0vw, 0vh, 0px)' },
-                { transform: 'translate3d(6vw, 30vh, 100px) rotateX(50deg) rotateZ(-20deg)' },
-                { transform: 'translate3d(-6vw, 40vh, 75px) rotateX(-50deg) rotateZ(20deg)' },
-                { transform: 'translate3d(6vw, 60vh, 100px) rotateX(70deg) rotateZ(-40deg)' }
-              ];
-
-              const options = {
-                duration: 3000,
-                iterations: Infinity
-              };
-              const animation = new KeyframeEffect(curPage, keyframes, options);
-              curPage.animate(animation);
+          if (progress < 1) {
+            progress += 0.01;
+            requestAnimationFrame(animateOnce);
+          } else {
+            progress = 0;
           }
+        };
+        animateOnce();
+        renderPage();
+        makeFloorElement(curPage);
       };
     };
+
+
+    // Mauskoordinaten beim Start berücksichtigen
+
+    function getCoordinates(e){
+      const mouseX = e.clientX - centerX;
+      const mouseY = e.clientY - centerY;
+      if(mouseX > 0){
+         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX+Math.random() * 100 - 50, y: targetY }];
+      }
+      else {
+         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX+Math.random() * 100 - 50, y: targetY }];
+      }
+      //console.log(bezierPoints);
+      return bezierPoints;
+    }
+
+
+
+    // Funktion, um die Position entlang der Bezier-Kurve zu berechnen
+    function getBezierPosition(points, progress) {
+      var x = 0,
+          y = 0;
+      var n = points.length - 1;
+      for (var i = 0; i <= n; i++) {
+        var coefficient = binomialCoefficient(n, i) * Math.pow(1 - progress, n - i) * Math.pow(progress, i);
+        x += points[i].x * coefficient;
+        y += points[i].y * coefficient;
+      }
+      // Mauskoordinaten berücksichtigen
+      x += (- bezierPoints[0].x) * (1 - progress);
+      y += (- bezierPoints[0].y) * (1 - progress);
+      return { x: x, y: y };
+    }
+
+// Hilfsfunktion, um den Binomialkoeffizienten zu berechnen
+    function binomialCoefficient(n, k) {
+      var coefficient = 1;
+      for (var i = 1; i <= k; i++) {
+        coefficient *= (n - i + 1) / i;
+      }
+      return coefficient;
+    }
+
+
 
     function makeFloorElement( element ){
       element.classList.add('floor');
@@ -283,7 +308,8 @@ class TearOffPad extends HTMLElement {
     };
 
     function activateEventListeners(){
-      pages.addEventListener('click', animatePage);
+      document.addEventListener('click', animatePage);
+      document.addEventListener('click', getCoordinates);
       pages.addEventListener('mouseenter', handleMouseEnter);
       pages.addEventListener('mouseout', handleMouseLeave);
       // pages.addEventListener('touch', );
