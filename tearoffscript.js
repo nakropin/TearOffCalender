@@ -123,6 +123,7 @@ class TearOffPad extends HTMLElement {
     function imprintbtn() {
       animationDelayIterator();
       turnOffEventListenersWhileEventAction();
+      // TODO: make work again
     };
 
     /* recursively call animation */
@@ -140,6 +141,7 @@ class TearOffPad extends HTMLElement {
         renderPageCallCounter = 0;
         //animatePage();
         removeAllFloorElements();
+        // TODO: make work again
       };
     };
 
@@ -186,9 +188,7 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-
     /////////////////////////////////////////////////////////////
-
     const width = window.innerWidth;
     const height = window.innerHeight;
     const centerX = width / 2;
@@ -197,12 +197,6 @@ class TearOffPad extends HTMLElement {
     const targetY = centerY / 4 * 3;
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
 
-    function getMouseCoordinates(e){
-      const mouseX = e.clientX - centerX;
-      const mouseY = e.clientY - centerY;
-      return {x: mouseX, y: mouseY};
-    }
-
     /* declares offset values randomly, x and y describe the coordinate system */
     // function generateRandomCoordinates (width, height, centerX, centerY){
     //   let x = Math.random() * width - centerX;
@@ -210,20 +204,30 @@ class TearOffPad extends HTMLElement {
     //   return({x: x, y: y});
     // };
 
+    /// helper
+    function makeFloorElement( element ){
+      element.classList.add('floor');
+    };
+
+    function getMouseCoordinates(e){
+      const mouseX = e.clientX - centerX;
+      const mouseY = e.clientY - centerY;
+      return {x: mouseX, y: mouseY};
+    }
+    /// main functs
+
     function animatePage() {
-      console.log("hello");
+      document.removeEventListener('mouseup', animatePage)
       if (renderPageCallCounter < randomFiles.length) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         const bezier = getCoordinates(event);
         let progress = 0;
         const random = 1;
         // const random = Math.random() * 20 - 10;
-
         const animateOnce = () => {
           let position = getBezierPosition(bezier, progress);
           let rotationAngle = Math.atan2(position.x, position.y) * 180 / Math.PI + random;
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotationAngle*progress*1.1+'deg) rotateZ('+ -rotationAngle*progress*0.8+'deg)';
-
           if (progress < 1) {
             progress += 0.01;
             requestAnimationFrame(animateOnce);
@@ -254,7 +258,6 @@ class TearOffPad extends HTMLElement {
 
     // Funktion, um die Position entlang der Bezier-Kurve zu berechnen
     function getBezierPosition(points, progress) {
-
       var x = 0,
           y = 0;
       var n = points.length - 1;
@@ -269,7 +272,6 @@ class TearOffPad extends HTMLElement {
       return { x: x, y: y };
     }
 
-// Hilfsfunktion, um den Binomialkoeffizienten zu berechnen
     function binomialCoefficient(n, k) {
       var coefficient = 1;
       for (var i = 1; i <= k; i++) {
@@ -277,10 +279,6 @@ class TearOffPad extends HTMLElement {
       }
       return coefficient;
     }
-
-    function makeFloorElement( element ){
-      element.classList.add('floor');
-    };
 
     /* detect from which pos hover over page */
     // function handleMouseEnter( event ) {
@@ -313,8 +311,9 @@ class TearOffPad extends HTMLElement {
     function handleClick(e){
       let mouseX = getMouseCoordinates(e).x;
       let mouseY = getMouseCoordinates(e).y;
-      document.addEventListener('mouseup', animatePage)
-      
+      // document.onmouseover
+      document.addEventListener("mouseup", animatePage);
+
       //console.log(vectorLength)
 
       //return mouseX;
@@ -322,13 +321,57 @@ class TearOffPad extends HTMLElement {
       //console.log(vectorLength)
     }
 
-    function activateEventListeners(){
-     
-      pages.addEventListener('mousedown', handleClick);  
-      // document.addEventListener('click', animatePage);
-      document.addEventListener('click', getCoordinates);
-      document.addEventListener('mousemove', getMouseCoordinates);
+    // function dragElement(elmnt) {
+    //   animatePage();
+    //   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    //     /* otherwise, move the DIV from anywhere inside the DIV:*/
+    //   elmnt.onmousedown = dragMouseDown;
+    
+    //   function dragMouseDown(e) {
+    //     e = e || window.event;
+    //     e.preventDefault();
+    //     // get the mouse cursor position at startup:
+    //     pos3 = e.clientX;
+    //     pos4 = e.clientY;
+    //     document.onmouseup = closeDragElement;
+    //     // call a function whenever the cursor moves:
+    //     document.onmousemove = elementDrag;
+    //   }
+    
+    //   function elementDrag(e) {
+    //     e = e || window.event;
+    //     e.preventDefault();
+    //     // calculate the new cursor position:
+    //     pos1 = pos3 - e.clientX;
+    //     pos2 = pos4 - e.clientY;
+    //     pos3 = e.clientX;
+    //     pos4 = e.clientY;
+    //     // set the element's new position:
+    //     elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    //     elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    //   }
+    
+    //   function closeDragElement() {
+    //     // stop moving when mouse button is released:
+    //     document.onmouseup = null;
+    //     document.onmousemove = null;
+    //     animatePage();
+    //   }
+    // }    
 
+    // function tearAnimation( event ){
+    //   while ( event ){
+    //     getMouseCoordinates
+    //   }
+      
+    // }
+
+    function activateEventListeners(){
+      pages.addEventListener('mousedown', handleClick);
+      // document.addEventListener('click', getCoordinates);
+      // document.addEventListener('mousemove', getMouseCoordinates);
+      
+      // document.addEventListener('click', animatePage);
       // pages.addEventListener('mouseenter', handleMouseEnter);
       // pages.addEventListener('mouseout', handleMouseLeave);
       // pages.addEventListener('touch', );

@@ -29,19 +29,28 @@
 - [ ] landscape for mobile does not work
 - [ ] prevent Dark mode does not work on few browsers
 - [ ] Code-Minification
-- [ ] finish shadowdom (buttons still missing, background style)
 - [ ] make floor elements adapt changed screen resolution
 - [ ] optimal example https://www.youtube.com/watch?v=7VFPos9clPo
 
+- [ ]
 
 - [ ] make it mobile
   - [ ] swipe (opacity fadeout)
+  - [ ] if mobile --> 90% use screen width for img
 
 - [ ] component structure
   - [ ] optimise functions
-  - [ ] change element structure?
+  - [ ] change element structure @css
 
-- [ ] optimise shadow dom
+- [ ] optimise shadow dom / background color
 
 - [ ] animation
   - [ ] optimise flying paper animation and implement keyframes in js
+
+- [ ] transformation animation randomisieren
+  - [ ] 3 verschiedene Fallanimationen pro Seite
+
+- [ ] abreißanimation
+  - [ ] 
+
+- [ ] stapel einbauen: css nach stacksize dynamisch setzen 
