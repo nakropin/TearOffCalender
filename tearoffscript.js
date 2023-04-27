@@ -56,6 +56,8 @@ class TearOffPad extends HTMLElement {
     var renderPageCallCounter     = 0;
     
     renderPage(); /* renders the first page */
+    activatePage();
+    
     activateEventListeners();
     // setInterval(handleMouseEnter(pages.event), 5000)
     /*  Functions */
@@ -102,17 +104,16 @@ class TearOffPad extends HTMLElement {
     function renderPage() {
       const currentSrc = randomFiles[ renderPageCallCounter ];
       const newPage = document.createElement('img');
-      newPage.classList.add('page');
+      newPage.classList.add('secondpage');
       newPage.src = currentSrc;
       newPage.setAttribute('alt', setAltText());
       // newPage.setAttribute('id', 'tearhint');
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
-      
       // TODO: pages set background img renderPageCallCounter+1
-      const nextSrc = randomFiles[ renderPageCallCounter + 1 ];
-      pages.setAttribute('src',  nextSrc );
+      // const nextSrc = randomFiles[ renderPageCallCounter + 1 ];
+      // pages.setAttribute('src',  nextSrc );
       
       renderPageCallCounter++;
     };
@@ -236,7 +237,8 @@ class TearOffPad extends HTMLElement {
           }
         };
         animateOnce();
-        renderPage();
+        activatePage();
+        // renderPage();
         makeFloorElement(curPage);
         zStyleSwitch(curPage);
 
@@ -247,8 +249,14 @@ class TearOffPad extends HTMLElement {
       };
     };
 
+    function activatePage(){
+      const secondPage = shadow.querySelectorAll("[class='secondpage']")[0];
+      secondPage.classList.add('page');
+      secondPage.classList.remove('secondpage');
+    }
+
     function zStyleSwitch( element ){
-      return element.style.zIndex == 1 ? 2 : 1
+      element.style.zIndex = 1
     }
 
     // Mauskoordinaten beim Start berücksichtigen
@@ -310,6 +318,7 @@ class TearOffPad extends HTMLElement {
     function startTransform(e){
       const curPage = shadow.querySelectorAll("[class='page']")[0];
       mouseXStart = e.clientX - centerX;
+      renderPage();
       document.addEventListener("mousemove", dragElement);
       document.addEventListener("mouseup", animatePage);
       document.body.addEventListener("mouseleave", animatePage);

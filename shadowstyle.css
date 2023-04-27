@@ -7,6 +7,7 @@
   -ms-user-select: none;
   user-select: none;
 }
+
 *:focus {
   outline: none !important;
 }
@@ -27,8 +28,18 @@ body {
 .pages {
   position: relative;
   text-align: center;
-  border: 1px solid black;
   background-color: white;
+  z-index: 0;
+}
+
+.secondpage {
+  z-index: 0;
+  pointer-events: none;
+  border: 1px solid black;
+  position: relative;
+  justify-content: center;
+  background-color: white;
+  backface-visibility: visible;
 }
 
 .page {
