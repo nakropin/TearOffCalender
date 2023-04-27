@@ -109,6 +109,10 @@ class TearOffPad extends HTMLElement {
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
+      
+      // TODO: pages set background img renderPageCallCounter+1
+      //pages
+      
       renderPageCallCounter++;
     };
     
@@ -196,6 +200,7 @@ class TearOffPad extends HTMLElement {
     const targetX = centerX / 8 * 5;
     const targetY = centerY / 4 * 3;
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
+    let mouseXStart;
 
     /* declares offset values randomly, x and y describe the coordinate system */
     // function generateRandomCoordinates (width, height, centerX, centerY){
@@ -209,15 +214,12 @@ class TearOffPad extends HTMLElement {
       element.classList.add('floor');
     };
 
-    function getMouseCoordinates(e){
-      const mouseX = e.clientX - centerX;
-      const mouseY = e.clientY - centerY;
-      return {x: mouseX, y: mouseY};
-    }
     /// main functs
 
     function animatePage() {
       document.removeEventListener('mouseup', animatePage)
+      document.removeEventListener('mousemove', getMouseCoordinates);
+      
       if (renderPageCallCounter < randomFiles.length) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         const bezier = getCoordinates(event);
@@ -280,6 +282,46 @@ class TearOffPad extends HTMLElement {
       return coefficient;
     }
 
+    function getMouseCoordinates(e){
+      const mouseX = e.clientX - centerX;
+      const mouseY = e.clientY - centerY;
+      let curDir = setDirection(e);
+      console.log(curDir)
+      let curDegree = (mouseXStart - mouseX) / 10;
+
+      const curPage = shadow.querySelectorAll("[class='page']")[0];
+      curPage.style.transformOrigin = 'top ' + curDir;
+      curPage.style.transform = 'rotate(' + curDegree + 'deg)';
+      console.log( mouseXStart, mouseX )
+      return {x: mouseX, y: mouseY};
+    }
+
+    function startTransform(e){
+      mouseXStart = e.clientX - centerX;
+
+      document.addEventListener("mousemove", getMouseCoordinates);
+      document.addEventListener("mouseup", animatePage);
+
+      //console.log(vectorLength)
+      //return mouseX;
+      //let vectorLength = Math.sqrt(Math.abs(handleClick(e).x - mouseX) + Math.abs(handleClick(e).x - - mouseY));
+      //console.log(vectorLength)
+    }
+
+    function setDirection(e){
+      return mouseXStart < (e.clientX - centerX) ? "right" : "left";
+    };
+
+    // TODO: set 0 shadow when curPage transform === 0 
+
+    // function tearPage( e, mouseXStart ){
+    //   const curPage = shadow.querySelectorAll("[class='page']")[0];
+    //   let mousePosX = getMouseCoordinates(e).x;
+    //   console.log(mouseXStart, mousePosX)
+    //   // startpos + x movement
+    // }
+
+
     /* detect from which pos hover over page */
     // function handleMouseEnter( event ) {
     //   if ( renderPageCallCounter < randomFiles.length ){
@@ -308,18 +350,6 @@ class TearOffPad extends HTMLElement {
     //   }, currentDelay );
     // };
 
-    function handleClick(e){
-      let mouseX = getMouseCoordinates(e).x;
-      let mouseY = getMouseCoordinates(e).y;
-      // document.onmouseover
-      document.addEventListener("mouseup", animatePage);
-
-      //console.log(vectorLength)
-
-      //return mouseX;
-      //let vectorLength = Math.sqrt(Math.abs(handleClick(e).x - mouseX) + Math.abs(handleClick(e).x - - mouseY));
-      //console.log(vectorLength)
-    }
 
     // function dragElement(elmnt) {
     //   animatePage();
@@ -367,7 +397,7 @@ class TearOffPad extends HTMLElement {
     // }
 
     function activateEventListeners(){
-      pages.addEventListener('mousedown', handleClick);
+      pages.addEventListener('mousedown', startTransform);
       // document.addEventListener('click', getCoordinates);
       // document.addEventListener('mousemove', getMouseCoordinates);
       
