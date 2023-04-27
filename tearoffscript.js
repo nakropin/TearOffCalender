@@ -111,7 +111,8 @@ class TearOffPad extends HTMLElement {
       pages.setAttribute('tabindex', '0');
       
       // TODO: pages set background img renderPageCallCounter+1
-      //pages
+      const nextSrc = randomFiles[ renderPageCallCounter + 1 ];
+      pages.setAttribute('src', 'url("' + nextSrc +'")');
       
       renderPageCallCounter++;
     };
@@ -143,7 +144,6 @@ class TearOffPad extends HTMLElement {
       if ( renderPageCallCounter != 0 ){
         //animatePage();
         renderPageCallCounter = 0;
-        //animatePage();
         removeAllFloorElements();
         // TODO: make work again
       };
@@ -160,7 +160,8 @@ class TearOffPad extends HTMLElement {
 
     function buttonPosition( position ){
       const checkInput = [ "upperLeft", "upperRight", "lowerLeft", "lowerRight" ];
-      let currPos = 0; /* preset value 0, used if no/incorrect input*/      
+      /* check if input is correct, otherwise use preset value 0 (upperleft) */  
+      let currPos = 0;     
       for ( let i = 0; i < checkInput.length; i++){
         if ( position === checkInput[i] ){
           currPos = i
@@ -182,12 +183,8 @@ class TearOffPad extends HTMLElement {
         // const refresh = shadow.getElementsByClassName("refresh")[0];
         if (pos[currPos][i] != null){
           imprint.style[stylespos[i]] = pos[currPos][i] + unit;
-          if( i === 0 | i === 1 ){
-            refresh.style[stylespos[i]] = "70" + unit;
-          }
-          else{
-            refresh.style[stylespos[i]] = pos[currPos][i] + unit;
-          };
+          let newVal = ( i === 0 | i === 1 ) ? "70" : pos[currPos][i]
+          refresh.style[stylespos[i]] = newVal + unit;
         };
       };
     };
@@ -218,7 +215,7 @@ class TearOffPad extends HTMLElement {
 
     function animatePage() {
       document.removeEventListener('mouseup', animatePage)
-      document.removeEventListener('mousemove', getMouseCoordinates);
+      document.removeEventListener('mousemove', dragElement);
       
       if (renderPageCallCounter < randomFiles.length) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
@@ -246,19 +243,18 @@ class TearOffPad extends HTMLElement {
 
     // Mauskoordinaten beim Start berücksichtigen
     function getCoordinates(e){
-      let mouseX = getMouseCoordinates(e).x;
-      let mouseY = getMouseCoordinates(e).y;
+      let mouseX = e.clientX - centerX;
+      let mouseY = e.clientY - centerY;
       if(mouseX > 0){
         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX+Math.random() * 100 - 50, y: targetY }];
      }
      else {
         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX+Math.random() * 100 - 50, y: targetY }];
      }
-      //console.log(bezierPoints);
       return bezierPoints;
     }
 
-    // Funktion, um die Position entlang der Bezier-Kurve zu berechnen
+    /* calc position along beziercurve */
     function getBezierPosition(points, progress) {
       var x = 0,
           y = 0;
@@ -268,7 +264,7 @@ class TearOffPad extends HTMLElement {
         x += points[i].x * coefficient;
         y += points[i].y * coefficient;
       }
-      // Mauskoordinaten berücksichtigen
+      /* watch mousecoords */
       x += (- bezierPoints[0].x) * (1 - progress);
       y += (- bezierPoints[0].y) * (1 - progress);
       return { x: x, y: y };
@@ -282,7 +278,7 @@ class TearOffPad extends HTMLElement {
       return coefficient;
     }
 
-    function getMouseCoordinates(e){
+    function dragElement(e){
       const mouseX = e.clientX - centerX;
       const mouseY = e.clientY - centerY;
       let curDir = setDirection(e);
@@ -299,7 +295,7 @@ class TearOffPad extends HTMLElement {
     function startTransform(e){
       mouseXStart = e.clientX - centerX;
 
-      document.addEventListener("mousemove", getMouseCoordinates);
+      document.addEventListener("mousemove", dragElement);
       document.addEventListener("mouseup", animatePage);
 
       //console.log(vectorLength)
@@ -316,7 +312,7 @@ class TearOffPad extends HTMLElement {
 
     // function tearPage( e, mouseXStart ){
     //   const curPage = shadow.querySelectorAll("[class='page']")[0];
-    //   let mousePosX = getMouseCoordinates(e).x;
+    //   let mousePosX = dragElement(e).x;
     //   console.log(mouseXStart, mousePosX)
     //   // startpos + x movement
     // }
@@ -391,7 +387,7 @@ class TearOffPad extends HTMLElement {
 
     // function tearAnimation( event ){
     //   while ( event ){
-    //     getMouseCoordinates
+    //     dragElement
     //   }
       
     // }
@@ -399,7 +395,7 @@ class TearOffPad extends HTMLElement {
     function activateEventListeners(){
       pages.addEventListener('mousedown', startTransform);
       // document.addEventListener('click', getCoordinates);
-      // document.addEventListener('mousemove', getMouseCoordinates);
+      // document.addEventListener('mousemove', dragElement);
       
       // document.addEventListener('click', animatePage);
       // pages.addEventListener('mouseenter', handleMouseEnter);
