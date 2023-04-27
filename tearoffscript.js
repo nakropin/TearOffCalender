@@ -112,7 +112,7 @@ class TearOffPad extends HTMLElement {
       
       // TODO: pages set background img renderPageCallCounter+1
       const nextSrc = randomFiles[ renderPageCallCounter + 1 ];
-      pages.setAttribute('src', 'url("' + nextSrc +'")');
+      pages.setAttribute('src',  nextSrc );
       
       renderPageCallCounter++;
     };
@@ -238,8 +238,18 @@ class TearOffPad extends HTMLElement {
         animateOnce();
         renderPage();
         makeFloorElement(curPage);
+        zStyleSwitch(curPage);
+
+        document.body.removeEventListener('mouseleave', animatePage);
+        // curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotationAngle*progress*1.1+'deg) rotateZ('+ -rotationAngle*progress*0.8+'deg)';
+        // z-index: 1;
+
       };
     };
+
+    function zStyleSwitch( element ){
+      return element.style.zIndex == 1 ? 2 : 1
+    }
 
     // Mauskoordinaten beim Start berücksichtigen
     function getCoordinates(e){
@@ -278,14 +288,19 @@ class TearOffPad extends HTMLElement {
       return coefficient;
     }
 
+    function setDragDirection(e){
+      return mouseXStart < (e.clientX - centerX) ? "right" : "left";
+    };
+
     function dragElement(e){
+      const curPage = shadow.querySelectorAll("[class='page']")[0];
+      curPage.style.zIndex = 2;
       const mouseX = e.clientX - centerX;
       const mouseY = e.clientY - centerY;
-      let curDir = setDirection(e);
+      let curDir = setDragDirection(e);
       console.log(curDir)
       let curDegree = (mouseXStart - mouseX) / 10;
 
-      const curPage = shadow.querySelectorAll("[class='page']")[0];
       curPage.style.transformOrigin = 'top ' + curDir;
       curPage.style.transform = 'rotate(' + curDegree + 'deg)';
       console.log( mouseXStart, mouseX )
@@ -293,20 +308,38 @@ class TearOffPad extends HTMLElement {
     }
 
     function startTransform(e){
+      const curPage = shadow.querySelectorAll("[class='page']")[0];
       mouseXStart = e.clientX - centerX;
-
       document.addEventListener("mousemove", dragElement);
       document.addEventListener("mouseup", animatePage);
-
+      document.body.addEventListener("mouseleave", animatePage);
+      // TODO: click als ausfallfunktion?
+      
       //console.log(vectorLength)
       //return mouseX;
       //let vectorLength = Math.sqrt(Math.abs(handleClick(e).x - mouseX) + Math.abs(handleClick(e).x - - mouseY));
       //console.log(vectorLength)
     }
 
-    function setDirection(e){
-      return mouseXStart < (e.clientX - centerX) ? "right" : "left";
+    function activateEventListeners(){
+      pages.addEventListener('mousedown', startTransform);
+      // document.addEventListener('click', getCoordinates);
+      // document.addEventListener('mousemove', dragElement);
+      
+      // document.addEventListener('click', animatePage);
+      // pages.addEventListener('mouseenter', handleMouseEnter);
+      // pages.addEventListener('mouseout', handleMouseLeave);
+      // pages.addEventListener('touch', );
+
+      refresh.addEventListener('click', refreshbtn);
+      imprint.addEventListener('click', imprintbtn);
     };
+
+  };
+};
+
+customElements.define('tear-off-pad', TearOffPad);
+
 
     // TODO: set 0 shadow when curPage transform === 0 
 
@@ -391,22 +424,3 @@ class TearOffPad extends HTMLElement {
     //   }
       
     // }
-
-    function activateEventListeners(){
-      pages.addEventListener('mousedown', startTransform);
-      // document.addEventListener('click', getCoordinates);
-      // document.addEventListener('mousemove', dragElement);
-      
-      // document.addEventListener('click', animatePage);
-      // pages.addEventListener('mouseenter', handleMouseEnter);
-      // pages.addEventListener('mouseout', handleMouseLeave);
-      // pages.addEventListener('touch', );
-
-      refresh.addEventListener('click', refreshbtn);
-      imprint.addEventListener('click', imprintbtn);
-    };
-
-  };
-};
-
-customElements.define('tear-off-pad', TearOffPad);
