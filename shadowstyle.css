@@ -42,6 +42,8 @@ body {
   background-color: white;
   transform-origin: center;
   backface-visibility: visible;
+  transition-timing-function: ease-in;
+  /* transition-duration: 0.02s; */
 }
 
 .floor {

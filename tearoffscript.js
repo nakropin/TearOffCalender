@@ -111,7 +111,6 @@ class TearOffPad extends HTMLElement {
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
 
-
       // TODO: pages set background img renderPageCallCounter+1
       // const nextSrc = randomFiles[ renderPageCallCounter + 1 ];
       // pages.setAttribute('src',  nextSrc );
@@ -142,11 +141,26 @@ class TearOffPad extends HTMLElement {
       };
     };
 
+        function turnOffEventListenersWhileEventAction(){
+      const clickableElements = [ pages, refresh, imprint ];
+      clickableElements.forEach(e => e.setAttribute('disabled', 'disabled'));
+      const currentDelay = delay * ( ( randomFiles.length - renderPageCallCounter ) + 3 );
+      setTimeout(function() {
+        clickableElements.forEach(e => e.removeAttribute('disabled'));
+      }, currentDelay );
+    };
+
     function refreshbtn(){
       if ( renderPageCallCounter != 0 ){
-        //animatePage();
-        renderPageCallCounter = 0;
+        animatePage();
         removeAllFloorElements();
+        renderPageCallCounter = 0;
+
+        // animatePage(new Event('mouseup'));
+        // pages.dispatchEvent(new Event('mousedown'), startTransform);
+        // setTimeout(function() {
+        //   document.dispatchEvent(new Event('mouseup'), animatePage);
+        // }, delay );
         // TODO: make work again
       };
     };
@@ -253,12 +267,14 @@ class TearOffPad extends HTMLElement {
       document.body.removeEventListener("mouseleave", animatePage);
       document.removeEventListener('mouseup', animatePage)
       document.removeEventListener('mousemove', dragElement);
+      document.removeEventListener("click", animatePage)
     }
 
     function addTempEventListeners(){
       document.addEventListener("mousemove", dragElement);
       document.addEventListener("mouseup", animatePage);
       document.body.addEventListener("mouseleave", animatePage);
+      document.addEventListener("click", animatePage)
     }
 
     function zStyleSwitch( element ){
@@ -314,7 +330,7 @@ class TearOffPad extends HTMLElement {
       const mouseY = e.clientY - centerY;
       if (firstCall === 0) {}
       curDir = setDragDirection(e);
-      let curDegree = ((mouseXStart - mouseX) + (mouseYStart - mouseY) )  / 7;
+      let curDegree = ((mouseXStart - mouseX) + (mouseYStart - mouseY) )  / 12;
       console.log(curDegree)
       curPage.style.transformOrigin = 'top ' + curDir;
       curPage.style.transform = 'rotate(' + curDegree + 'deg)';
@@ -332,9 +348,7 @@ class TearOffPad extends HTMLElement {
         mouseXStart = e.clientX - centerX;
         mouseYStart = e.clientY - centerY;
         addTempEventListeners();
-
       }
-      // TODO: click als ausfallfunktion?
     
       //console.log(vectorLength)
       //return mouseX;
@@ -344,14 +358,6 @@ class TearOffPad extends HTMLElement {
 
     function activateEventListeners(){
       pages.addEventListener('mousedown', startTransform);
-      // document.addEventListener('click', getCoordinates);
-      // document.addEventListener('mousemove', dragElement);
-      
-      // document.addEventListener('click', animatePage);
-      // pages.addEventListener('mouseenter', handleMouseEnter);
-      // pages.addEventListener('mouseout', handleMouseLeave);
-      // pages.addEventListener('touch', );
-
       refresh.addEventListener('click', refreshbtn);
       imprint.addEventListener('click', imprintbtn);
     };
@@ -390,16 +396,6 @@ customElements.define('tear-off-pad', TearOffPad);
     //   setTimeout(function() {curPage.removeAttribute('id');}, 300 );
     //   // curPage.id= "tearhint";
     // };
-
-    // function turnOffEventListenersWhileEventAction(){
-    //   const clickableElements = [ pages, refresh, imprint ];
-    //   clickableElements.forEach(e => e.setAttribute('disabled', 'disabled'));
-    //   const currentDelay = delay * ( ( randomFiles.length - renderPageCallCounter ) + 3 );
-    //   setTimeout(function() {
-    //     clickableElements.forEach(e => e.removeAttribute('disabled'));
-    //   }, currentDelay );
-    // };
-
 
     // function dragElement(elmnt) {
     //   animatePage();

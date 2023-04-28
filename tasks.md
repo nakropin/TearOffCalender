@@ -31,8 +31,7 @@
 - [ ] Code-Minification
 - [ ] make floor elements adapt changed screen resolution
 - [ ] optimal example https://www.youtube.com/watch?v=7VFPos9clPo
-
-- [ ]
+- [ ] modular animation settings: neigungswinkel, abfallwinkel, tear blatt anreissen visuell, geschwindigkeit etc. 
 
 - [ ] make it mobile
   - [ ] swipe (opacity fadeout)
@@ -50,9 +49,12 @@
 - [ ] transformation animation randomisieren
   - [ ] 3 verschiedene Fallanimationen pro Seite
 
-- [ ] abreißanimation
-  - [ ] 
-
 - [ ] stapel einbauen: css nach stacksize dynamisch setzen
 
-- [ ] modular settings: neigungswinkel, abfallwinkel, tear blatt anreissen visuell, geschwindigkeit etc. 
+
+- [ ] bugs to fix: 
+  - [ ] right up, left down == move
+  - [ ] if dir has been set for X, dont change direction
+  - [ ] dir: dont move over start-pos
+  - [ ] if 'mouseup' but too few degrees (<25): transform back to start pos / leave hanging?
+  - [ ] render nextSrc in background
