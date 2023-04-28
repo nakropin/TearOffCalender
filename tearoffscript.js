@@ -246,7 +246,7 @@ class TearOffPad extends HTMLElement {
         y += points[i].y * coefficient;
       }
       /* watch mousecoords */
-      x += ( - bezierPoints[0].x) * (1 - progress);
+      x += (- bezierPoints[0].x) * (1 - progress);
       y += (- bezierPoints[0].y) * (1 - progress);
       return { x: x, y: y };
     }
