@@ -4,7 +4,7 @@
   - [ ] animation module to let every sheet fall differently ~~min 6 x fall and lay on the floor, 3l/3r~~
   - [x] (tear off all animation for button)
   - [ ] should turn back when not full hover
-- [ ] interactivity
+- [x] interactivity
 - [x] buttons with svg
   - [x] refresh-button
   - [x] tear off all button
@@ -31,7 +31,7 @@
 - [ ] Code-Minification
 - [ ] make floor elements adapt changed screen resolution
 - [ ] optimal example https://www.youtube.com/watch?v=7VFPos9clPo
-- [ ] modular animation settings: neigungswinkel, abfallwinkel, tear blatt anreissen visuell, geschwindigkeit etc. 
+- [ ] modular animation settings: animationspeed, degree, abfallwinkel, tear blatt anreissen visuell etc. 
 
 - [ ] make it mobile
   - [ ] swipe (opacity fadeout)
@@ -53,8 +53,11 @@
 
 
 - [ ] bugs to fix: 
-  - [ ] right up, left down == move
+  - [ ] right up, left down == move. count higher from 
+    - [ ] save plusY + lastY, always add last-y+(positive(curY)) on top of plusY 
   - [ ] if dir has been set for X, dont change direction
   - [ ] dir: dont move over start-pos
   - [ ] if 'mouseup' but too few degrees (<25): transform back to start pos / leave hanging?
   - [ ] render nextSrc in background
+  - [ ] make transformation slower/delayed
+  - [ ] only transform if curDegree is higher than nextDegree 

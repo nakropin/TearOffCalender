@@ -60,8 +60,7 @@ class TearOffPad extends HTMLElement {
     // setInterval(handleMouseEnter(pages.event), 5000)
     /*  Functions */
 
-    function createBasicPage(){
-      /* TearOffPad, Pages */
+    function createBasicPage(){      /* TearOffPad: make Pages & Buttons */
       const pagesTag = shadow.appendChild( document.createElement('div') );
       pagesTag.classList.add( "pages" );   
       const buttons = [  [ 'imprint', imprintBtnAriaLabel, imgPath ],
@@ -205,7 +204,7 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-    /////////////////////////////////////////////////////////////
+    /* helpers */
     const width = window.innerWidth;
     const height = window.innerHeight;
     const centerX = width / 2;
@@ -215,82 +214,24 @@ class TearOffPad extends HTMLElement {
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
     let mouseXStart;
     let mouseYStart;
-    let firstCall = 0;
     let curDir;
-    let lastDragPoint;
 
-    /* declares offset values randomly, x and y describe the coordinate system */
-    // function generateRandomCoordinates (width, height, centerX, centerY){
-    //   let x = Math.random() * width - centerX;
-    //   let y = Math.random() * height - centerY;
-    //   return({x: x, y: y});
-    // };
+    // let firstCall = 0;
+    // let lastDragPoint;
 
-    /// helper
     function makeFloorElement( element ){
       element.classList.add('floor');
     };
-
-    /// main functs
-
-    function animatePage() {
-      // TODO: get startposition from drag & animate
-      firstCall = 0;
-      removeTempEventListeners();
-
-      if ( renderPageCallCounter < randomFiles.length ) {
-        const curPage = shadow.querySelectorAll("[class='page']")[0];
-        const bezier = getCoordinates(event);
-        let progress = 0;
-        const random = 1;
-        // const random = Math.random() * 20 - 10;
-        const animateOnce = () => {
-          let position = getBezierPosition(bezier, progress);
-          let rotationAngle = Math.atan2(position.x, position.y) * 180 / Math.PI + random;
-          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotationAngle*progress*1.1+'deg) rotateZ('+ -rotationAngle*progress*0.8+'deg)';
-          if (progress < 1) {
-            progress += 0.01;
-            requestAnimationFrame(animateOnce);
-          } else {
-            document.removeEventListener('mouseup', animatePage)
-            progress = 0;
-          }
-        };
-        animateOnce();
-        renderPage();
-        makeFloorElement(curPage);
-        zStyleSwitch(curPage);
-      };
-    };
-
-    function removeTempEventListeners(){
-      document.body.removeEventListener("mouseleave", animatePage);
-      document.removeEventListener('mouseup', animatePage)
-      document.removeEventListener('mousemove', dragElement);
-      document.removeEventListener("click", animatePage)
-    }
-
-    function addTempEventListeners(){
-      document.addEventListener("mousemove", dragElement);
-      document.addEventListener("mouseup", animatePage);
-      document.body.addEventListener("mouseleave", animatePage);
-      document.addEventListener("click", animatePage)
-    }
-
-    function zStyleSwitch( element ){
-      element.style.zIndex = 1
-    }
-
-    // Mauskoordinaten beim Start berücksichtigen
-    function getCoordinates(e){
+    
+    function getCoordinates(e){ /* get mouseCoords at start */
       let mouseX = e.clientX - centerX;
       let mouseY = e.clientY - centerY;
-      if(mouseX > 0){
-        bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX+Math.random() * 100 - 50, y: targetY }];
-     }
-     else {
-        bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX+Math.random() * 100 - 50, y: targetY }];
-     }
+      if( mouseX > 0 ){
+        bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX + Math.random() * 100 - 50, y: targetY }];
+      }
+      else {
+          bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX + Math.random() * 100 - 50, y: targetY }];
+      }
       return bezierPoints;
     }
 
@@ -318,27 +259,79 @@ class TearOffPad extends HTMLElement {
       return coefficient;
     }
 
+    function animatePage() {
+      // TODO: get startposition from drag & animate
+      // firstCall = 0;
+      removeTempEventListeners();
+
+      if ( renderPageCallCounter < randomFiles.length ) {
+        const curPage = shadow.querySelectorAll("[class='page']")[0];
+        const bezier = getCoordinates(event);
+        let progress = 0;
+        const random = 1;
+        // const random = Math.random() * 20 - 10;
+        const animateOnce = () => {
+          let position = getBezierPosition(bezier, progress);
+          let rotationAngle = Math.atan2(position.x, position.y) * 180 / Math.PI + random;
+          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotationAngle*progress*1.1+'deg) rotateZ('+ -rotationAngle*progress*0.8+'deg)';
+          if (progress < 1) {
+            progress += 0.01;
+            requestAnimationFrame(animateOnce);
+          } else {
+            document.removeEventListener('mouseup', animatePage)
+            progress = 0;
+          }
+        };
+        animateOnce();
+        renderPage();
+        makeFloorElement(curPage);
+        zStyleSwitch(curPage);
+      };
+    };
+
+    function zStyleSwitch( element ){
+      element.style.zIndex = 1
+    }
+
+
+
     function setDragDirection(e){
       /* "natural haptic" = mouse left side -> right: top right, l->l: t l, r->l: t l, r->: t r; */
       return mouseXStart < (e.clientX - centerX) ? "right" : "left";
     };
+
+    /* temporary event Listeners, use mouseleave & click as helper in case of stuck */
+    function removeTempEventListeners(){
+      document.removeEventListener('mouseup', animatePage)
+      document.removeEventListener('mousemove', dragElement);
+      document.body.removeEventListener("mouseleave", animatePage);
+      document.removeEventListener("click", animatePage)
+    }
+
+    function addTempEventListeners(){
+      document.addEventListener("mousemove", dragElement);
+      document.addEventListener("mouseup", animatePage);
+      document.body.addEventListener("mouseleave", animatePage);
+      document.addEventListener("click", animatePage)
+    }
 
     function dragElement(e){
       const curPage = shadow.querySelectorAll("[class='page']")[0];
       curPage.style.zIndex = 2;
       const mouseX = e.clientX - centerX;
       const mouseY = e.clientY - centerY;
-      if (firstCall === 0) {}
+      // if (firstCall === 0) {}
       curDir = setDragDirection(e);
-      let curDegree = ((mouseXStart - mouseX) + (mouseYStart - mouseY) )  / 12;
-      console.log(curDegree)
+      curPage.style.transformOrigin = 'top ' + curDir;
+
+      let curDegree = curDir === "left" ? Math.abs(((mouseXStart - mouseX) + (mouseY) )  / 12) : -Math.abs(((mouseXStart - mouseX) )  / 12)
       curPage.style.transformOrigin = 'top ' + curDir;
       curPage.style.transform = 'rotate(' + curDegree + 'deg)';
-      //-ms-transform:rotate(' + curDegree + 'deg); -webkit-transform:rotate(' + curDegree + 'deg);'
-      if ( Math.abs(curDegree) >= 60 ) {
+
+      if ( curDegree >= 60 ) {
         document.dispatchEvent(new Event('mouseup'), animatePage());
       };
-      firstCall = 1;
+      // firstCall = 1;
     }
 
     function startTransform(e){
@@ -349,11 +342,6 @@ class TearOffPad extends HTMLElement {
         mouseYStart = e.clientY - centerY;
         addTempEventListeners();
       }
-    
-      //console.log(vectorLength)
-      //return mouseX;
-      //let vectorLength = Math.sqrt(Math.abs(handleClick(e).x - mouseX) + Math.abs(handleClick(e).x - - mouseY));
-      //console.log(vectorLength)
     }
 
     function activateEventListeners(){
@@ -361,11 +349,32 @@ class TearOffPad extends HTMLElement {
       refresh.addEventListener('click', refreshbtn);
       imprint.addEventListener('click', imprintbtn);
     };
-
   };
 };
 
 customElements.define('tear-off-pad', TearOffPad);
+
+    /* declares offset values randomly, x and y describe the coordinate system */
+    // function generateRandomCoordinates (width, height, centerX, centerY){
+    //   let x = Math.random() * width - centerX;
+    //   let y = Math.random() * height - centerY;
+    //   return({x: x, y: y});
+    // };
+
+
+      // in starttransform
+      //console.log(vectorLength)
+      //return mouseX;
+      //let vectorLength = Math.sqrt(Math.abs(handleClick(e).x - mouseX) + Math.abs(handleClick(e).x - - mouseY));
+      //console.log(vectorLength)
+
+      // // // regex from html element string to get lastDegree to not push upwards again
+      // let lastDegree = String(curPage.style.getPropertyValue('transform'));
+      // lastDegree = lastDegree.match(/-?\d*\.?\d+/);
+      // // how to preve
+      // if (curDegree > lastDegree){  
+      // }
+      //   //-ms-transform:rotate(' + curDegree + 'deg); -webkit-transform:rotate(' + curDegree + 'deg);'
 
 
     // TODO: set 0 shadow when curPage transform === 0 
