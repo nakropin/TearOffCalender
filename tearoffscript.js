@@ -56,8 +56,6 @@ class TearOffPad extends HTMLElement {
     var renderPageCallCounter     = 0;
     
     renderPage(); /* renders the first page */
-    activatePage();
-    
     activateEventListeners();
     // setInterval(handleMouseEnter(pages.event), 5000)
     /*  Functions */
@@ -104,13 +102,16 @@ class TearOffPad extends HTMLElement {
     function renderPage() {
       const currentSrc = randomFiles[ renderPageCallCounter ];
       const newPage = document.createElement('img');
-      newPage.classList.add('secondpage');
+      newPage.classList.add('page');
       newPage.src = currentSrc;
       newPage.setAttribute('alt', setAltText());
       // newPage.setAttribute('id', 'tearhint');
+      // pages.style.backgroundImage('url("img/a-1.svg")');
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
+
+
       // TODO: pages set background img renderPageCallCounter+1
       // const nextSrc = randomFiles[ renderPageCallCounter + 1 ];
       // pages.setAttribute('src',  nextSrc );
@@ -199,6 +200,10 @@ class TearOffPad extends HTMLElement {
     const targetY = centerY / 4 * 3;
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
     let mouseXStart;
+    let mouseYStart;
+    let firstCall = 0;
+    let curDir;
+    let lastDragPoint;
 
     /* declares offset values randomly, x and y describe the coordinate system */
     // function generateRandomCoordinates (width, height, centerX, centerY){
@@ -215,10 +220,11 @@ class TearOffPad extends HTMLElement {
     /// main functs
 
     function animatePage() {
-      document.removeEventListener('mouseup', animatePage)
-      document.removeEventListener('mousemove', dragElement);
-      
-      if (renderPageCallCounter < randomFiles.length) {
+      // TODO: get startposition from drag & animate
+      firstCall = 0;
+      removeTempEventListeners();
+
+      if ( renderPageCallCounter < randomFiles.length ) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         const bezier = getCoordinates(event);
         let progress = 0;
@@ -237,22 +243,22 @@ class TearOffPad extends HTMLElement {
           }
         };
         animateOnce();
-        activatePage();
-        // renderPage();
+        renderPage();
         makeFloorElement(curPage);
         zStyleSwitch(curPage);
-
-        document.body.removeEventListener('mouseleave', animatePage);
-        // curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotationAngle*progress*1.1+'deg) rotateZ('+ -rotationAngle*progress*0.8+'deg)';
-        // z-index: 1;
-
       };
     };
 
-    function activatePage(){
-      const secondPage = shadow.querySelectorAll("[class='secondpage']")[0];
-      secondPage.classList.add('page');
-      secondPage.classList.remove('secondpage');
+    function removeTempEventListeners(){
+      document.body.removeEventListener("mouseleave", animatePage);
+      document.removeEventListener('mouseup', animatePage)
+      document.removeEventListener('mousemove', dragElement);
+    }
+
+    function addTempEventListeners(){
+      document.addEventListener("mousemove", dragElement);
+      document.addEventListener("mouseup", animatePage);
+      document.body.addEventListener("mouseleave", animatePage);
     }
 
     function zStyleSwitch( element ){
@@ -297,6 +303,7 @@ class TearOffPad extends HTMLElement {
     }
 
     function setDragDirection(e){
+      /* "natural haptic" = mouse left side -> right: top right, l->l: t l, r->l: t l, r->: t r; */
       return mouseXStart < (e.clientX - centerX) ? "right" : "left";
     };
 
@@ -305,25 +312,30 @@ class TearOffPad extends HTMLElement {
       curPage.style.zIndex = 2;
       const mouseX = e.clientX - centerX;
       const mouseY = e.clientY - centerY;
-      let curDir = setDragDirection(e);
-      console.log(curDir)
-      let curDegree = (mouseXStart - mouseX) / 10;
-
+      if (firstCall === 0) {}
+      curDir = setDragDirection(e);
+      let curDegree = ((mouseXStart - mouseX) + (mouseYStart - mouseY) )  / 7;
+      console.log(curDegree)
       curPage.style.transformOrigin = 'top ' + curDir;
       curPage.style.transform = 'rotate(' + curDegree + 'deg)';
-      console.log( mouseXStart, mouseX )
-      return {x: mouseX, y: mouseY};
+      //-ms-transform:rotate(' + curDegree + 'deg); -webkit-transform:rotate(' + curDegree + 'deg);'
+      if ( Math.abs(curDegree) >= 60 ) {
+        document.dispatchEvent(new Event('mouseup'), animatePage());
+      };
+      firstCall = 1;
     }
 
     function startTransform(e){
-      const curPage = shadow.querySelectorAll("[class='page']")[0];
-      mouseXStart = e.clientX - centerX;
-      renderPage();
-      document.addEventListener("mousemove", dragElement);
-      document.addEventListener("mouseup", animatePage);
-      document.body.addEventListener("mouseleave", animatePage);
+      if (renderPageCallCounter !== randomFiles.length){
+        const curPage = shadow.querySelectorAll("[class='page']")[0];
+        curPage.setAttribute(  "border", "1px solid black;")
+        mouseXStart = e.clientX - centerX;
+        mouseYStart = e.clientY - centerY;
+        addTempEventListeners();
+
+      }
       // TODO: click als ausfallfunktion?
-      
+    
       //console.log(vectorLength)
       //return mouseX;
       //let vectorLength = Math.sqrt(Math.abs(handleClick(e).x - mouseX) + Math.abs(handleClick(e).x - - mouseY));

@@ -29,22 +29,14 @@ body {
   position: relative;
   text-align: center;
   background-color: white;
-  z-index: 0;
-}
-
-.secondpage {
-  z-index: 0;
-  pointer-events: none;
   border: 1px solid black;
-  position: relative;
-  justify-content: center;
-  background-color: white;
-  backface-visibility: visible;
+  z-index: 0;
+  background-image: img;
 }
 
 .page {
   pointer-events: none;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   position: relative;
   justify-content: center;
   background-color: white;

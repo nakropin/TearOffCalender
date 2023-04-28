@@ -53,4 +53,6 @@
 - [ ] abreißanimation
   - [ ] 
 
-- [ ] stapel einbauen: css nach stacksize dynamisch setzen 
+- [ ] stapel einbauen: css nach stacksize dynamisch setzen
+
+- [ ] modular settings: neigungswinkel, abfallwinkel, tear blatt anreissen visuell, geschwindigkeit etc. 
