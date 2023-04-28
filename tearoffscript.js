@@ -212,11 +212,13 @@ class TearOffPad extends HTMLElement {
     const targetX = centerX / 8 * 5;
     const targetY = centerY / 4 * 3;
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
+    
     let mouseXStart;
-    let mouseYStart;
+    let lastPositionY = 0;
+    let mouseAddY = 0;
     let curDir;
+    let timer = 0;
 
-    // let firstCall = 0;
     // let lastDragPoint;
 
     function makeFloorElement( element ){
@@ -261,7 +263,6 @@ class TearOffPad extends HTMLElement {
 
     function animatePage() {
       // TODO: get startposition from drag & animate
-      // firstCall = 0;
       removeTempEventListeners();
 
       if ( renderPageCallCounter < randomFiles.length ) {
@@ -273,34 +274,43 @@ class TearOffPad extends HTMLElement {
         const animateOnce = () => {
           let position = getBezierPosition(bezier, progress);
           let rotationAngle = Math.atan2(position.x, position.y) * 180 / Math.PI + random;
-          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotationAngle*progress*1.1+'deg) rotateZ('+ -rotationAngle*progress*0.8+'deg)';
+          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX(' + rotationAngle * progress * 1.1 + 'deg) rotateZ(' + -rotationAngle * progress * 0.8 + 'deg)';
           if (progress < 1) {
             progress += 0.01;
             requestAnimationFrame(animateOnce);
           } else {
-            document.removeEventListener('mouseup', animatePage)
+            document.removeEventListener('mouseup', animatePage);
             progress = 0;
           }
         };
         animateOnce();
         renderPage();
+        resetHelpers();
         makeFloorElement(curPage);
         zStyleSwitch(curPage);
       };
     };
 
     function zStyleSwitch( element ){
-      element.style.zIndex = 1
+      element.style.zIndex = 1;
     }
-
-
 
     function setDragDirection(e){
       /* "natural haptic" = mouse left side -> right: top right, l->l: t l, r->l: t l, r->: t r; */
-      return mouseXStart < (e.clientX - centerX) ? "right" : "left";
+      // TODO: if drag has been done on one side till X deg then dont change dir (switch to the other side) 
+      // use timer here
+      
+      if (timer === 1){
+        return curDir;
+      }
+      else{
+        // setTimeout(timer = 1, 500);
+        timer = 1;
+        return mouseXStart < (e.clientX - centerX) ? "right" : "left";
+      }
     };
 
-    /* temporary event Listeners, use mouseleave & click as helper in case of stuck */
+    /* temporary event Listeners, use mouseleave & click as helper in case of (browserwise) stuck */
     function removeTempEventListeners(){
       document.removeEventListener('mouseup', animatePage)
       document.removeEventListener('mousemove', dragElement);
@@ -315,23 +325,37 @@ class TearOffPad extends HTMLElement {
       document.addEventListener("click", animatePage)
     }
 
+    function resetHelpers(){
+      mouseXStart, lastPositionY, mouseAddY, curDir, timer = 0;
+    }
+
     function dragElement(e){
       const curPage = shadow.querySelectorAll("[class='page']")[0];
       curPage.style.zIndex = 2;
       const mouseX = e.clientX - centerX;
       const mouseY = e.clientY - centerY;
-      // if (firstCall === 0) {}
       curDir = setDragDirection(e);
       curPage.style.transformOrigin = 'top ' + curDir;
+      
+      let curDegree = calcDegFromCurMouse(curDir, mouseX, mouseY);
 
-      let curDegree = curDir === "left" ? Math.abs(((mouseXStart - mouseX) + (mouseY) )  / 12) : -Math.abs(((mouseXStart - mouseX) )  / 12)
       curPage.style.transformOrigin = 'top ' + curDir;
       curPage.style.transform = 'rotate(' + curDegree + 'deg)';
 
       if ( curDegree >= 60 ) {
         document.dispatchEvent(new Event('mouseup'), animatePage());
       };
-      // firstCall = 1;
+
+    }
+
+    /* in this setup, difference in y-value through mousemove is measured so that
+         one can move up or down and it still will tear the animation */
+    function calcDegFromCurMouse(curDir, mouseX, mouseY) {
+    /* add diff of (last to cur y-pos) for curDegree -> dragging up or down leads to more tear*/
+      mouseAddY += Math.abs(lastPositionY - mouseY) / 3000;
+      let mousePosX = ((mouseXStart - mouseX) / 12);
+      let curDegree = curDir === "left" ? Math.abs(mousePosX + mouseAddY) : -Math.abs(mousePosX - mouseAddY);
+      return curDegree;
     }
 
     function startTransform(e){
@@ -339,7 +363,6 @@ class TearOffPad extends HTMLElement {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         curPage.setAttribute(  "border", "1px solid black;")
         mouseXStart = e.clientX - centerX;
-        mouseYStart = e.clientY - centerY;
         addTempEventListeners();
       }
     }
