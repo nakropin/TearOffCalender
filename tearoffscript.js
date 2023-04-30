@@ -310,6 +310,7 @@ class TearOffPad extends HTMLElement {
       }
     };
 
+    // TODO: check templisteners
     /* temporary event Listeners, use mouseleave & click as helper in case of (browserwise) stuck */
     function removeTempEventListeners(){
       document.removeEventListener('mouseup', animatePage)
@@ -348,10 +349,10 @@ class TearOffPad extends HTMLElement {
 
     }
 
+    // TODO: change so that when moving left/right always goes in same direction?
     /* in this setup, difference in y-value through mousemove is measured so that
          one can move up or down and it still will tear the animation */
     function calcDegFromCurMouse(curDir, mouseX, mouseY) {
-    /* add diff of (last to cur y-pos) for curDegree -> dragging up or down leads to more tear*/
       mouseAddY += Math.abs(lastPositionY - mouseY) / 3000;
       let mousePosX = ((mouseXStart - mouseX) / 12);
       let curDegree = curDir === "left" ? Math.abs(mousePosX + mouseAddY) : -Math.abs(mousePosX - mouseAddY);

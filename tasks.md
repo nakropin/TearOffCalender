@@ -65,3 +65,6 @@
     - [ ] deactivate buttons when clicked
     - [ ] imprint, refresh button function
     - [ ] delay for animation?
+  - [ ] first degree change sometimes way too big. resetter bugged?
+  - [ ] left/right switch: right now it mostly depends on which side of the page one starts, but should be in which direction one drags. but how to measure this when drag animation needs to start right away too?
+  - [ ] somewhere no reset of degree, gotta fix
