@@ -80,16 +80,15 @@ class TearOffPad extends HTMLElement {
       const buttons = [  [ 'imprint', imprintBtnAriaLabel, imgPath ],
                          [ 'refresh', refreshBtnAriaLabel, imgPath ] ];
       buttons.forEach(e => makeButton( e[0], e[1], e[2] ))
-    };
 
-    function makeButton(btnName, ariaLabel, imgPath){
-      let newButton = shadow.appendChild( document.createElement( 'button' ) );
-      newButton.classList.add( btnName );
-      newButton.setAttribute('title', ariaLabel);
-      newButton.setAttribute('tabindex', '0');
-      newButton.setAttribute('style', 'background-image: url(' + imgPath + btnName + '.svg)');
-      newButton.setAttribute('aria-label', ariaLabel);
-    };
+      function makeButton(btnName, ariaLabel, imgPath){
+        let newButton = shadow.appendChild( document.createElement( 'button' ) );
+        newButton.classList.add( btnName );
+        newButton.setAttribute('title', ariaLabel);
+        newButton.setAttribute('tabindex', '0');
+        newButton.setAttribute('style', 'background-image: url(' + imgPath + btnName + '.svg)');
+        newButton.setAttribute('aria-label', ariaLabel);
+      };
 
     /* Generate Matrix for imgPath + Filenames, then randomize */
     function makeRandomizedFileList(){
@@ -223,9 +222,8 @@ class TearOffPad extends HTMLElement {
     let curDir;
     let timer;
     let lastDragPosition;
-    // tearDegree and dragelementfactor need to be adjusted in combination
-    const tearDegree = 50;
-    const dragElementFactor = 2.3;
+    const dragElementFactor = 5;
+
 
     function makeFloorElement( element ){
       element.classList.add('floor');
@@ -362,12 +360,13 @@ class TearOffPad extends HTMLElement {
       curPage.style.transformOrigin = 'top ' + curDir;
       
       let curDegree = calcDegFromCurMouse(curDir, mouseX, mouseY);
+      //let curDegree = curDir === "left" ? Math.abs(((mouseXStart - mouseX) + (mouseY)) / 12) / dragElementFactor : -Math.abs(((mouseXStart - mouseX)) / 12) / dragElementFactor;
 
       curPage.style.transformOrigin = 'top ' + curDir;
       curPage.style.transform = 'rotate(' + curDegree + 'deg)';
       lastDragPosition = curDegree;
 
-      if ( curDegree >= tearDegree ) {
+      if ( curDegree >= 60 ) {
         document.dispatchEvent(new Event('mouseup'), animatePage());
       };
     };
@@ -378,7 +377,6 @@ class TearOffPad extends HTMLElement {
       // TODO: change mouseAddY so that it only grows bigger
       mouseAddY += Math.abs(lastPositionY - mouseY) / 3000;
       let mousePosX = ((mouseXStart - mouseX) / 12);
-      // let curDegree = curDir === "left" ? Math.abs((mousePosX + (mouseY)) / 12) / dragElementFactor : -Math.abs(mousePosX - mouseAddY) / dragElementFactor;
       let curDegree = curDir === "left" ? Math.abs(mousePosX + mouseAddY) : -Math.abs(mousePosX - mouseAddY);
       return curDegree;
     };
@@ -421,5 +419,5 @@ class TearOffPad extends HTMLElement {
     };
   };
 };
-
+};
 customElements.define('tear-off-pad', TearOffPad);
