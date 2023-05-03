@@ -39,6 +39,8 @@ class TearOffPad extends HTMLElement {
     const altTextFrontPage        = componentElement.getAttribute( 'data-alttextfrontpage' );
     const altTextImages           = componentElement.getAttribute( 'data-alttextimages' );
     const altTextImprint          = componentElement.getAttribute( 'data-alttextimprint' );
+    const clickSetter             = componentElement.getAttribute( 'data-clicksetter' );
+    // TODO: clickSetter
 
     let tearDegree = 60;
     /* tearDegree and dragelementfactor need to be adjusted in combination */
@@ -73,7 +75,7 @@ class TearOffPad extends HTMLElement {
       deviceType === 'Mobile'
         ? ( startEventType = "touchstart", moveEventType = "touchmove", endEventType = "touchend" )
         : ( startEventType = "pointerdown",  moveEventType = "pointermove", endEventType = "pointerup" );
-        // TODO: change mobile eventTypes to: pointerdown, pointermove, pointerup
+        // TODO: change mobile eventTypes to: pointerdown, pointermove, pointerup and get rid of detectfunction
       return { 
         deviceType: deviceType,
         startEventType: startEventType,
@@ -122,20 +124,15 @@ class TearOffPad extends HTMLElement {
 
     function renderPage() {
       const currentSrc = randomFiles[ renderPageCallCounter ];
+      const nextSrc = randomFiles[ renderPageCallCounter + 1 ];
       const newPage = document.createElement('img');
       newPage.classList.add('page');
       newPage.src = currentSrc;
       newPage.setAttribute('alt', setAltText());
-      // newPage.setAttribute('id', 'tearhint');
-      // page.style.backgroundImage('url("img/a-1.svg")');
+      pages.style.backgroundImage = ('url('+ nextSrc + ')');
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
-
-      // TODO: pages set background img renderPageCallCounter+1
-      // const nextSrc = randomFiles[ renderPageCallCounter + 1 ];
-      // pages.setAttribute('src',  nextSrc );
-      
       renderPageCallCounter++;
     };
     
@@ -148,6 +145,9 @@ class TearOffPad extends HTMLElement {
     };
 
     function imprintbtn() {
+      // TODO: putin fake dragElement for touch/mouse
+      // pointerdown -> pointermove -> pointerup
+      // only if Desktop?
       animationDelayIterator();
       turnOffEventListenersWhileEventAction();
     };

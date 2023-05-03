@@ -64,7 +64,7 @@
     - [x] imprint, refresh button function
     - [X] delay for animation?
   - [ ] if 'mouseup' but too few degrees (<25): transform back to start pos / leave hanging?
-  - [ ] render nextSrc in background
+  - [x] render nextSrc in background
   - [ ] make transformation slower/delayed
   - [ ] only transform if curDegree is higher than nextDegree?
   - [ ] left/right switch: right now it mostly depends on which side of the page one starts, but should be in which direction one drags. but how to measure this when drag animation needs to start right away too?

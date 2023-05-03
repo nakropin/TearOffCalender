@@ -17,11 +17,12 @@
   text-align: center;
   background-color: white;
   border: 1px solid black;
-  z-index: 0;
-  /* background-image: img; */
+  /* z-index: 0; */
+  background-image: none;
 }
 
 .page {
+  /* z-index: -1; */
   pointer-events: none;
   /* border: 1px solid black; */
   position: relative;
