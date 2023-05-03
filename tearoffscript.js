@@ -142,7 +142,6 @@ class TearOffPad extends HTMLElement {
     function imprintbtn() {
       animationDelayIterator();
       turnOffEventListenersWhileEventAction();
-      // TODO: make work again
     };
 
     /* recursively call animation */
@@ -150,7 +149,6 @@ class TearOffPad extends HTMLElement {
       if( renderPageCallCounter != randomFiles.length ){
         animatePage();
         setTimeout(animationDelayIterator, delay);
-        // TODO: implement random coordinates or left-right switch for animation to work correctly
       };
     };
 
@@ -223,9 +221,18 @@ class TearOffPad extends HTMLElement {
     let curDir;
     let timer;
     let lastDragPosition;
-    // tearDegree and dragelementfactor need to be adjusted in combination
-    const tearDegree = 50;
-    const dragElementFactor = 2.3;
+
+    /* tearDegree and dragelementfactor need to be adjusted in combination */
+    let tearDegree;
+    let dragElementFactor;
+
+    let dragSettings = 0; 
+
+    function tearDragFactor( dragSettings ){
+      tearDegree = 50;
+      dragElementFactor = 2.3;
+      return {tearDegree: tearDegree, dragElementFactor: dragElementFactor}
+    };
 
     function makeFloorElement( element ){
       element.classList.add('floor');
@@ -289,6 +296,7 @@ class TearOffPad extends HTMLElement {
     }
 
     function animatePage() {
+      console.log(lastDragPosition)
       // TODO: lastDragPosition: get startposition from drag & animate for prettier animation?
       removeTempEventListeners();
       if ( renderPageCallCounter < randomFiles.length ) {
