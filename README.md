@@ -5,6 +5,11 @@ tearoffpad is a simple web component that contains a tearoffpad animation. tearo
 run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z-4" and "first", "last", "refresh", "imprint" (ending ".svg") in folder img/.
 
 # use
+* click / click and drag current tearoffpad-element to make it fall down and the next element appear.
+* refresh button lets user return to the original state of the tearoffpad. randomfilelist will not be generated anew, so that main use of the refresh button is to see the same pictures again.
+* imprint button tears off every paper and takes user to imprint page.
+
+# implement
 * implement component like shown below in your html file as child node of body element. insert html tag with attributes and tearoffscript.js as script like shown below. Set the attributes according to your needs. if no attributes are set, standard values are provided.
 * example code body:
     
