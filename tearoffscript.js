@@ -247,8 +247,8 @@ class TearOffPad extends HTMLElement {
       }
       else {
         if (deviceType=== 'Mobile') {
-          mouseX = e.touches[0].clientX - centerX;
-          mouseY = e.touches[0].clientY - centerY;
+          mouseX = e.changedTouches[0].clientX - centerX;
+          mouseY = e.changedTouches[0].clientY - centerY;
         }
         else if (deviceType=== 'Desktop') {
           mouseX = e.clientX - centerX;
@@ -305,7 +305,7 @@ class TearOffPad extends HTMLElement {
             progress += 0.01;
             requestAnimationFrame(animateOnce);
           } else {
-            document.removeEventListener('mouseup', animatePage);
+            // document.removeEventListener(endEventType, animatePage);
             progress = 0;
           }
         };
@@ -331,7 +331,7 @@ class TearOffPad extends HTMLElement {
         // setTimeout(timer = 1, 500);
         timer = 1;
         if (deviceType=== 'Mobile') {
-          return mouseXStart < (e.touches[0].clientX - centerX) ? "right" : "left";
+          return mouseXStart < (e.changedTouches[0].clientX - centerX) ? "right" : "left";
         }
         else if (deviceType=== 'Desktop') {
           return mouseXStart < (e.clientX - centerX) ? "right" : "left";
@@ -350,8 +350,8 @@ class TearOffPad extends HTMLElement {
       let mouseX;
       let mouseY;
       if (deviceType=== 'Mobile') {
-        mouseX = e.touches[0].clientX - centerX;
-        mouseY = e.touches[0].clientY - centerY;
+        mouseX = e.changedTouches[0].clientX - centerX;
+        mouseY = e.changedTouches[0].clientY - centerY;
       }
       else if (deviceType=== 'Desktop') {
         mouseX = e.clientX - centerX;
@@ -367,8 +367,8 @@ class TearOffPad extends HTMLElement {
       curPage.style.transform = 'rotate(' + curDegree + 'deg)';
       lastDragPosition = curDegree;
 
-      if ( curDegree >= tearDegree ) {
-        document.dispatchEvent(new Event('mouseup'), animatePage());
+      if ( Math.abs(curDegree) >= tearDegree ) {
+        document.dispatchEvent(new Event(endEventType), animatePage());
       };
     };
 
@@ -388,13 +388,11 @@ class TearOffPad extends HTMLElement {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         curPage.setAttribute( "border", "1px solid black;" )
         if (deviceType=== 'Mobile') {
-          mouseXStart = e.touches[0].clientX - centerX;
+          mouseXStart = e.changedTouches[0].clientX - centerX;
         }
         else if (deviceType=== 'Desktop') {
           mouseXStart = e.clientX - centerX;
         }
-
-        console.log(mouseXStart)
         addTempEventListeners();
       };
     };
