@@ -331,7 +331,7 @@ class TearOffPad extends HTMLElement {
         // setTimeout(timer = 1, 500);
         timer = 1;
         if (deviceType=== 'Mobile') {
-          return mouseXStart < (e.touches[0] - centerX) ? "right" : "left";
+          return mouseXStart < (e.touches[0].clientX - centerX) ? "right" : "left";
         }
         else if (deviceType=== 'Desktop') {
           return mouseXStart < (e.clientX - centerX) ? "right" : "left";
