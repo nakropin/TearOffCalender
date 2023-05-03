@@ -6,8 +6,10 @@ run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z
 
 # use
 * click / click and drag current tearoffpad-element to make it fall down and the next element appear.
-* refresh button lets user return to the original state of the tearoffpad. randomfilelist will not be generated anew, so that main use of the refresh button is to see the same pictures again.
+  * when only click on the page it will be torn off left or right depending on mouse position. 
+* refresh button lets user return to the original state of the tearoffpad. randomfilelist will not be generated anew, thus main use of the refresh button is to see the same pictures again from start.
 * imprint button tears off every paper and takes user to imprint page.
+* any click will on buttons / page will set a delay for the next possible click, in case of imprint button its set until the animation is finished
 
 # implement
 * implement component like shown below in your html file as child node of body element. insert html tag with attributes and tearoffscript.js as script like shown below. Set the attributes according to your needs. if no attributes are set, standard values are provided.

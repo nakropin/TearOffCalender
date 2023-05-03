@@ -81,35 +81,6 @@ button:hover {
   transform: rotate(3deg);
 }
 
-/* #tearhint {
-  animation-name: tearhint-animation;
-  animation-duration: 5s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-@keyframes tearhint-animation {
-  70% {
-    transform-origin: top right;
-    transform: rotate(0deg);
-  }
-  85% {
-    transform-origin: top right;
-    transform: rotate(-2.2deg);
-  }
-  100% {
-    transform-origin: top right;
-    transform: rotate(0deg);
-  }
-} */
-
-/* @keyframes teardown-animation {
-  0%    { transform: translate3d(0vw, 0vh, 0px) ;}
-  33%   { transform: translate3d(20vw, 30vh, 100px) rotateX(50deg) rotateZ(-20deg);} 
-  66%   { transform: translate3d(5vw, 40vh, 75px) rotateX(-50deg) rotateZ(20deg);} 
-  100%  { transform: translate3d(20vw, 68vh, 100px) rotateX(70deg) rotateZ(-40deg);;} 
-} */
-
 /* very small screen */
 @media only screen and (max-width: 600px){
   .pages, .page, .tear, .floor{

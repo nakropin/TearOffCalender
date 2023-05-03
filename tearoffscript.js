@@ -40,6 +40,13 @@ class TearOffPad extends HTMLElement {
     const altTextImages           = componentElement.getAttribute( 'data-alttextimages' );
     const altTextImprint          = componentElement.getAttribute( 'data-alttextimprint' );
 
+    let tearDegree = 60;
+    /* tearDegree and dragelementfactor need to be adjusted in combination */
+    // let tearDegree;
+    // let dragElementFactor;
+    // let dragSettings = 1; 
+    // tearDragFactor(dragSettings);
+
     createBasicPage();
     randomBackgroundColor();
 
@@ -51,11 +58,11 @@ class TearOffPad extends HTMLElement {
 
     const fileEnding              = ".svg";
     const randomFiles             = makeRandomizedFileList();
-    const delay                   = 150;
+    const delay                   = 300;
     var renderPageCallCounter     = 0;
     
     renderPage(); /* renders the first page */
-    activateEventListeners();
+    setEventListeners();
 
     /* Functions */
 
@@ -65,7 +72,8 @@ class TearOffPad extends HTMLElement {
         : 'Desktop';
       deviceType === 'Mobile'
         ? ( startEventType = "touchstart", moveEventType = "touchmove", endEventType = "touchend" )
-        : ( startEventType = "mousedown",  moveEventType = "mousemove", endEventType = "mouseup" );
+        : ( startEventType = "pointerdown",  moveEventType = "pointermove", endEventType = "pointerup" );
+        // TODO: change mobile eventTypes to: pointerdown, pointermove, pointerup
       return { 
         deviceType: deviceType,
         startEventType: startEventType,
@@ -119,7 +127,7 @@ class TearOffPad extends HTMLElement {
       newPage.src = currentSrc;
       newPage.setAttribute('alt', setAltText());
       // newPage.setAttribute('id', 'tearhint');
-      // pages.style.backgroundImage('url("img/a-1.svg")');
+      // page.style.backgroundImage('url("img/a-1.svg")');
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');
@@ -222,17 +230,12 @@ class TearOffPad extends HTMLElement {
     let timer;
     let lastDragPosition;
 
-    /* tearDegree and dragelementfactor need to be adjusted in combination */
-    let tearDegree;
-    let dragElementFactor;
-
-    let dragSettings = 0; 
-
-    function tearDragFactor( dragSettings ){
-      tearDegree = 50;
-      dragElementFactor = 2.3;
-      return {tearDegree: tearDegree, dragElementFactor: dragElementFactor}
-    };
+    // function tearDragFactor( dragSettings ){
+    //   tearDegree = (dragSettings * 60);
+    //   dragElementFactor = (dragSettings * 2.3 );
+    //   console.log(tearDegree, dragElementFactor)
+    //   //return {tearDegree: tearDegree, dragElementFactor: dragElementFactor};
+    // };
 
     function makeFloorElement( element ){
       element.classList.add('floor');
@@ -367,25 +370,24 @@ class TearOffPad extends HTMLElement {
       
       curDir = setDragDirection(e);
       curPage.style.transformOrigin = 'top ' + curDir;
-      
       let curDegree = calcDegFromCurMouse(curDir, mouseX, mouseY);
 
-      curPage.style.transformOrigin = 'top ' + curDir;
       curPage.style.transform = 'rotate(' + curDegree + 'deg)';
       lastDragPosition = curDegree;
 
+      /* TODO: tearDegree is relative to clients aspect ratio on desktop, not on mobile though?*/
       if ( Math.abs(curDegree) >= tearDegree ) {
         document.dispatchEvent(new Event(endEventType), animatePage());
       };
     };
 
     /* in this setup, difference in y-value through mousemove is measured so that
-       one can move up and down afterwards or vice versa and it still will tear the animation */
+       one can move up and down afterwards or vice versa and it still will tear the animation in the same direction */
     function calcDegFromCurMouse(curDir, mouseX, mouseY) {
       // TODO: change mouseAddY so that it only grows bigger
       mouseAddY += Math.abs(lastPositionY - mouseY) / 3000;
       let mousePosX = ((mouseXStart - mouseX) / 12);
-      // let curDegree = curDir === "left" ? Math.abs((mousePosX + (mouseY)) / 12) / dragElementFactor : -Math.abs(mousePosX - mouseAddY) / dragElementFactor;
+      // let curDegree = curDir === "left" ? Math.abs(((mousePosX + (mouseY/ 12)) ) / dragElementFactor) : -Math.abs((mousePosX - (mouseAddY/ 12)) / dragElementFactor);
       let curDegree = curDir === "left" ? Math.abs(mousePosX + mouseAddY) : -Math.abs(mousePosX - mouseAddY);
       return curDegree;
     };
@@ -419,7 +421,7 @@ class TearOffPad extends HTMLElement {
       document.addEventListener("click", animatePage);
     };
 
-    function activateEventListeners( ){
+    function setEventListeners( ){
       pages.addEventListener(startEventType, startTransform);
       refresh.addEventListener('click', refreshbtn);
       imprint.addEventListener('click', imprintbtn);
