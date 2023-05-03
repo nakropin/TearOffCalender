@@ -213,8 +213,8 @@ class TearOffPad extends HTMLElement {
     const height = window.innerHeight;
     const centerX = width / 2;
     const centerY = height / 2;
-    const targetX = centerX / 8 * 5;
-    const targetY = centerY / 4 * 3;
+    const targetX = centerX / 8 * 6;
+    const targetY = centerY / 8 * 7;
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
     
     let mouseXStart;
@@ -256,10 +256,10 @@ class TearOffPad extends HTMLElement {
         }
       }
       if( mouseX > 0 ){
-        bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX + Math.random() * 100 - 50, y: targetY }];
+        bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX , y: targetY }];
       }
       else {
-          bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX + Math.random() * 100 - 50, y: targetY }];
+          bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX , y: targetY }];
       }
       return bezierPoints;
     }
@@ -295,12 +295,25 @@ class TearOffPad extends HTMLElement {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         curPage.setAttribute( "border", "1px solid black;" )      
         const bezier = getCoordinates(event);
+
         let progress = 0;
         const random = 1; // const random = Math.random() * 20 - 10;
+
+        const curDir = setDragDirection(event);
+        let startDegree = calcDegFromCurMouse(curDir, bezier[1].x, bezier[1].y);
+        //console.log(startDegree)
+        //curPage.style.transformOrigin = 'top ' + curDir;
+
         const animateOnce = () => {
+          //curPage.style.transformOrigin = 'top center';
           let position = getBezierPosition(bezier, progress);
-          let rotationAngle = Math.atan2(position.x, position.y) * 180 / Math.PI + random;
-          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX(' + rotationAngle * progress * 1.1 + 'deg) rotateZ(' + -rotationAngle * progress * 0.8 + 'deg)';
+          //console.log(position);
+          let endDegree = 45 - 60-startDegree*progress;
+          let curDegree = startDegree - startDegree*progress + endDegree;
+
+          //let rotationAngle = Math.atan2(position.x, position.y) * 180 / Math.PI + random;
+
+          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ 40*progress +'deg) rotateZ('+ curDegree +'deg)';
           if (progress < 1) {
             progress += 0.01;
             requestAnimationFrame(animateOnce);
@@ -376,10 +389,12 @@ class TearOffPad extends HTMLElement {
        one can move up and down afterwards or vice versa and it still will tear the animation */
     function calcDegFromCurMouse(curDir, mouseX, mouseY) {
       // TODO: change mouseAddY so that it only grows bigger
-      mouseAddY += Math.abs(lastPositionY - mouseY) / 3000;
+      //mouseAddY += Math.abs(lastPositionY - mouseY) / 3000;
       let mousePosX = ((mouseXStart - mouseX) / 12);
       // let curDegree = curDir === "left" ? Math.abs((mousePosX + (mouseY)) / 12) / dragElementFactor : -Math.abs(mousePosX - mouseAddY) / dragElementFactor;
-      let curDegree = curDir === "left" ? Math.abs(mousePosX + mouseAddY) : -Math.abs(mousePosX - mouseAddY);
+      let curDegree = curDir === "left" ? Math.abs(mousePosX) : -Math.abs(mousePosX);
+      console.log(curDegree)
+
       return curDegree;
     };
 
