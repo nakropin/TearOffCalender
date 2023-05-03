@@ -313,7 +313,6 @@ class TearOffPad extends HTMLElement {
             progress += 0.01;
             requestAnimationFrame(animateOnce);
           } else {
-            // document.removeEventListener(endEventType, animatePage);
             progress = 0;
           }
         };
