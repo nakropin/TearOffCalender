@@ -51,13 +51,25 @@
 
 - [ ] stapel einbauen: css nach stacksize dynamisch setzen
 
-
 - [ ] bugs to fix: 
-  - [ ] right up, left down == move. count higher from 
-    - [ ] save plusY + lastY, always add last-y+(positive(curY)) on top of plusY 
-  - [ ] if dir has been set for X, dont change direction
-  - [ ] dir: dont move over start-pos
+  - [X] right up, left down == move. count higher from 
+    - [X] save plusY + lastY, always add last-y+(positive(curY)) on top of plusY 
+  - [X] if dir has been set for X, dont change direction
+  - [X] dir: dont move over start-pos
   - [ ] if 'mouseup' but too few degrees (<25): transform back to start pos / leave hanging?
   - [ ] render nextSrc in background
   - [ ] make transformation slower/delayed
-  - [ ] only transform if curDegree is higher than nextDegree 
+  - [ ] only transform if curDegree is higher than nextDegree
+  - [X] redo: 
+    - [X] deactivate buttons when clicked
+    - [x] imprint, refresh button function
+    - [X] delay for animation?
+  - [ ] left/right switch: right now it mostly depends on which side of the page one starts, but should be in which direction one drags. but how to measure this when drag animation needs to start right away too?
+  - [ ] getDirection first after certain movement in one direction
+
+  - [ ] 
+  - [ ] load next sheet when dragged
+  - [ ] startposition does not get reseteed
+    - [ ] somewhere no reset of degree, gotta fix
+  - [ ] imprint lacks shadows
+  - [ ] change global vars

@@ -12,26 +12,13 @@
   outline: none !important;
 }
 
-/* *{
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 90vh;
-  overflow: hidden;
-} */
-
 .pages {
   position: relative;
   text-align: center;
   background-color: white;
   border: 1px solid black;
   z-index: 0;
-  background-image: img;
+  /* background-image: img; */
 }
 
 .page {
@@ -40,9 +27,9 @@ body {
   position: relative;
   justify-content: center;
   background-color: white;
-  transform-origin: center;
+  /* transform-origin: center; */
   backface-visibility: visible;
-  transition-timing-function: ease-in;
+  /* transition-timing-function: ease-in; */
   /* transition-duration: 0.02s; */
 }
 
@@ -73,6 +60,11 @@ body {
   background-position: center;
   background-color: #FFFFFF;
 }
+
+button:hover {
+  box-shadow: 1px 1px 4px black;
+}
+
 
 .page#left, #right{
   box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
