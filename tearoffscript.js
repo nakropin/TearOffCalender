@@ -60,7 +60,7 @@ class TearOffPad extends HTMLElement {
 
     const fileEnding              = ".svg";
     const randomFiles             = makeRandomizedFileList();
-    const delay                   = 300;
+    const delay                   = 0;
     var renderPageCallCounter     = 0;
     
     renderPage(); /* renders the first page */
@@ -229,7 +229,7 @@ class TearOffPad extends HTMLElement {
     let lastPositionY = 0;
     let mouseAddY = 0;
     let curDir;
-    let timer;
+    let dragDirectionSetter;
     let lastDragPosition;
 
     // function tearDragFactor( dragSettings ){
@@ -336,12 +336,12 @@ class TearOffPad extends HTMLElement {
     function setDragDirection(e){
       /* "natural haptic" = mouse left side -> right: top right, l->l: t l, r->l: t l, r->: t r; */
       // TODO: if drag has been done on one side till X deg then dont change dir (switch to the other side)      
-      if (timer === 1){
+      if (dragDirectionSetter === 1){
         return curDir;
       }
       else{
-        // setTimeout(timer = 1, 500);
-        timer = 1;
+        // setTimeout(dragDirectionSetter = 1, 500);
+        dragDirectionSetter = 1;
         if (deviceType=== 'Mobile') {
           return mouseXStart < (e.changedTouches[0].clientX - centerX) ? "right" : "left";
         }
@@ -352,13 +352,13 @@ class TearOffPad extends HTMLElement {
     };
 
     function resetHelpers(){
-      mouseXStart = lastPositionY = mouseAddY = timer = lastDragPosition = 0;
+      mouseXStart = lastPositionY = mouseAddY = dragDirectionSetter = lastDragPosition = 0;
       curDir = null;
     };
 
     function dragElement(e){
       const curPage = shadow.querySelectorAll("[class='page']")[0];
-      curPage.style.zIndex = 2;
+      //curPage.style.zIndex = 2;
       let mouseX;
       let mouseY;
       if (deviceType=== 'Mobile') {
@@ -398,12 +398,9 @@ class TearOffPad extends HTMLElement {
       if (renderPageCallCounter !== randomFiles.length){
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         curPage.setAttribute( "border", "1px solid black;" )
-        if (deviceType=== 'Mobile') {
-          mouseXStart = e.changedTouches[0].clientX - centerX;
-        }
-        else if (deviceType=== 'Desktop') {
-          mouseXStart = e.clientX - centerX;
-        }
+        deviceType === 'Mobile' 
+          ? mouseXStart = e.changedTouches[0].clientX - centerX
+          : mouseXStart = e.clientX - centerX;
         addTempEventListeners();
       };
     };
@@ -423,7 +420,7 @@ class TearOffPad extends HTMLElement {
       document.addEventListener("click", animatePage);
     };
 
-    function setEventListeners( ){
+    function setEventListeners(){
       pages.addEventListener(startEventType, startTransform);
       refresh.addEventListener('click', refreshbtn);
       imprint.addEventListener('click', imprintbtn);

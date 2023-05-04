@@ -8,9 +8,9 @@
   user-select: none;
 }
 
-*:focus {
-  outline: none !important;
-}
+/* *:focus {
+   outline: none !important; 
+} */
 
 .pages {
   position: relative;
@@ -19,6 +19,8 @@
   border: 1px solid black;
   /* z-index: 0; */
   background-image: none;
+  width: 100%;
+  height: 100%;
 }
 
 .page {
@@ -28,6 +30,8 @@
   position: relative;
   justify-content: center;
   background-color: white;
+  width: 100%;
+  height: 100%;
   /* transform-origin: center; */
   backface-visibility: visible;
   /* transition-timing-function: ease-in; */
@@ -38,7 +42,7 @@
   position: absolute;
   box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
   pointer-events: none;
-  z-index: 1;
+  z-index: 2;
   position: fixed;
   pointer-events: none;
   /* justify-content: center; */
@@ -54,13 +58,16 @@
   position: absolute;
   height: 40px;
   width: 100px;
-  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5);
+  /* box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.5); */
   justify-content: center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-position: center;
   background-color: #FFFFFF;
+  border-width: 4px;
+  border-color: whitesmoke;
   z-index: 1;
+  outline: black solid 0.5px;
 }
 
 button:hover {
@@ -68,7 +75,7 @@ button:hover {
 }
 
 
-.page#left, #right{
+/* .page#left, #right{
   box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
   transition: 0.3s;
 }
@@ -81,7 +88,7 @@ button:hover {
 #right:hover {
   transform-origin: top left;
   transform: rotate(3deg);
-}
+} */
 
 /* very small screen */
 @media only screen and (max-width: 600px){
