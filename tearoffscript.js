@@ -124,12 +124,14 @@ class TearOffPad extends HTMLElement {
 
     function renderPage() {
       const currentSrc = randomFiles[ renderPageCallCounter ];
-      const nextSrc = randomFiles[ renderPageCallCounter + 1 ];
+      if (renderPageCallCounter + 1 < randomFiles.length ){
+        let nextSrc = randomFiles[ renderPageCallCounter + 1 ];
+        pages.style.backgroundImage = ('url('+ nextSrc + ')');
+      }
       const newPage = document.createElement('img');
       newPage.classList.add('page');
       newPage.src = currentSrc;
       newPage.setAttribute('alt', setAltText());
-      pages.style.backgroundImage = ('url('+ nextSrc + ')');
       pages.appendChild(newPage);
       pages.setAttribute('title', pageImgTitle);
       pages.setAttribute('tabindex', '0');

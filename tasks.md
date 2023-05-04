@@ -83,3 +83,4 @@
 finish:
   - [ ] get rid off all global vars
   - [ ] test on all devices, browserstack, lighthouse etc
+  - [ ] button z index
