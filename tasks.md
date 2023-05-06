@@ -84,3 +84,5 @@ finish:
   - [ ] get rid off all global vars
   - [ ] test on all devices, browserstack, lighthouse etc
   - [ ] button z index
+  - [ ] firefox compatibility: problem with 
+  - [ ] dunno: load images all at once at least for imprint to reduce number iof serverrequests?

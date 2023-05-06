@@ -230,7 +230,7 @@ class TearOffPad extends HTMLElement {
     let mouseAddY = 0;
     let curDir;
     let dragDirectionSetter;
-    let lastDragPosition;
+    let lastDragPosition = 0;
 
     // function tearDragFactor( dragSettings ){
     //   tearDegree = (dragSettings * 60);
@@ -325,12 +325,12 @@ class TearOffPad extends HTMLElement {
         renderPage();
         resetHelpers();
         makeFloorElement(curPage);
-        zStyleSwitch(curPage);
+        zStyleSwitch(curPage, 1);
       };
     };
 
-    function zStyleSwitch( element ){
-      element.style.zIndex = 1;
+    function zStyleSwitch( element, zIndex ){
+      element.style.zIndex = zIndex;
     }
 
     function setDragDirection(e){
@@ -358,7 +358,6 @@ class TearOffPad extends HTMLElement {
 
     function dragElement(e){
       const curPage = shadow.querySelectorAll("[class='page']")[0];
-      //curPage.style.zIndex = 2;
       let mouseX;
       let mouseY;
       if (deviceType=== 'Mobile') {
@@ -373,10 +372,10 @@ class TearOffPad extends HTMLElement {
       curDir = setDragDirection(e);
       curPage.style.transformOrigin = 'top ' + curDir;
       let curDegree = calcDegFromCurMouse(curDir, mouseX, mouseY);
-
-      curPage.style.transform = 'rotate(' + curDegree + 'deg)';
-      lastDragPosition = curDegree;
-
+      if (Math.abs(curDegree) >= lastDragPosition | curDegree === undefined | curDegree === 0){
+        curPage.style.transform = 'rotate(' + curDegree + 'deg)';
+        lastDragPosition = curDegree;
+      };
       /* TODO: tearDegree is relative to clients aspect ratio on desktop, not on mobile though?*/
       if ( Math.abs(curDegree) >= tearDegree ) {
         document.dispatchEvent(new Event(endEventType), animatePage());
@@ -410,14 +409,12 @@ class TearOffPad extends HTMLElement {
       document.removeEventListener(moveEventType, dragElement);
       document.removeEventListener(endEventType, animatePage);
       document.body.removeEventListener("mouseleave", animatePage);
-      document.removeEventListener("click", animatePage);
     };
 
     function addTempEventListeners(){
       document.addEventListener(moveEventType, dragElement);
       document.addEventListener(endEventType, animatePage);
       document.body.addEventListener("mouseleave", animatePage);
-      document.addEventListener("click", animatePage);
     };
 
     function setEventListeners(){
