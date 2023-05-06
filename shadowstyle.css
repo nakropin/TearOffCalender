@@ -13,6 +13,7 @@
 } */
 
 .pages {
+  cursor: pointer;
   position: relative;
   text-align: center;
   background-color: white;

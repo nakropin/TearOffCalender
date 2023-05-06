@@ -376,17 +376,15 @@ class TearOffPad extends HTMLElement {
         curPage.style.transform = 'rotate(' + curDegree + 'deg)';
         lastDragPosition = curDegree;
       };
-      /* TODO: tearDegree is relative to clients aspect ratio on desktop, not on mobile though?*/
       if ( Math.abs(curDegree) >= tearDegree ) {
-        document.dispatchEvent(new Event(endEventType), animatePage());
+        animatePage();
       };
     };
 
     /* in this setup, difference in y-value through mousemove is measured so that
-       one can move up and down afterwards or vice versa and it still will tear the animation in the same direction */
+       one can move up and down and any move still will tear the animation in the same direction */
     function calcDegFromCurMouse(curDir, mouseX, mouseY) {
-      // TODO: change mouseAddY so that it only grows bigger
-      mouseAddY += Math.abs(lastPositionY - mouseY) / 3000;
+      mouseAddY += Math.abs(lastPositionY - mouseY) / 300;
       let mousePosX = ((mouseXStart - mouseX) / 12);
       // let curDegree = curDir === "left" ? Math.abs(((mousePosX + (mouseY/ 12)) ) / dragElementFactor) : -Math.abs((mousePosX - (mouseAddY/ 12)) / dragElementFactor);
       let curDegree = curDir === "left" ? Math.abs(mousePosX + mouseAddY) : -Math.abs(mousePosX - mouseAddY);
@@ -396,7 +394,7 @@ class TearOffPad extends HTMLElement {
     function startTransform(e){
       if (renderPageCallCounter !== randomFiles.length){
         const curPage = shadow.querySelectorAll("[class='page']")[0];
-        curPage.setAttribute( "border", "1px solid black;" )
+        curPage.setAttribute( "border", "1px solid black;" );
         deviceType === 'Mobile' 
           ? mouseXStart = e.changedTouches[0].clientX - centerX
           : mouseXStart = e.clientX - centerX;
@@ -404,17 +402,21 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-    /* temporary event Listeners, use mouseleave & click as helper in case of stuck. can be optimized */
+    function changePointer( option ) {
+      option === "hand"
+        ? document.body.style.cursor = 'pointer'
+        : document.body.style.cursor = 'auto';
+    };    
+
+    /* temporary event Listeners */
     function removeTempEventListeners(){
       document.removeEventListener(moveEventType, dragElement);
-      document.removeEventListener(endEventType, animatePage);
-      document.body.removeEventListener("mouseleave", animatePage);
+      changePointer(0);
     };
 
     function addTempEventListeners(){
       document.addEventListener(moveEventType, dragElement);
-      document.addEventListener(endEventType, animatePage);
-      document.body.addEventListener("mouseleave", animatePage);
+      changePointer("hand");
     };
 
     function setEventListeners(){
