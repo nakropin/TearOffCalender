@@ -232,13 +232,6 @@ class TearOffPad extends HTMLElement {
     let dragDirectionSetter;
     let lastDragPosition = 0;
 
-    // function tearDragFactor( dragSettings ){
-    //   tearDegree = (dragSettings * 60);
-    //   dragElementFactor = (dragSettings * 2.3 );
-    //   console.log(tearDegree, dragElementFactor)
-    //   //return {tearDegree: tearDegree, dragElementFactor: dragElementFactor};
-    // };
-
     function makeFloorElement( element ){
       element.classList.add('floor');
     };
@@ -340,8 +333,8 @@ class TearOffPad extends HTMLElement {
         return curDir;
       }
       else{
-        // setTimeout(dragDirectionSetter = 1, 500);
         dragDirectionSetter = 1;
+        
         if (deviceType=== 'Mobile') {
           return mouseXStart < (e.changedTouches[0].clientX - centerX) ? "right" : "left";
         }
@@ -358,8 +351,7 @@ class TearOffPad extends HTMLElement {
 
     function dragElement(e){
       const curPage = shadow.querySelectorAll("[class='page']")[0];
-      let mouseX;
-      let mouseY;
+      let mouseX, mouseY;
       if (deviceType=== 'Mobile') {
         mouseX = e.changedTouches[0].clientX - centerX;
         mouseY = e.changedTouches[0].clientY - centerY;
@@ -372,22 +364,24 @@ class TearOffPad extends HTMLElement {
       curDir = setDragDirection(e);
       curPage.style.transformOrigin = 'top ' + curDir;
       let curDegree = calcDegFromCurMouse(curDir, mouseX, mouseY);
+      console.log("curdegree: " + Math.abs(curDegree), " lastdrag: " + lastDragPosition, Math.abs(curDegree) >= lastDragPosition )
       if (Math.abs(curDegree) >= lastDragPosition | curDegree === undefined | curDegree === 0){
         curPage.style.transform = 'rotate(' + curDegree + 'deg)';
-        lastDragPosition = curDegree;
+        lastDragPosition = Math.abs(curDegree);
       };
       if ( Math.abs(curDegree) >= tearDegree ) {
         animatePage();
       };
     };
 
-    /* in this setup, difference in y-value through mousemove is measured so that
-       one can move up and down and any move still will tear the animation in the same direction */
+    /* y-movement in any direction causes drag */
     function calcDegFromCurMouse(curDir, mouseX, mouseY) {
-      mouseAddY += Math.abs(lastPositionY - mouseY) / 300;
-      let mousePosX = ((mouseXStart - mouseX) / 12);
+      mouseAddY += Math.abs( lastPositionY - mouseY ) / 500;
+      let mousePosX = ( mouseXStart - mouseX ) / 12;
       // let curDegree = curDir === "left" ? Math.abs(((mousePosX + (mouseY/ 12)) ) / dragElementFactor) : -Math.abs((mousePosX - (mouseAddY/ 12)) / dragElementFactor);
-      let curDegree = curDir === "left" ? Math.abs(mousePosX + mouseAddY) : -Math.abs(mousePosX - mouseAddY);
+      let curDegree = curDir === "left"
+        ? Math.abs(mousePosX + mouseAddY) 
+        : -Math.abs(mousePosX - mouseAddY);
       return curDegree;
     };
 
@@ -428,3 +422,26 @@ class TearOffPad extends HTMLElement {
 };
 
 customElements.define('tear-off-pad', TearOffPad);
+
+
+    // function responsiveEventHandler (e){
+    //   let x
+    //   let y;
+    //   if ( deviceType === 'Mobile' ){
+    //     x = e.changedTouches[0].clientX
+    //     y = e.changedTouches[0].clientY
+    //   }
+    //   else {
+    //     x = e.clientX
+    //     y = e.clientY
+    //   }
+    // return { x: x, y: y}
+    // }
+
+
+        // function tearDragFactor( dragSettings ){
+    //   tearDegree = (dragSettings * 60);
+    //   dragElementFactor = (dragSettings * 2.3 );
+    //   console.log(tearDegree, dragElementFactor)
+    //   //return {tearDegree: tearDegree, dragElementFactor: dragElementFactor};
+    // };
