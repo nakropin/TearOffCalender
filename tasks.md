@@ -87,3 +87,7 @@ finish:
   - [ ] button z index
   - [ ] firefox compatibility: problem with 
   - [ ] dunno: load images all at once at least for imprint to reduce number iof serverrequests?
+
+new:
+  - [ ] make animation go to fixposition (rotate35) when dragging mouse out of page
+  - [ ] und wenns wieder reingeht dann fall ab (randomizer degree)  
