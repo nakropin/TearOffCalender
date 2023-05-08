@@ -301,7 +301,8 @@ class TearOffPad extends HTMLElement {
       removeTempEventListeners();
       if ( notLastPage() ) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
-        curPage.style.transitionDuration = '0s' ;
+        curPage.style.transitionDuration = ".01s";
+        //curPage.removeAttribute("transition-duration")
         curPage.setAttribute( "border", "1px solid black;" )      
         // TODO: getCoordinates?
         const bezier = getCoordinates(event);
@@ -309,14 +310,14 @@ class TearOffPad extends HTMLElement {
         const random = 1; // const random = Math.random() * 20 - 10;
 
         const animateOnce = () => {
-          console.log("times the lower function is called")
+          console.log("animateOnce is called")
           let position = getBezierPosition(bezier, progress);
           let rotationAngle = Math.atan2(position.x, position.y) * 180 / Math.PI + random;
           // curPage.style.willChange = "transform, translate, rotateX, rotateZ";
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX(' + rotationAngle * progress * 1.1 + 'deg) rotateZ(' + -rotationAngle * progress * 0.8 + 'deg)';
           if (progress < 1) {
-            progress += 0.017;
-              requestAnimationFrame(animateOnce);
+            progress += 0.016;
+            requestAnimationFrame(animateOnce);
           } else {
             progress = 0;
           }
