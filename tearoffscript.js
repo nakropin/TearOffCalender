@@ -318,7 +318,16 @@ class TearOffPad extends HTMLElement {
         let progress = 0;
         const curDir = setDragDirection(event);
         let curDegree = calcDegFromCurMouse(curDir, getCoordinates((event)).x);
-        console.log(curDegree);
+
+        curPage.style.transformOrigin = 'center';
+        const divPosition = curPage.getBoundingClientRect();
+        const mitteX = divPosition.left + divPosition.width ;
+        const mitteY = divPosition.top + divPosition.height ;
+        console.log(mitteX +"mitte"+mitteY);
+        console.log(centerX +"mitte"+centerY);
+        curPage.style.transform = 'translate('+mitteX+'px, '+mitteY+'px) rotateZ('+curDegree+'deg)';
+
+
 
         const animateOnce = () => {
           let position = getBezierPosition(bezier, progress);
@@ -326,8 +335,6 @@ class TearOffPad extends HTMLElement {
 
 
           curDegree += rotationAngle;
-          console.log(curDegree + "+rotation");
-
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ 50*progress +'deg) rotateZ('+ curDegree+'deg)';
           if (progress < 1) {
             progress += 0.01;
