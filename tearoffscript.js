@@ -355,7 +355,7 @@ class TearOffPad extends HTMLElement {
         lastMouseX = mouseX;
         curDegree = calcDegFromCurMouse( mouseX );
         const curPage = shadow.querySelectorAll("[class='page']")[0];
-        // TODO: fix: if transformOrigin leads to stutters 
+        // TODO: fix: if transformOrigin is positioned before this function it leads to stutters 
         curPage.style.transformOrigin = 'top ' + curDir;
         curPage.style.transform = 'rotate(' + curDegree + 'deg)';
         lastDragPosition = Math.abs(curDegree);
