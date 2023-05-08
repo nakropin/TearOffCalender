@@ -71,9 +71,9 @@
   outline: black solid 0.5px;
 }
 
-button:hover {
+/* button:hover {
   box-shadow: 1px 1px 4px black;
-}
+} */
 
 
 /* .page#left, #right{
@@ -114,19 +114,4 @@ button:hover {
     width: 287px;
     height: 382.7px;
   }
-}
-
-.swipe {
-  overflow: hidden;
-  visibility: hidden;
-  position: relative;
-}
-.swipe-wrap {
-  overflow: hidden;
-  position: relative;
-}
-.swipe-wrap > div {
-  float: left;
-  width: 100%;
-  position: relative;
 }

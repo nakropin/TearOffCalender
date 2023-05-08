@@ -184,6 +184,7 @@ class TearOffPad extends HTMLElement {
 
     function randomBackgroundColor() {
       let randomColor = bgColors[ Math.floor( Math.random() * bgColors.length) ];
+      //TODO: let tearOffPadElement = document.getElementsByTagName("tear-off-pad")[0]
       document.body.style.background = randomColor;
     };
 
@@ -342,17 +343,9 @@ class TearOffPad extends HTMLElement {
     };
 
     function dragElement(e){ // maxTearDegree, curDir, lastMouseX, 
-      const curPage = shadow.querySelectorAll("[class='page']")[0];
       let mouseX;
-      if (deviceType=== 'Mobile') {
-        mouseX = e.changedTouches[0].clientX - centerX;
-      }
-      else if (deviceType=== 'Desktop') {
-        mouseX = e.clientX - centerX;
-      }
-
-      // console.log("curdegree: " + Math.abs(curDegree), " lastdrag: " + lastDragPosition, Math.abs(curDegree) >= lastDragPosition )
-      console.log(curDir, mouseX, lastMouseX)
+      if (deviceType=== 'Mobile') { mouseX = e.changedTouches[0].clientX - centerX;}
+      else if (deviceType=== 'Desktop') {mouseX = e.clientX - centerX;};
 
       let curDegree = null;
       if (lastMouseX === null){
@@ -360,7 +353,10 @@ class TearOffPad extends HTMLElement {
       }
       else if ( (curDir === "right" && mouseX > lastMouseX) || (curDir === "left" && mouseX < lastMouseX)){
         lastMouseX = mouseX;
-        curDegree = calcDegFromCurMouse(curDir, mouseX);
+        curDegree = calcDegFromCurMouse( mouseX );
+        const curPage = shadow.querySelectorAll("[class='page']")[0];
+        // TODO: fix: if transformOrigin leads to stutters 
+        curPage.style.transformOrigin = 'top ' + curDir;
         curPage.style.transform = 'rotate(' + curDegree + 'deg)';
         lastDragPosition = Math.abs(curDegree);
       };
@@ -373,8 +369,7 @@ class TearOffPad extends HTMLElement {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
-    // Reduced Mousecalc
-    function calcDegFromCurMouse( curDir, mouseX ) {
+    function calcDegFromCurMouse( mouseX ) {
       let mousePosX = ( mouseXStart - mouseX ) / 10;
       // let curDegree = curDir === "left" ? Math.abs(((mousePosX + (mouseY/ 12)) ) / dragElementFactor) : -Math.abs((mousePosX - (mouseAddY/ 12)) / dragElementFactor);
       let curDegree = curDir === "left"
@@ -384,7 +379,6 @@ class TearOffPad extends HTMLElement {
     };
 
     function startTransform(e){
-      console.log("starr")
       if (notLastPage()){
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         curPage.setAttribute( "border", "1px solid black;" );
@@ -392,8 +386,7 @@ class TearOffPad extends HTMLElement {
           ? mouseXStart = e.changedTouches[0].clientX - centerX
           : mouseXStart = e.clientX - centerX;
         curDir = setDragDirection(e);
-        curPage.style.transformOrigin = 'top ' + curDir;
-        addTempEventListeners();
+        setTempEventListeners();
       };
     };
 
@@ -407,7 +400,6 @@ class TearOffPad extends HTMLElement {
         : document.body.style.cursor = 'auto';
     };    
 
-    /* temporary event Listeners */
     function removeTempEventListeners(){
       document.removeEventListener(moveEventType, dragElement);
       document.body.removeEventListener("mouseleave", animatePage);
@@ -416,7 +408,7 @@ class TearOffPad extends HTMLElement {
       pages.addEventListener(startEventType, startTransform);
     };
 
-    function addTempEventListeners(){
+    function setTempEventListeners(){
       pages.removeEventListener(startEventType, startTransform);
       document.addEventListener(moveEventType, dragElement);
       setAdditionalEventListeners();
@@ -424,10 +416,8 @@ class TearOffPad extends HTMLElement {
     };
 
     function setAdditionalEventListeners(){
-      tearOnLeave === "on"
-        ? document.body.addEventListener("mouseleave", animatePage) : null;
-      clickToTear === "on"
-        ? document.addEventListener(endEventType, animatePage) : null;
+      if (tearOnLeave === "on"){document.body.addEventListener("mouseleave", animatePage)}
+      if (clickToTear === "on"){document.addEventListener(endEventType, animatePage)}
     };
 
     function setEventListeners(){

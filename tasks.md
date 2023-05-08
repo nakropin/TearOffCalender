@@ -79,6 +79,7 @@
   - [ ] set resolutions for mobile / Desktop
   - [ ] alternative animate function for mobile (fadeout -> right?)
   - [ ] add imprint drag animation
+  - [ ] top/bottom border
 
 finish:
   - [ ] get rid off all global vars
