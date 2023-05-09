@@ -305,15 +305,14 @@ class TearOffPad extends HTMLElement {
         curPage.setAttribute( "border", "1px solid black;" )      
         const bezier = getBezierCoordinates(event);
         let progress = 0;
-        // const curDir = setDragDirection(event);
+
         let curDegree = calcDegFromCurMouse(getCoordinates((event)).x);
         curPage.style.transition = 'transform-origin 1s ease';
         curPage.style.transformOrigin = 'center';
-
+        
         const animateOnce = () => {
           console.log("curDir", curDir)
           let position = getBezierPosition(bezier, progress);
-          console.log("pos ",position);
           let rotationAngle = Math.atan2(position.x, position.y) * progress;
           curDegree += rotationAngle;
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ 50*progress +'deg) rotateZ('+ curDegree+'deg)';
@@ -322,7 +321,6 @@ class TearOffPad extends HTMLElement {
             requestAnimationFrame(animateOnce);
           } else {
             progress = 0;
-
           }
         };
         animateOnce();
