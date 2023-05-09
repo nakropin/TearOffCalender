@@ -350,11 +350,18 @@ class TearOffPad extends HTMLElement {
       if (lastMouseX === null){
         lastMouseX = mouseX;
       }
+      /* TODO: interrupt */
+      // else if ( keyFrameHasBeenSet === 1 && (
+      //   (curDir === "right" && mouseX > pages.getBoundingClientRect().left ) ||
+      //   (curDir === "left" && mouseX < pages.getBoundingClientRect().right )   )
+      // ){
+      //   // TODO: interrupt if curdir right and x> borderleft and ???
+
+      // }
       else if ( 
         (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
         (curDir === "left" && mouseX < lastMouseX - animationFactor )
       ){
-        
         lastMouseX = mouseX;
         curDegree = calcDegFromCurMouse( mouseX );
         setTransitionDuration(curPage, "0.045s")
@@ -385,12 +392,14 @@ class TearOffPad extends HTMLElement {
       };
     };
 
+
     /* Watch Out for Whitespaces! */
     function makeCurSwingAnimation(element, stuckDegree, lastDragPosition){
       let swingFactor = 1.5;
       let stuckDegreeOne;
       let stuckDegreeTwo;
       // console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
+      // TODO: check: should drag coming from right left first and vice versa
       if (Math.abs(lastDragPosition) - Math.abs(stuckDegree)){
         stuckDegreeOne = stuckDegree+swingFactor;
         stuckDegreeTwo = stuckDegree-swingFactor;
@@ -399,27 +408,31 @@ class TearOffPad extends HTMLElement {
         stuckDegreeOne = stuckDegree-swingFactor;
         stuckDegreeTwo = stuckDegree+swingFactor;
       }
-      console.log(stuckDegreeOne, stuckDegreeTwo)
-      let keyframes = `@keyframes stuckDegreeAndSwing{
+      
+      let animationName = "swing";
+      let animationTime = "1s";
+      let keyframes = `@keyframes `+ animationName +`{
        20% { transform: rotate(${stuckDegreeOne}deg);}
        40% { transform: rotate(${stuckDegreeTwo}deg);}
        60% { transform: rotate(${stuckDegreeOne}deg);}
        80% { transform: rotate(${stuckDegreeTwo}deg);}
       100% { transform: rotate(${stuckDegree}deg);}
       }`;
-      let animationName = "stuckDegreeAndSwing";
-      let animationTime = "1s";
+
       let stylesheet = shadow.querySelector("link[rel='stylesheet']");
       stylesheet.sheet.insertRule(keyframes)
 
       requestAnimationFrame(() => {
-        element.style.animation = animationName+" " + animationTime + " " + "linear";
+        element.style.animation = animationName + " " + animationTime + " " + "linear";
       });
 
       element.addEventListener('animationend', () => {
-        element.style.transform = 'rotate('+stuckDegree+'deg)';
+        element.style.transform = 'rotate('+ stuckDegree+'deg)';
         element.style.animation = 'none';
-        deleteKeyFrameByName(stylesheet.sheet, animationName)
+        deleteKeyFrameByName(stylesheet.sheet, "swing")
+        //element.removeEventListener('animationend animationpause')
+        // curPage.style.animationPlayState = 'paused';
+        // deleteKeyFrameByName(stylesheet.sheet, "swing")
       });
       keyFrameHasBeenSet = 1;
     };
@@ -495,19 +508,19 @@ class TearOffPad extends HTMLElement {
     function setAdditionalEventListeners(){
       if (tearOnLeave === "on"){document.body.addEventListener("mouseleave", animatePage)}
       if (clickToTear === "on"){document.addEventListener(endEventType, animatePage)}
-      // just deactivated right click
-      // if (clickToTear === "on"){document.addEventListener( endEventType, (event) => {
-      //     if (event.button === 0) {animatePage();};
-      //   });
-      // };
     };
 
     function setEventListeners(){
-      pages.addEventListener(startEventType, startTransform);
-      refresh.addEventListener('click', refreshbtn);
-      imprint.addEventListener('click', imprintbtn);
-      /* deactivate rightclick */
-      document.addEventListener('contextmenu', event => event.preventDefault());
+      if ( deviceType === 'Mobile' ){
+        // TODO: mobile animation
+      }
+      if ( deviceType === 'Desktop' ){
+        pages.addEventListener(startEventType, startTransform);
+        refresh.addEventListener('click', refreshbtn);
+        imprint.addEventListener('click', imprintbtn);
+        /* deactivate rightclick */
+        shadow.addEventListener('contextmenu', event => event.preventDefault());
+      };
     };
   };
 };
