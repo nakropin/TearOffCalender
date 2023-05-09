@@ -244,15 +244,21 @@ class TearOffPad extends HTMLElement {
     };
 
     function getBezierCoordinates(e){ /* get mouseCoords at start */
-      let randomCoord = getRandomCoordinate();
-      let mouseX = randomCoord.x;
-      let mouseY = randomCoord.y;
-
+      let mouseX, mouseY;
+      if (e === undefined){
+        let randomCoord = getRandomCoordinate();
+        mouseX = randomCoord.x;
+        mouseY = randomCoord.y;
+      }
+      else {
+        mouseX = e.clientX - centerX;
+        mouseY = e.clientY - centerY;
+      }
       if( mouseX > 0 ){
         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX , y: targetY }];
       }
       else {
-          bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX , y: targetY }];
+        bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX , y: targetY }];
       }
       return bezierPoints;
     }
@@ -308,8 +314,11 @@ class TearOffPad extends HTMLElement {
         let curDegree = calcDegFromCurMouse(getCoordinates((event)).x);
         curPage.style.transition = 'transform-origin 1s ease';
         curPage.style.transformOrigin = 'center';
+
         const animateOnce = () => {
           let position = getBezierPosition(bezier, progress);
+          console.log(position);
+
           let rotationAngle = Math.atan2(position.x, position.y) * progress;
           curDegree += rotationAngle;
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ 50*progress +'deg) rotateZ('+ curDegree+'deg)';
