@@ -306,12 +306,12 @@ class TearOffPad extends HTMLElement {
         const bezier = getBezierCoordinates(event);
         let progress = 0;
         // const curDir = setDragDirection(event);
-        // let curDegree = calcDegFromCurMouse(curDir, getCoordinates((event)).x);
+        let curDegree = calcDegFromCurMouse(getCoordinates((event)).x);
         curPage.style.transition = 'transform-origin 1s ease';
         curPage.style.transformOrigin = 'center';
 
         const animateOnce = () => {
-          console.log("animateOnce is called")
+          console.log("curDir", curDir)
           let position = getBezierPosition(bezier, progress);
           console.log("pos ",position);
           let rotationAngle = Math.atan2(position.x, position.y) * progress;
