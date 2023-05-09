@@ -309,7 +309,6 @@ class TearOffPad extends HTMLElement {
         let curDegree = calcDegFromCurMouse(getCoordinates((event)).x);
         curPage.style.transition = 'transform-origin 1s ease';
         curPage.style.transformOrigin = 'center';
-        
         const animateOnce = () => {
           console.log("curDir", curDir)
           let position = getBezierPosition(bezier, progress);
@@ -503,6 +502,11 @@ class TearOffPad extends HTMLElement {
       };
     };
 
+
+    function mobileAnimation(event){
+
+    }
+
     function notLastPage(){
       return renderPageCallCounter !== randomFiles.length;
     };
@@ -536,6 +540,8 @@ class TearOffPad extends HTMLElement {
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
         // TODO: mobile animation
+        // get touchstart and animate on touchstart or touchend
+        pages.addEventListener(startEventType, mobileAnimation);
       }
       if ( deviceType === 'Desktop' ){
         pages.addEventListener(startEventType, startTransform);
