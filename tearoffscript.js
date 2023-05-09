@@ -251,14 +251,8 @@ class TearOffPad extends HTMLElement {
         mouseY = randomCoord.y;
       }
       else {
-        // if (deviceType=== 'Mobile') {
-        //   mouseX = e.changedTouches[0].clientX - centerX;
-        //   mouseY = e.changedTouches[0].clientY - centerY;
-        // }
-        // else if (deviceType=== 'Desktop') {
           mouseX = e.clientX - centerX;
           mouseY = e.clientY - centerY;
-        // }
       }
       if( mouseX > 0 ){
         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX + Math.random() * 100 - 50, y: targetY }];
@@ -382,7 +376,6 @@ class TearOffPad extends HTMLElement {
         stuckDegree = curDir === "right" 
           ? -stuckDegree 
           : stuckDegree;
-        // Swing Animation
         if (keyFrameHasBeenSet === 0) {
           makeCurSwingAnimation(curPage, stuckDegree, lastDragPosition);
         }
@@ -390,7 +383,6 @@ class TearOffPad extends HTMLElement {
         lastDragPosition = stuckDegree;
         lastMouseX = calcMouseFromDegree( lastDragPosition );
       };
-      //console.log(lastDragPosition)
     };
 
     /* Watch Out for Whitespaces! */
@@ -468,9 +460,6 @@ class TearOffPad extends HTMLElement {
       if (notLastPage()){
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         curPage.setAttribute( "border", "1px solid black;" );
-        // deviceType === 'Mobile' 
-        //   ? mouseXStart = e.changedTouches[0].clientX - centerX
-        //   : 
         mouseXStart = e.clientX - centerX;
         curDir = setDragDirection(e);
         curPage.style.transformOrigin = 'top ' + curDir;
@@ -506,12 +495,19 @@ class TearOffPad extends HTMLElement {
     function setAdditionalEventListeners(){
       if (tearOnLeave === "on"){document.body.addEventListener("mouseleave", animatePage)}
       if (clickToTear === "on"){document.addEventListener(endEventType, animatePage)}
+      // just deactivated right click
+      // if (clickToTear === "on"){document.addEventListener( endEventType, (event) => {
+      //     if (event.button === 0) {animatePage();};
+      //   });
+      // };
     };
 
     function setEventListeners(){
       pages.addEventListener(startEventType, startTransform);
       refresh.addEventListener('click', refreshbtn);
       imprint.addEventListener('click', imprintbtn);
+      /* deactivate rightclick */
+      document.addEventListener('contextmenu', event => event.preventDefault());
     };
   };
 };
