@@ -325,20 +325,13 @@ class TearOffPad extends HTMLElement {
         const animateOnce = () => {
           let position = getBezierPosition(bezier, progress);
           let rotationAngle = Math.atan2(position.x, position.y) * progress;
-
-
           curDegree += rotationAngle;
-
-
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ 50*progress +'deg) rotateZ('+ curDegree+'deg)';
           if (progress < 1) {
-            progress += 0.01;
+            progress += 0.1;
             requestAnimationFrame(animateOnce);
-
-          } else if (progress > 0.2) {
-
-
-          } else
+          }
+            else
           {
             // document.removeEventListener(endEventType, animatePage);
             progress = 0;
@@ -346,8 +339,6 @@ class TearOffPad extends HTMLElement {
           }
         };
         animateOnce();
-
-
         renderPage();
         resetHelpers();
         makeFloorElement(curPage);
