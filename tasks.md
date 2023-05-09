@@ -90,4 +90,5 @@ finish:
 
 new:
   - [ ] make animation go to fixposition (rotate35) when dragging mouse out of page
-  - [ ] und wenns wieder reingeht dann fall ab (randomizer degree)  
+  - [ ] und wenns wieder reingeht dann fall ab (randomizer degree) 
+  - [ ]  

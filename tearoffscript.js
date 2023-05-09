@@ -225,14 +225,12 @@ class TearOffPad extends HTMLElement {
     const targetY = centerY / 4 * 3;
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
     
-    let mouseXStart;
-    let lastPositionY = 0;
-    let mouseAddY = 0;
-    let curDir;
-    let dragDirectionSetter;
-    let lastDragPosition = 0;
     let maxTearDegree = tearMaxDegreeRandomizer( 30, 50 );
+    let mouseXStart;
+    let curDir;
+    let lastDragPosition = 0;
     let lastMouseX = null;
+    let keyFrameHasBeenSet = 0;
 
     function makeFloorElement( element ){
       element.classList.add('floor');
@@ -253,14 +251,14 @@ class TearOffPad extends HTMLElement {
         mouseY = randomCoord.y;
       }
       else {
-        if (deviceType=== 'Mobile') {
-          mouseX = e.changedTouches[0].clientX - centerX;
-          mouseY = e.changedTouches[0].clientY - centerY;
-        }
-        else if (deviceType=== 'Desktop') {
+        // if (deviceType=== 'Mobile') {
+        //   mouseX = e.changedTouches[0].clientX - centerX;
+        //   mouseY = e.changedTouches[0].clientY - centerY;
+        // }
+        // else if (deviceType=== 'Desktop') {
           mouseX = e.clientX - centerX;
           mouseY = e.clientY - centerY;
-        }
+        // }
       }
       if( mouseX > 0 ){
         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX + Math.random() * 100 - 50, y: targetY }];
@@ -301,9 +299,8 @@ class TearOffPad extends HTMLElement {
       removeTempEventListeners();
       if ( notLastPage() ) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
-        curPage.style.transitionDuration = ".01s";
-        //curPage.removeAttribute("transition-duration")
-        curPage.setAttribute( "border", "1px solid black;" )      
+        setTransitionDuration(curPage, "0.01s");
+        curPage.setAttribute( "border", "1px solid black;" ); 
         // TODO: getCoordinates?
         const bezier = getCoordinates(event);
         let progress = 0;
@@ -313,7 +310,6 @@ class TearOffPad extends HTMLElement {
           console.log("animateOnce is called")
           let position = getBezierPosition(bezier, progress);
           let rotationAngle = Math.atan2(position.x, position.y) * 180 / Math.PI + random;
-          // curPage.style.willChange = "transform, translate, rotateX, rotateZ";
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX(' + rotationAngle * progress * 1.1 + 'deg) rotateZ(' + -rotationAngle * progress * 0.8 + 'deg)';
           if (progress < 1) {
             progress += 0.016;
@@ -330,6 +326,10 @@ class TearOffPad extends HTMLElement {
       };
     };
 
+    function setTransitionDuration( element, value ){
+      element.style.transitionDuration = value;
+    }
+
     function zStyleSwitch( element, zIndex ){
       element.style.zIndex = zIndex;
     }
@@ -342,55 +342,112 @@ class TearOffPad extends HTMLElement {
     };
     
     function resetHelpers(){
-      mouseXStart = lastPositionY = mouseAddY = dragDirectionSetter = lastDragPosition = 0;
+      keyFrameHasBeenSet = mouseXStart = lastDragPosition = 0;
       lastMouseX = curDir = null;
       maxTearDegree = tearMaxDegreeRandomizer(30,60);
     };
 
     function dragElement(e){ // maxTearDegree, curDir, lastMouseX, 
-      //console.log("dragelement")
-      let mouseX;
-      // if (deviceType=== 'Mobile') { mouseX = e.changedTouches[0].clientX - centerX;}
-      // else if (deviceType=== 'Desktop') {
-        mouseX = e.clientX - centerX;
-      // };
-      let animationFactor = 15;
-      let curDegree = null;
+      const curPage = shadow.querySelectorAll("[class='page']")[0];
+      let mouseX = e.clientX - centerX;
+      let animationFactor = 15; /* AnimationFactor sets how often DOM-transform is called */
+      let curDegree;
+
       if (lastMouseX === null){
         lastMouseX = mouseX;
       }
-      else if ( (curDir === "right" && mouseX > lastMouseX + animationFactor ) || (curDir === "left" && mouseX < lastMouseX - animationFactor )){
-        console.log("transformDrag")
+      else if ( 
+        (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
+        (curDir === "left" && mouseX < lastMouseX - animationFactor )
+      ){
+        
         lastMouseX = mouseX;
         curDegree = calcDegFromCurMouse( mouseX );
-        const curPage = shadow.querySelectorAll("[class='page']")[0];
-        // TODO: fix: if transformOrigin is positioned before this function it leads to stutters 
-        // curPage.style.transitionDuration = '.1s' ;
-        
+        setTransitionDuration(curPage, "0.045s")
         requestAnimationFrame(() => {
           curPage.style.transform = 'rotate(' + curDegree + 'deg)';
         });
-        
-        // curPage.style.transform = 'rotate(' + curDegree + 'deg)' ;
-        // setTimeout(curPage.style.transitionDuration = '0s', 100);
         lastDragPosition = Math.abs(curDegree);
         if ( Math.abs(curDegree) >= maxTearDegree ) {
           animatePage();
         };
+        keyFrameHasBeenSet = 0
+      }
+      else if (
+        (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
+        (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
+      ){
+        setTransitionDuration(curPage, "0s")
+        let stuckDegree = 20;
+        stuckDegree = curDir === "right" 
+          ? -stuckDegree 
+          : stuckDegree;
+        // Swing Animation
+        if (keyFrameHasBeenSet === 0) {
+          makeCurSwingAnimation(curPage, stuckDegree, lastDragPosition);
+        }
+        /* Set Border, calc corresponding mouseX from lastDragPosition */
+        lastDragPosition = stuckDegree;
+        lastMouseX = calcMouseFromDegree( lastDragPosition );
       };
+      //console.log(lastDragPosition)
+    };
 
+    function makeCurSwingAnimation(element, stuckDegree, lastDragPosition){
+      // TODO: if left change order of +/-
+      // TODO: problem: starting on one side corrupts the other sides animation. why?
+      let swingFactor = 1.5;
+      let stuckDegreeOne;
+      let stuckDegreeTwo;
+      console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
+      if (Math.abs(lastDragPosition) - Math.abs(stuckDegree)){
+        stuckDegreeOne = stuckDegree+swingFactor;
+        stuckDegreeTwo = stuckDegree-swingFactor;
+      }
+      else {
+        stuckDegreeOne = stuckDegree-swingFactor;
+        stuckDegreeTwo = stuckDegree+swingFactor;
+      }
+      console.log(stuckDegreeOne, stuckDegreeTwo)
+      let keyframes = `@keyframes stuckDegreeAndSwing{
+       20% { transform: rotate(${stuckDegreeOne}deg);}
+       40% { transform: rotate(${stuckDegreeTwo}deg);}
+       60% { transform: rotate(${stuckDegreeOne}deg);}
+       80% { transform: rotate(${stuckDegreeTwo}deg);}
+      100% { transform: rotate(${stuckDegree}deg);}
+      }`;
+      let animationTime = "1s";
+      let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+      stylesheet.sheet.insertRule(keyframes)
+      requestAnimationFrame(() => {
+        element.style.animation = "stuckDegreeAndSwing " + animationTime + " linear";
+      });
+      element.addEventListener('animationend', () => {
+        element.style.transform = 'rotate('+stuckDegree+'deg)';
+        element.style.animation = 'none';
+      });
+      keyFrameHasBeenSet = 1;
     };
 
     function tearMaxDegreeRandomizer ( min, max ){
       return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
+    function calcMouseFromDegree( degree ){
+      let result = ( mouseXStart - ( 10 * degree ) )
+      // result === curDir === "right"
+      //   ? Math.abs( result ) 
+      //   : result;
+      console.log(result)
+      return result
+    };
+
     function calcDegFromCurMouse( mouseX ) {
-      let mousePosX = ( mouseXStart - mouseX ) / 10;
-      // let curDegree = curDir === "left" ? Math.abs(((mousePosX + (mouseY/ 12)) ) / dragElementFactor) : -Math.abs((mousePosX - (mouseAddY/ 12)) / dragElementFactor);
+      let unsignedDegree = ( mouseXStart - mouseX ) / 10;
+      // let curDegree = curDir === "left" ? Math.abs(((unsignedDegree + (mouseY/ 12)) ) / dragElementFactor) : -Math.abs((unsignedDegree - (mouseAddY/ 12)) / dragElementFactor);
       let curDegree = curDir === "left"
-        ? Math.abs(mousePosX) 
-        : -Math.abs(mousePosX );
+        ? Math.abs( unsignedDegree ) 
+        : -Math.abs( unsignedDegree );
       return curDegree;
     };
 
@@ -398,9 +455,10 @@ class TearOffPad extends HTMLElement {
       if (notLastPage()){
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         curPage.setAttribute( "border", "1px solid black;" );
-        deviceType === 'Mobile' 
-          ? mouseXStart = e.changedTouches[0].clientX - centerX
-          : mouseXStart = e.clientX - centerX;
+        // deviceType === 'Mobile' 
+        //   ? mouseXStart = e.changedTouches[0].clientX - centerX
+        //   : 
+        mouseXStart = e.clientX - centerX;
         curDir = setDragDirection(e);
         curPage.style.transformOrigin = 'top ' + curDir;
         setTempEventListeners();
