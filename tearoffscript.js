@@ -393,13 +393,12 @@ class TearOffPad extends HTMLElement {
       //console.log(lastDragPosition)
     };
 
+    /* Watch Out for Whitespaces! */
     function makeCurSwingAnimation(element, stuckDegree, lastDragPosition){
-      // TODO: if left change order of +/-
-      // TODO: problem: starting on one side corrupts the other sides animation. why?
       let swingFactor = 1.5;
       let stuckDegreeOne;
       let stuckDegreeTwo;
-      console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
+      // console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
       if (Math.abs(lastDragPosition) - Math.abs(stuckDegree)){
         stuckDegreeOne = stuckDegree+swingFactor;
         stuckDegreeTwo = stuckDegree-swingFactor;
@@ -416,17 +415,31 @@ class TearOffPad extends HTMLElement {
        80% { transform: rotate(${stuckDegreeTwo}deg);}
       100% { transform: rotate(${stuckDegree}deg);}
       }`;
+      let animationName = "stuckDegreeAndSwing";
       let animationTime = "1s";
       let stylesheet = shadow.querySelector("link[rel='stylesheet']");
       stylesheet.sheet.insertRule(keyframes)
+
       requestAnimationFrame(() => {
-        element.style.animation = "stuckDegreeAndSwing " + animationTime + " linear";
+        element.style.animation = animationName+" " + animationTime + " " + "linear";
       });
+
       element.addEventListener('animationend', () => {
         element.style.transform = 'rotate('+stuckDegree+'deg)';
         element.style.animation = 'none';
+        deleteKeyFrameByName(stylesheet.sheet, animationName)
       });
       keyFrameHasBeenSet = 1;
+    };
+
+    function deleteKeyFrameByName(styleSheet, animationName){
+      for (let i = 0; i < styleSheet.cssRules.length; i++) {
+        let rule = styleSheet.cssRules[i];
+        if (rule.type === CSSRule.KEYFRAMES_RULE && rule.name === animationName) {
+          styleSheet.deleteRule(i);
+          break;
+        };
+      };
     };
 
     function tearMaxDegreeRandomizer ( min, max ){
