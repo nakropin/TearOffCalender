@@ -222,7 +222,7 @@ class TearOffPad extends HTMLElement {
     const centerX = width / 2;
     const centerY = height / 2;
     const targetX = centerX / 8 * 5;
-    const targetY = centerY / 4 * 3;
+    const targetY = centerY / 8 * 7;
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
     
     let maxTearDegree = tearMaxDegreeRandomizer( 30, 50 );
@@ -243,7 +243,7 @@ class TearOffPad extends HTMLElement {
       return {x: x, y: y}
     };
 
-    function getCoordinates(e){ /* get mouseCoords at start */
+    function getBezierCoordinates(e){ /* get mouseCoords at start */
       let mouseX, mouseY;
       if (e === undefined){
         let randomCoord = getRandomCoordinate();
@@ -255,12 +255,32 @@ class TearOffPad extends HTMLElement {
           mouseY = e.clientY - centerY;
       }
       if( mouseX > 0 ){
-        bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX + Math.random() * 100 - 50, y: targetY }];
+        bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX , y: targetY }];
       }
       else {
-          bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX + Math.random() * 100 - 50, y: targetY }];
+          bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX, y: mouseY }, { x: 0, y: targetY}, { x: -targetX , y: targetY }];
       }
       return bezierPoints;
+    }
+
+    function getCoordinates(e){ /* get mouseCoords at start */
+      let mouseX, mouseY;
+      if (e === undefined){
+        let randomCoord = getRandomCoordinate();
+        mouseX = randomCoord.x;
+        mouseY = randomCoord.y;
+      }
+      else {
+        if (deviceType=== 'Mobile') {
+          mouseX = e.changedTouches[0].clientX - centerX;
+          mouseY = e.changedTouches[0].clientY - centerY;
+        }
+        else if (deviceType=== 'Desktop') {
+          mouseX = e.clientX - centerX;
+          mouseY = e.clientY - centerY;
+        }
+      }
+      return {x:mouseX, y:mouseY};
     }
 
     /* calc position along beziercurve */
@@ -294,22 +314,28 @@ class TearOffPad extends HTMLElement {
       if ( notLastPage() ) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         setTransitionDuration(curPage, "0.01s");
-        curPage.setAttribute( "border", "1px solid black;" ); 
-        // TODO: getCoordinates?
-        const bezier = getCoordinates(event);
+        curPage.setAttribute( "border", "1px solid black;" )      
+        const bezier = getBezierCoordinates(event);
         let progress = 0;
-        const random = 1; // const random = Math.random() * 20 - 10;
+        const curDir = setDragDirection(event);
+        let curDegree = calcDegFromCurMouse(curDir, getCoordinates((event)).x);
+        ;
+        curPage.style.transition = 'transform-origin 1s ease';
+        curPage.style.transformOrigin = 'center';
+
 
         const animateOnce = () => {
           console.log("animateOnce is called")
           let position = getBezierPosition(bezier, progress);
-          let rotationAngle = Math.atan2(position.x, position.y) * 180 / Math.PI + random;
-          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX(' + rotationAngle * progress * 1.1 + 'deg) rotateZ(' + -rotationAngle * progress * 0.8 + 'deg)';
+          let rotationAngle = Math.atan2(position.x, position.y) * progress;
+          curDegree += rotationAngle;
+          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ 50*progress +'deg) rotateZ('+ curDegree+'deg)';
           if (progress < 1) {
             progress += 0.016;
             requestAnimationFrame(animateOnce);
           } else {
             progress = 0;
+
           }
         };
         animateOnce();
@@ -319,6 +345,7 @@ class TearOffPad extends HTMLElement {
         zStyleSwitch(curPage, 1);
       };
     };
+
 
     function setTransitionDuration( element, value ){
       element.style.transitionDuration = value;
@@ -409,6 +436,15 @@ class TearOffPad extends HTMLElement {
         stuckDegreeTwo = stuckDegree+swingFactor;
       }
       
+      /* curDir = setDragDirection(e);
+      curPage.style.transformOrigin = 'top ' + curDir;
+      
+      let curDegree = calcDegFromCurMouse(curDir, mouseX);
+
+      curPage.style.transformOrigin = 'top ' + curDir;
+      curPage.style.transform = 'rotate(' + curDegree + 'deg)';
+      lastDragPosition = curDegree; */
+
       let animationName = "swing";
       let animationTime = "1s";
       let keyframes = `@keyframes `+ animationName +`{
@@ -446,6 +482,9 @@ class TearOffPad extends HTMLElement {
         };
       };
     };
+
+    /* in this setup, difference in y-value through mousemove is measured so that
+       one can move up and down afterwards or vice versa and it still will tear the animation */
 
     function tearMaxDegreeRandomizer ( min, max ){
       return Math.floor(Math.random() * (max - min + 1)) + min;
