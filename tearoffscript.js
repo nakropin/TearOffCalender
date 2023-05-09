@@ -244,16 +244,10 @@ class TearOffPad extends HTMLElement {
     };
 
     function getBezierCoordinates(e){ /* get mouseCoords at start */
-      let mouseX, mouseY;
-      if (e === undefined){
-        let randomCoord = getRandomCoordinate();
-        mouseX = randomCoord.x;
-        mouseY = randomCoord.y;
-      }
-      else {
-          mouseX = e.clientX - centerX;
-          mouseY = e.clientY - centerY;
-      }
+      let randomCoord = getRandomCoordinate();
+      let mouseX = randomCoord.x;
+      let mouseY = randomCoord.y;
+
       if( mouseX > 0 ){
         bezierPoints = [{ x: centerX, y: centerY }, { x: mouseX + centerX, y: mouseY}, { x: 0, y: targetY}, { x: targetX , y: targetY }];
       }
@@ -271,14 +265,8 @@ class TearOffPad extends HTMLElement {
         mouseY = randomCoord.y;
       }
       else {
-        if (deviceType=== 'Mobile') {
-          mouseX = e.changedTouches[0].clientX - centerX;
-          mouseY = e.changedTouches[0].clientY - centerY;
-        }
-        else if (deviceType=== 'Desktop') {
-          mouseX = e.clientX - centerX;
-          mouseY = e.clientY - centerY;
-        }
+        mouseX = e.clientX - centerX;
+        mouseY = e.clientY - centerY;
       }
       return {x:mouseX, y:mouseY};
     }
@@ -317,16 +305,15 @@ class TearOffPad extends HTMLElement {
         curPage.setAttribute( "border", "1px solid black;" )      
         const bezier = getBezierCoordinates(event);
         let progress = 0;
-        const curDir = setDragDirection(event);
-        let curDegree = calcDegFromCurMouse(curDir, getCoordinates((event)).x);
-        ;
+        // const curDir = setDragDirection(event);
+        // let curDegree = calcDegFromCurMouse(curDir, getCoordinates((event)).x);
         curPage.style.transition = 'transform-origin 1s ease';
         curPage.style.transformOrigin = 'center';
-
 
         const animateOnce = () => {
           console.log("animateOnce is called")
           let position = getBezierPosition(bezier, progress);
+          console.log("pos ",position);
           let rotationAngle = Math.atan2(position.x, position.y) * progress;
           curDegree += rotationAngle;
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ 50*progress +'deg) rotateZ('+ curDegree+'deg)';
@@ -346,14 +333,13 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-
     function setTransitionDuration( element, value ){
       element.style.transitionDuration = value;
-    }
+    };
 
-    function zStyleSwitch( element, zIndex ){
-      element.style.zIndex = zIndex;
-    }
+    function zStyleSwitch( element, value ){
+      element.style.zIndex = value;
+    };
 
     function setDragDirection(e){
         const rect = pages.getBoundingClientRect();
@@ -379,8 +365,8 @@ class TearOffPad extends HTMLElement {
       }
       /* TODO: interrupt */
       // else if ( keyFrameHasBeenSet === 1 && (
-      //   (curDir === "right" && mouseX > pages.getBoundingClientRect().left ) ||
-      //   (curDir === "left" && mouseX < pages.getBoundingClientRect().right )   )
+      //   (curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
+      //   (curDir === "left" && e.clientX < pages.getBoundingClientRect().right )   )
       // ){
       //   // TODO: interrupt if curdir right and x> borderleft and ???
 
