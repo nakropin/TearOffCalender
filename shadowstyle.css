@@ -59,22 +59,37 @@
     outline: black solid 0.5px;
 }
 
-.pages, .page, .tear, .floor {
-    width: 37.5vh;
-    height: 50vh;
+@media only screen and (orientation: portrait){
+  .pages, .page, .tear, .floor{
+    width: 75vw;
+  }
 }
 
-.pages {
+@media only screen and (orientation: landscape)  {
+  .pages, .page{
+    width: 37.5vh;
+    height: 50vh;
+  }
+  .pages {
     position: absolute;
     top: 16vh;
     margin: 0 auto;
-    left: 0;
-    right: 0;
+    left: 25%;
+    right: 25%;
+  }
 }
 
-@media only screen and (orientation: landscape) and (max-width: 1000px) {
-    .pages {
-        transform-origin: top center;
-        scale: 1.4;
-    }
+  /* Desktop */
+@media only screen and (min-width: 1000px) {
+  .pages, .page, .tear, .floor{
+    width: 37.5vh;
+    height: 50vh;
+  }
+  .pages{
+    position: absolute;
+    top: 16vh;
+    margin: 0 auto;
+    left: 25%;
+    right:25%;
+  }
 }
