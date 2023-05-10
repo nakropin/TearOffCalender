@@ -54,8 +54,8 @@ class TearOffPad extends HTMLElement {
     const fileEnding              = ".svg";
     const randomFiles             = makeRandomizedFileList();
     const delay                   = 0;
-    var renderPageCallCounter     = 0;
-    
+    let renderPageCallCounter     = 0;
+
     renderPage(); /* renders the first page */
     setEventListeners();
 
@@ -183,16 +183,20 @@ class TearOffPad extends HTMLElement {
     };
 
     function imprintbtn() {
+      if (renderPageCallCounter = 0){
+        console.log("")
+      }
       animationDelayIterator( animatePage );
       turnOffEventListenersWhileEventAction();
     };
 
     /* recursively call animation */
     function animationDelayIterator( animation ) {
-      if( notLastPage() ){
-        animation();
-        setTimeout( animationDelayIterator(animation), delay );
-      };
+
+      animation();
+        setTimeout( () => {
+          animationDelayIterator(animation);
+        }, delay );
     };
 
     function turnOffEventListenersWhileEventAction(){
@@ -300,6 +304,8 @@ class TearOffPad extends HTMLElement {
     function animatePage() {
       removeTempEventListeners();
       if ( notLastPage() ) {
+        console.log(renderPageCallCounter)
+
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         setZIndex(curPage, 1);
         setTransitionDuration(curPage, "0.01s");
