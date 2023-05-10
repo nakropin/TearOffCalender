@@ -1,97 +1,80 @@
 * {
-  /* -webkit-tap-highlight-color: none; */
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+    /* -webkit-tap-highlight-color: none; */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .pages {
-  position: relative;
-  text-align: center;
-  background-color: white;
-  border: 1px solid black;
-  background-image: none;
-  width: 100%;
-  height: 100%; 
-  will-change: transform;
-  backface-visibility: visible;
+    position: relative;
+    text-align: center;
+    background-color: white;
+    border: 1px solid black;
+    background-image: none;
+    width: 100%;
+    height: 100%;
+    will-change: transform;
+    backface-visibility: visible;
 }
 
 .page {
-  pointer-events: none;
-  position: relative;
-  justify-content: center;
-  background-color: white;
-  width: 100%;
-  height: 100%; 
-  will-change: transform;
-  transition-timing-function: linear;
-  /* aspect-ratio: attr(width) / attr(height); */
+    pointer-events: none;
+    position: relative;
+    justify-content: center;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+    will-change: transform;
+    transition-timing-function: linear;
+    /* aspect-ratio: attr(width) / attr(height); */
 }
 
 .floor {
-  position: absolute;
-  box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  position: fixed;
-  pointer-events: none;
-  /* justify-content: center; */
-  width: 100%;
-  height: 100%;
-  backface-visibility: visible;
+    position: absolute;
+    box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    position: fixed;
+    pointer-events: none;
+    /* justify-content: center; */
+    width: 100%;
+    height: 100%;
+    backface-visibility: visible;
 }
 
-.refresh, .imprint{
-  position: absolute;
-  height: 40px;
-  width: 100px;
-  justify-content: center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-position: center;
-  background-color: #FFFFFF;
-  border-width: 4px;
-  border-color: whitesmoke;
-  z-index: 1;
-  outline: black solid 0.5px;
+.refresh, .imprint {
+    position: absolute;
+    height: 40px;
+    width: 100px;
+    justify-content: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    background-color: #FFFFFF;
+    border-width: 4px;
+    border-color: whitesmoke;
+    z-index: 1;
+    outline: black solid 0.5px;
 }
 
-@media only screen and (orientation: portrait){
-  .pages, .page, .tear, .floor{
-    width: 75vw;
-  }
-}
-
-@media only screen and (orientation: landscape) {
-  .pages, .page, .tear, .floor {
+.pages, .page, .tear, .floor {
     width: 37.5vh;
     height: 50vh;
-  }
+}
 
-  .pages {
+.pages {
     position: absolute;
     top: 16vh;
     margin: 0 auto;
-    left: 25%;
-    right: 25%;
-    height: 35vw;
-  }
+    left: 0;
+    right: 0;
 }
 
-  /* Desktop */
-  @media only screen and (min-width: 1000px) {
-    .pages, .page, .tear, .floor{
-      width: 37.5vh;
-      height: 50vh;
-    }
-    .pages{
-      position: absolute;
-      top: 16vh;
-      margin: 0 auto;
-      left: 25%;
-      right:25%;
+@media only screen and (orientation: landscape) and (max-width: 1000px) {
+    .pages {
+        transform-origin: top center;
+        scale: 1.4;
     }
 }
