@@ -226,7 +226,7 @@ class TearOffPad extends HTMLElement {
     const targetX = centerX / 8 * 1.5; // changed from 5
     const targetY = centerY / 8 * 7.5; // changed from 7
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
-    
+
     let maxTearDegree = randomizer( 30, 50 );
     let mouseXStart;
     let curDir;
@@ -382,7 +382,7 @@ class TearOffPad extends HTMLElement {
 
       if( hitOnce === 1 &&
         ( ( curDir === "right" && e.clientX > middlePlusRandom  ) ||
-          ( curDir === "left"  && e.clientX < middlePlusRandom) )  
+          ( curDir === "left"  && e.clientX < middlePlusRandom) )
         ){
           hitOnce = 0;
           setTransitionDuration(curPage, "0.02s")
