@@ -315,12 +315,14 @@ class TearOffPad extends HTMLElement {
           let rotationAngle = Math.atan2(position.x, position.y) * progress;
           curDegree += rotationAngle;
           // optional: change RotateX Factor
-          let rotateXFactor = 77
+          const rotateXFactor = 77;
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree+'deg)';
           if (progress < 1) {
-            progress += 0.016;
+            progress += 0.01;
             requestAnimationFrame(animateOnce);
-          } else {
+            //setTimeout(animateOnce, 10);
+          }
+          else {
             progress = 0;
             setZIndex(curPage, -1);
           };
@@ -361,7 +363,7 @@ class TearOffPad extends HTMLElement {
       let mouseX = e.clientX - centerX;
       let animationFactor = 15; /* AnimationFactor sets how often DOM-transform is called */
       let curDegree;
-      console.log("0",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
+      //console.log("0",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
 
       if (lastMouseX === null){
         lastMouseX = mouseX;
@@ -388,7 +390,7 @@ class TearOffPad extends HTMLElement {
         (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
         (curDir === "left" && mouseX < lastMouseX - animationFactor )
       ){
-        console.log("2")
+        //console.log("2")
         lastMouseX = mouseX;
         curDegree = calcDegFromCurMouse( mouseX );
         setTransitionDuration(curPage, "0.045s")
@@ -471,7 +473,7 @@ class TearOffPad extends HTMLElement {
 
     function calcMouseFromDegree( degree ){
       let result = ( mouseXStart - ( 10 * degree ) )
-      console.log(result)
+      //console.log(result)
       return result
     };
 
