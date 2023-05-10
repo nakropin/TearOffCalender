@@ -101,4 +101,12 @@ newest:
   - [x] blue element highlighting chrome android
 
 optimization
- - [ ] optimize page layout so that it 
+  - [ ] optimize page layout so that it
+
+css-task
+  - [ ] aspect ratio desktop
+  - [ ] different aspect ratio (90% width) für mobile
+    - [ ] (tablets)
+
+todo:
+  - [ ] decrease call values bei dem rotation degree
