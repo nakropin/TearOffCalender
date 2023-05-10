@@ -41,7 +41,8 @@ class TearOffPad extends HTMLElement {
     const altTextImprint          = componentElement.getAttribute( 'data-alttextimprint' );
     const tearOnLeave             = componentElement.getAttribute( 'data-tearonleave' );
     const clickToTear             = componentElement.getAttribute( 'data-clicktotear' );
-    const delay                   = componentElement.getAttribute( 'data-imprintanimationtime' );
+    /* should be let */
+    const delay                   = parseInt(componentElement.getAttribute( 'data-imprintanimationdelay' ));
 
     createBasicPage();
     randomBackgroundColor();
@@ -187,11 +188,18 @@ class TearOffPad extends HTMLElement {
       turnOffEventListenersWhileEventAction();
     };
 
+    // function getDelay(){
+    //   return 
+    // }
+
     /* recursively call animation */
     function animationDelayIterator( animation ) {
+      let curDelay = isNaN(delay)
+        ? 1000
+        : delay;
       if( notLastPage() ){
         animation();
-        setTimeout( () => {animationDelayIterator(animation)}, delay );
+        setTimeout( () => {animationDelayIterator(animation)}, curDelay );
       };
     };
 
