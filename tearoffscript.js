@@ -643,7 +643,7 @@ class TearOffPad extends HTMLElement {
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
-        document.body.addEventListener('touchmove', function(e){ e.preventDefault(); });
+        //document.body.addEventListener('touchmove', function(e){ e.preventDefault(); });
         pages.addEventListener(startEventType, mobileDrag);
         refresh.addEventListener('click', mobileRefresh);
         imprint.addEventListener('click', mobileImprint);

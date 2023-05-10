@@ -59,7 +59,7 @@
   outline: black solid 0.5px;
 }
 
-@media (orientation: portrait){
+@media only screen and (orientation: portrait){
   .pages, .page, .tear, .floor{
     width: 75vw;
   }
