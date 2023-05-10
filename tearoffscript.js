@@ -41,6 +41,7 @@ class TearOffPad extends HTMLElement {
     const altTextImprint          = componentElement.getAttribute( 'data-alttextimprint' );
     const tearOnLeave             = componentElement.getAttribute( 'data-tearonleave' );
     const clickToTear             = componentElement.getAttribute( 'data-clicktotear' );
+    const delay                   = componentElement.getAttribute( 'data-imprintanimationtime' );
 
     createBasicPage();
     randomBackgroundColor();
@@ -53,7 +54,6 @@ class TearOffPad extends HTMLElement {
 
     const fileEnding              = ".svg";
     const randomFiles             = makeRandomizedFileList();
-    const delay                   = 0;
     var renderPageCallCounter     = 0;
     
     renderPage(); /* renders the first page */
