@@ -418,8 +418,8 @@ class TearOffPad extends HTMLElement {
         };
       }
       else if (
-        (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
-        (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
+        (curDir === "right" && e.clientX < pages.offsetLeft) ||
+        (curDir === "left" && e.clientX > pages.offsetLeft + pages.offsetWidth)
       ){
         setTransitionDuration(curPage, "0s")
 
@@ -438,8 +438,6 @@ class TearOffPad extends HTMLElement {
       let swingFactor = 1.5;
       let stuckDegreeOne;
       let stuckDegreeTwo;
-      // console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
-      // TODO: check: should drag coming from right left first and vice versa
       if (Math.abs(lastDragPosition) - Math.abs(stuckDegree)){
         stuckDegreeOne = stuckDegree+swingFactor;
         stuckDegreeTwo = stuckDegree-swingFactor;
