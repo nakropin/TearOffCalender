@@ -20,11 +20,14 @@ run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z
         data-subpageamount          = '4'
         data-pagesamount            = '26'
         data-buttonposition         = 'upperLeft'
-        data-pageimgtitle           = 'Click to tear off current page.'
+        data-imprintanimationdelay  = '30'
+        data-tearonleave            = 'on'
+        data-clicktotear            = 'on'
+        data-pageimgtitle           = 'Hover to drag and tear off current page.'
         data-refreshbuttonarialabel = 'Refresh tear-off pad and go to first page.'
         data-imprintbuttonarialabel = 'Tear off all pages and go to imprint.'
         data-alttextfrontpage       = 'Front page with information about the company.'
-        data-alttextimages          = 'An image.'
+        data-alttextimages          = 'Alttext for images'
         data-alttextimprint         = 'Imprint page.'
       >
       </tear-off-pad>
@@ -48,11 +51,14 @@ run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z
 
 * to make your page screenreader-accessible use accessibility tags in the svg (e.g. title, desc, aria-labeledby="title", aria-describedby="desc", for text: role="presentation" aria-hidden="true") [https://www.amberddesign.com/make-svg-file-accessible/], like the data from the mockdatagenerator.
 
-* **Attributes**
-  * **bgcolors**: background colors, randomly picked except if u only provide single color. there must be only comma as separator within the quotes, no whitespace.
-  * **subpageamount**: number of variations from which should be randomly picked. preset is 4.
-  * **pagesamount**: number of pages that shall be shown on the tearoffpad animation. preset is 26. it can be set lower, but for higher count component code should be enhanced.
-  * **buttonposition**: chosse from ["upperLeft", "upperRight", "lowerLeft", "lowerRight"]
+* **Custom Attributes**
+  * **data-bgcolors**: background colors, randomly picked except if u only provide single color. there must be only comma as separator within the quotes, no whitespace.
+  * **data-subpageamount**: number of variations from which should be randomly picked. preset is 4.; mandatory
+  * **data-pagesamount**: number of pages that shall be shown on the tearoffpad animation. preset is 26. it can be set lower, but for higher count component code should be enhanced.
+  * **data-buttonposition**: choose from ["upperLeft", "upperRight", "lowerLeft", "lowerRight"]
+  * **data-imprintanimationdelay**: Set in ms, e.g. "30"; optional
+  * **data-tearonleave** = 'on' makes tear ; optional
+  * **data-clicktotear** = 'on' ; optional
   * Fill out the other Attributes according to your needs (mostly WCAG, Screenreaders).
 
 * insert all pictures that shall appear in the calendar in "img" subfolder in svg-format according to naming convention: "[a-z]-[1-4].svg", "first.svg", "last.svg", "refresh.svg" and "imprint.svg".

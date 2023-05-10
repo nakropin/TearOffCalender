@@ -41,6 +41,8 @@ class TearOffPad extends HTMLElement {
     const altTextImprint          = componentElement.getAttribute( 'data-alttextimprint' );
     const tearOnLeave             = componentElement.getAttribute( 'data-tearonleave' );
     const clickToTear             = componentElement.getAttribute( 'data-clicktotear' );
+    /* should be let */
+    const delay                   = parseInt(componentElement.getAttribute( 'data-imprintanimationdelay' ));
 
     createBasicPage();
     randomBackgroundColor();
@@ -53,7 +55,6 @@ class TearOffPad extends HTMLElement {
 
     const fileEnding              = ".svg";
     const randomFiles             = makeRandomizedFileList();
-    const delay                   = 0;
     var renderPageCallCounter     = 0;
     
     renderPage(); /* renders the first page */
@@ -187,11 +188,18 @@ class TearOffPad extends HTMLElement {
       turnOffEventListenersWhileEventAction();
     };
 
+    // function getDelay(){
+    //   return 
+    // }
+
     /* recursively call animation */
     function animationDelayIterator( animation ) {
+      let curDelay = isNaN(delay)
+        ? 1000
+        : delay;
       if( notLastPage() ){
         animation();
-        setTimeout( () => {animationDelayIterator(animation)}, delay );
+        setTimeout( () => {animationDelayIterator(animation)}, curDelay );
       };
     };
 
@@ -311,7 +319,7 @@ class TearOffPad extends HTMLElement {
         let progress = 0;
         let curDegree = calcDegFromCurMouse(getCoordinates((event)).x);
 
-        if(isNaN(curDegree)){curDegree = Math.random()*5} /* catches first */
+        if(isNaN(curDegree)){curDegree = Math.random()*5} /* catches first page animation */
         curPage.style.transition = 'transform-origin 1s ease';
         curPage.style.transformOrigin = 'center';
 
@@ -635,7 +643,7 @@ class TearOffPad extends HTMLElement {
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
-        document.body.addEventListener('touchmove', function(e){ e.preventDefault(); });
+        //document.body.addEventListener('touchmove', function(e){ e.preventDefault(); });
         pages.addEventListener(startEventType, mobileDrag);
         refresh.addEventListener('click', mobileRefresh);
         imprint.addEventListener('click', mobileImprint);

@@ -59,41 +59,13 @@
   outline: black solid 0.5px;
 }
 
-/* .page#left, #right{
-  box-shadow: 0 0 10px -1px rgba(0, 0, 0, 0.5);
-  transition: 0.3s;
-}
-
-#left:hover {
-  transform-origin: top right;
-  transform: rotate(-3deg);
-}
-
-#right:hover {
-  transform-origin: top left;
-  transform: rotate(3deg);
-} */
-
-/* very small screen */
- @media only screen and (max-width: 600px){
+@media only screen and (orientation: portrait){
   .pages, .page, .tear, .floor{
-    width: 100%;
-    height: 255.1px;
+    width: 75vw;
   }
 }
 
-/* Standard Mobile */
-    /* 80% in px for browser compatibility*/
-
-@media only screen and (min-width: 600px) and (max-width: 1000px) {
-  .pages, .page, .tear, .floor{
-    width: 100%;
-    height: 340.2px;
-  }
-} 
-
-/* Desktop */
-@media only screen and (min-width: 1000px) {
+@media only screen and (orientation: landscape){
   .pages, .page, .tear, .floor{
     width: 37.5vh;
     height: 50vh;
@@ -104,5 +76,20 @@
     margin: 0 auto;
     left: 25%;
     right:25%;
+    height: 35vw;
   }
+
+  /* Desktop */
+  @media only screen and (min-width: 1000px) {
+    .pages, .page, .tear, .floor{
+      width: 37.5vh;
+      height: 50vh;
+    }
+    .pages{
+      position: absolute;
+      top: 16vh;
+      margin: 0 auto;
+      left: 25%;
+      right:25%;
+    }
 }
