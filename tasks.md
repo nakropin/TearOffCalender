@@ -92,9 +92,9 @@ new:
   - [ ] make animation go to fixposition (rotate35) when dragging mouse out of page
   - [ ] und wenns wieder reingeht dann fall ab (randomizer degree) 
 
-
-
 newest:
-  - [ ] last page takes a while to load on imprint
-  - [ ] mobile can sidescroll/upside down when scrolling while transition to right
-  - [ ] reload bei last page on mobile 
+  - [x] last page takes a while to load on imprint ( mobile)
+    - [ ] problem still on for desktop 
+  - [x] mobile can sidescroll/upside down when scrolling while transition to right
+  - [ ] swing-problems
+  - [ ] z-index pages/curPage behind 

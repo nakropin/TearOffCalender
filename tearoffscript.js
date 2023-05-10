@@ -123,6 +123,7 @@ class TearOffPad extends HTMLElement {
 
     /*  */
     function renderPage() {
+
       const currentSrc = randomFiles[ renderPageCallCounter ];
       if (renderPageCallCounter + 1 < randomFiles.length ){
         let nextSrc = randomFiles[ renderPageCallCounter + 1 ];
@@ -548,6 +549,7 @@ class TearOffPad extends HTMLElement {
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
+        //document.body.addEventListener('touchmove', function(e){ e.preventDefault(); });
         pages.addEventListener(startEventType, mobileDrag);
         refresh.addEventListener('click', refreshbtn);
         imprint.addEventListener('click', mobileImprint);
@@ -561,6 +563,8 @@ class TearOffPad extends HTMLElement {
       };
     };
 
+    let mobileAnimations = 0;
+
     /* Mobile functions */
     function mobileDrag(e){
       if ( notLastPage() ) {
@@ -568,15 +572,46 @@ class TearOffPad extends HTMLElement {
         let mobileDir = typeof e.touches === "undefined"
           ? "left"
           : setDragDirection(e);
-        
+        let transLateDegreePercent = 150
+        mobileDir === "right"
+          ? transLateDegreePercent = -transLateDegreePercent
+          : 0;
         zStyleSwitch(curPage, 1);
         curPage.setAttribute( "border", "1px solid black;" )      
-        curPage.style.transition = 'opacity 1s, transform 1s';
-        curPage.style.opacity = '0';
-        mobileDir === "right"
-          ? curPage.style.transform = 'translateX(-100%)'
-          : curPage.style.transform = 'translateX(100%)';
-        
+        //curPage.style.opacity = '0';
+        //curPage.style.transition = 'opacity 0.5s,  transform 0.5s';
+        //curPage.style.transform = 'translateX(' + transLateDegreePercent + '%)'
+
+        // if (mobileAnimations === 0){
+        let animationName = "fadeout-" + mobileDir;
+        let animationTime = "0.5s";
+        let keyframes = `@keyframes `+ animationName +`{
+          from {
+            transform: translateX(0%);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(`+ transLateDegreePercent +`%);
+            opacity: 0;
+          }
+        }`;
+  
+        let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+        stylesheet.sheet.insertRule(keyframes)
+      //   mobileAnimations = 1;
+      // }
+        requestAnimationFrame(() => {
+          curPage.style.animation = animationName + " " + animationTime + " " + "linear";
+        });
+  
+        curPage.addEventListener('animationend', () => {
+          curPage.remove();
+          // element.style.transform = 'rotate('+ stuckDegree+'deg)';
+          // element.style.animation = 'none';
+          deleteKeyFrameByName(stylesheet.sheet, animationName);
+        });
+
+
         renderPage();
         makeFloorElement(curPage)
       };
