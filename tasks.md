@@ -101,4 +101,4 @@ newest:
   - [x] blue element highlighting chrome android
 
 optimization
- - [ ] optimize page layout so that it 
+  - [ ] optimize page layout so that it

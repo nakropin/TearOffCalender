@@ -225,7 +225,10 @@ class TearOffPad extends HTMLElement {
     let lastDragPosition = 0;
     let lastMouseX = null;
     let keyFrameHasBeenSet = 0;
+    // TODO: let stuckdegree is the problem, must be const and from there initialized through different var
     let stuckDegree = 20;
+    let minTearDegree = 0;
+    let oneHit = 0;
 
     function makeFloorElement( element ){
       element.classList.add('floor');
@@ -241,6 +244,7 @@ class TearOffPad extends HTMLElement {
     function getBezierCoordinates(e){ /* get mouseCoords at start */
       let mouseX, mouseY;
       let bezierRandomizer = 115;
+      console.log(e)
       if (e === undefined){
         let randomCoord = getRandomCoordinate();
         mouseX = randomCoord.x;
@@ -297,7 +301,7 @@ class TearOffPad extends HTMLElement {
       return coefficient;
     };
 
-    function animatePage() {
+    function animatePage(  ) {
       removeTempEventListeners();
       if ( notLastPage() ) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
@@ -311,12 +315,11 @@ class TearOffPad extends HTMLElement {
         curPage.style.transformOrigin = 'center';
 
         const animateOnce = () => {
-          let position = getBezierPosition(bezier, progress);
-          let rotationAngle = Math.atan2(position.x, position.y) * progress;
+          let position = getBezierPosition( bezier, progress );
+          let rotationAngle = Math.atan2( position.x, position.y ) * progress;
           curDegree += rotationAngle;
-          // optional: change RotateX Factor
           let rotateXFactor = 77
-          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree+'deg)';
+          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree + 'deg)';
           if (progress < 1) {
             progress += 0.016;
             requestAnimationFrame(animateOnce);
@@ -361,9 +364,26 @@ class TearOffPad extends HTMLElement {
       let mouseX = e.clientX - centerX;
       let animationFactor = 15; /* AnimationFactor sets how often DOM-transform is called */
       let curDegree;
-      console.log("0",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
+      //console.log("0",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
 
-      if (lastMouseX === null){
+      let middlePlusRandom = (pages.offsetLeft + pages.offsetWidth / 2 )
+      middlePlusRandom += curDir === "right"
+        ? +randomizer(50,120) 
+        : -randomizer(50,120) 
+
+      if( oneHit === 1 &&
+        ( ( curDir === "right" && e.clientX > middlePlusRandom  ) ||
+          ( curDir === "left"  && e.clientX < middlePlusRandom) )  
+        ){
+          oneHit = 0;
+          setTransitionDuration(curPage, "0.02s")
+          requestAnimationFrame(() => {
+            curPage.style.transform = 'rotate(' + curDegree + 'deg)';
+          });
+
+        animatePage();
+      }
+      if( lastMouseX === null ){
         lastMouseX = mouseX;
       }
       /* TODO: fix interrupt */
@@ -382,11 +402,11 @@ class TearOffPad extends HTMLElement {
       //   deleteKeyFrameByName(stylesheet.sheet, "swing")
       //   keyFrameHasBeenSet = 0;
       // }
-      else if ( 
+      else if ( oneHit === 0 && 
         // (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
         // (curDir === "left" && mouseX < lastMouseX - animationFactor )
-        (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
-        (curDir === "left" && mouseX < lastMouseX - animationFactor )
+        ( ( curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
+          ( curDir === "left" && e.clientX < pages.getBoundingClientRect().right ) )
       ){
         console.log("2")
         lastMouseX = mouseX;
@@ -401,6 +421,18 @@ class TearOffPad extends HTMLElement {
         };
         //keyFrameHasBeenSet = 0
       }
+      else if ( 
+        (curDir === "right" && e.clientX < pages.getBoundingClientRect().left ) ||
+        (curDir === "left" && e.clientX > pages.getBoundingClientRect().right ) )
+        {
+          let curStuck = getCurrentStuckDegree( curDir );
+          console.log( curStuck )
+          requestAnimationFrame(() => {
+            setTransitionDuration(curPage, "0.3s")
+            curPage.style.transform = 'rotate(' + curStuck + 'deg)';
+          });
+          oneHit = 1;
+        }
       // else if (
       //   (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
       //   (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
@@ -465,6 +497,13 @@ class TearOffPad extends HTMLElement {
       };
     };
 
+    function getCurrentStuckDegree( curDir ){
+      let curStuck = curDir === "right"
+        ? -stuckDegree
+        : stuckDegree;
+      return curStuck 
+    }
+
     function randomizer ( min, max ){
       return Math.floor(Math.random() * (max - min + 1)) + min;
     };
@@ -507,7 +546,7 @@ class TearOffPad extends HTMLElement {
     /* Animation + Buttons Mobile */
     let mobileAnimations = 0;
 
-    function mobileDrag(e){
+    function mobileDrag( e ){
       if ( notLastPage() ) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         let mobileDir = typeof e.touches === "undefined"
