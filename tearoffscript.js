@@ -373,6 +373,7 @@ class TearOffPad extends HTMLElement {
       let mouseX = e.clientX - centerX;
       let animationFactor = 15; /* AnimationFactor sets how often DOM-transform is called */
       let curDegree;
+      let curStuck = getCurrentStuckDegree( curDir );
 
       let middlePlusRandom = (pages.offsetLeft + pages.offsetWidth / 2 )
       middlePlusRandom += curDir === "right"
@@ -394,24 +395,22 @@ class TearOffPad extends HTMLElement {
         lastMouseX = mouseX;
       }
       /* TODO: fix interrupt */
-      // else if ( keyFrameHasBeenSet === 1 && (
-      //   (curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
-      //   (curDir === "left"  && e.clientX < pages.getBoundingClientRect().right )   )
-      // ){
-      //   console.log("1",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
-      //   stuckDegree = curDir === "right" 
-      //     ? -stuckDegree 
-      //     : stuckDegree;
-      //   setTransitionDuration(curPage, "0.045s")
-      //   curPage.style.transform = 'rotate('+ stuckDegree+'deg)';
-      //   curPage.style.animation = 'none';
-      //   let stylesheet = shadow.querySelector("link[rel='stylesheet']");
-      //   deleteKeyFrameByName(stylesheet.sheet, "swing")
-      //   keyFrameHasBeenSet = 0;
-      // }
+      else if ( keyFrameHasBeenSet === 1 && (
+        (curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
+        (curDir === "left"  && e.clientX < pages.getBoundingClientRect().right )   )
+      ){
+        console.log("1",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
+
+        setTransitionDuration(curPage, "0.045s")
+        curPage.style.transform = 'rotate('+ curStuck+'deg)';
+        curPage.style.animation = 'none';
+        let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+        deleteKeyFrameByName(stylesheet.sheet, "swing")
+        keyFrameHasBeenSet = 0;
+      }
       else if ( hitOnce === 0 && 
-        ( ( curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
-          ( curDir === "left" && e.clientX < pages.getBoundingClientRect().right ) )
+        ( ( curDir === "right" && e.clientX > pages.offsetLeft ) ||
+          ( curDir === "left" && e.clientX < pages.offsetLeft + pages.offsetWidth ) )
       ){
         lastMouseX = mouseX;
         curDegree = calcDegFromCurMouse( mouseX );
@@ -424,70 +423,68 @@ class TearOffPad extends HTMLElement {
           animatePage();
         };
       }
-      else if ( 
-        (curDir === "right" && e.clientX < pages.getBoundingClientRect().left ) ||
-        (curDir === "left" && e.clientX > pages.getBoundingClientRect().right ) )
-        {
-          let curStuck = getCurrentStuckDegree( curDir );
-          console.log( curStuck )
-          requestAnimationFrame(() => {
-            setTransitionDuration(curPage, "0.3s")
-            curPage.style.transform = 'rotate(' + curStuck + 'deg)';
-          });
-          hitOnce = 1;
+      // else if ( 
+      //   (curDir === "right" && e.clientX < pages.getBoundingClientRect().left ) ||
+      //   (curDir === "left" && e.clientX > pages.getBoundingClientRect().right ) )
+      // {
+      //   let curStuck = getCurrentStuckDegree( curDir );
+      //   requestAnimationFrame(() => {
+      //     setTransitionDuration(curPage, "0.3s")
+      //     curPage.style.transform = 'rotate(' + curStuck + 'deg)';
+      //   });
+      //   hitOnce = 1;
+      // }
+      else if (
+        (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
+        (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
+      ){
+        setTransitionDuration(curPage, "0s")
+
+        if (keyFrameHasBeenSet === 0) {
+          makeCurSwingAnimation(curPage, curStuck, lastDragPosition);
         }
-      // else if (
-      //   (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
-      //   (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
-      // ){
-      //   setTransitionDuration(curPage, "0s")
-      //   stuckDegree = curDir === "right" 
-      //     ? -stuckDegree 
-      //     : stuckDegree;
-      //   if (keyFrameHasBeenSet === 0) {
-      //     makeCurSwingAnimation(curPage, stuckDegree, lastDragPosition);
-      //   }
-      //   keyFrameHasBeenSet = 1;
-      //   /* Set Border, calc corresponding mouseX from lastDragPosition */
-      //   lastDragPosition = stuckDegree;
-      //   lastMouseX = calcMouseFromDegree( lastDragPosition );
-      // };
+        keyFrameHasBeenSet = 1;
+        /* Set Border, calc corresponding mouseX from lastDragPosition */
+        lastDragPosition = curStuck;
+        lastMouseX = calcMouseFromDegree( lastDragPosition );
+        hitOnce = 1;
+      };
     };
 
-    // function makeCurSwingAnimation(element, stuckDegree, lastDragPosition){
-    //   let swingFactor = 1.5;
-    //   let stuckDegreeOne;
-    //   let stuckDegreeTwo;
-    //   // console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
-    //   // TODO: check: should drag coming from right left first and vice versa
-    //   if (Math.abs(lastDragPosition) - Math.abs(stuckDegree)){
-    //     stuckDegreeOne = stuckDegree+swingFactor;
-    //     stuckDegreeTwo = stuckDegree-swingFactor;
-    //   }
-    //   else {
-    //     stuckDegreeOne = stuckDegree-swingFactor;
-    //     stuckDegreeTwo = stuckDegree+swingFactor;
-    //   }
-    //   let animationName = "swing";
-    //   let animationTime = "1s";
-    //   let keyframes = `@keyframes `+ animationName +`{
-    //    20% { transform: rotate(${stuckDegreeOne}deg);}
-    //    40% { transform: rotate(${stuckDegreeTwo}deg);}
-    //    60% { transform: rotate(${stuckDegreeOne}deg);}
-    //    80% { transform: rotate(${stuckDegreeTwo}deg);}
-    //   100% { transform: rotate(${stuckDegree}deg);}
-    //   }`;
-    //   let stylesheet = shadow.querySelector("link[rel='stylesheet']");
-    //   stylesheet.sheet.insertRule(keyframes)
-    //   requestAnimationFrame(() => {
-    //     element.style.animation = animationName + " " + animationTime + " " + "linear";
-    //   });
-    //   element.addEventListener('animationend', () => {
-    //     element.style.transform = 'rotate('+ stuckDegree+'deg)';
-    //     element.style.animation = 'none';
-    //     deleteKeyFrameByName(stylesheet.sheet, "swing");
-    //   });
-    // };
+    function makeCurSwingAnimation(element, stuckDegree, lastDragPosition){
+      let swingFactor = 1.5;
+      let stuckDegreeOne;
+      let stuckDegreeTwo;
+      // console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
+      // TODO: check: should drag coming from right left first and vice versa
+      if (Math.abs(lastDragPosition) - Math.abs(stuckDegree)){
+        stuckDegreeOne = stuckDegree+swingFactor;
+        stuckDegreeTwo = stuckDegree-swingFactor;
+      }
+      else {
+        stuckDegreeOne = stuckDegree-swingFactor;
+        stuckDegreeTwo = stuckDegree+swingFactor;
+      }
+      let animationName = "swing";
+      let animationTime = "1s";
+      let keyframes = `@keyframes `+ animationName +`{
+       20% { transform: rotate(${stuckDegreeOne}deg);}
+       40% { transform: rotate(${stuckDegreeTwo}deg);}
+       60% { transform: rotate(${stuckDegreeOne}deg);}
+       80% { transform: rotate(${stuckDegreeTwo}deg);}
+      100% { transform: rotate(${stuckDegree}deg);}
+      }`;
+      let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+      stylesheet.sheet.insertRule(keyframes)
+      requestAnimationFrame(() => {
+        element.style.animation = animationName + " " + animationTime + " " + "linear";
+      });
+      element.addEventListener('animationend', () => {
+        element.style.transform = 'rotate('+ stuckDegree+'deg)';
+        element.style.animation = 'none';
+        deleteKeyFrameByName(stylesheet.sheet, "swing");
+      });
+    };
 
     function deleteKeyFrameByName(styleSheet, animationName){
       for (let i = 0; i < styleSheet.cssRules.length; i++) {
