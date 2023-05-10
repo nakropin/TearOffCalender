@@ -66,18 +66,16 @@
 }
 
 @media only screen and (orientation: landscape) {
-  .pages, .page, .tear, .floor {
+  .pages, .page{
     width: 37.5vh;
     height: 50vh;
   }
-
   .pages {
     position: absolute;
     top: 16vh;
     margin: 0 auto;
     left: 25%;
     right: 25%;
-    height: 35vw;
   }
 }
 

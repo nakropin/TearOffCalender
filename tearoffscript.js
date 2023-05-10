@@ -224,7 +224,7 @@ class TearOffPad extends HTMLElement {
     const centerX = width / 2;
     const centerY = height / 2;
     const targetX = centerX / 8 * 1.5; // changed from 5
-    const targetY = centerY / 8 * 6; // changed from 7
+    const targetY = centerY / 8 * 7.5; // changed from 7
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
     
     let maxTearDegree = randomizer( 30, 50 );
