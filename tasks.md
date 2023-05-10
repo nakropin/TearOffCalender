@@ -104,8 +104,8 @@ optimization
   - [ ] optimize page layout so that it
 
 css-task
-  - [ ] aspect ratio desktop
-  - [ ] different aspect ratio (90% width) für mobile
+  - [x] aspect ratio desktop
+  - [x] different aspect ratio (90% width) für mobile
     - [ ] (tablets)
 
 todo:
