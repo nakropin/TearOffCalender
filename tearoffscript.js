@@ -236,7 +236,7 @@ class TearOffPad extends HTMLElement {
     // TODO: let stuckdegree is the problem, must be const and from there initialized through different var
     let stuckDegree = 20;
     let minTearDegree = 0;
-    let oneHit = 0;
+    let hitOnce = 0;
 
     function makeFloorElement( element ){
       element.classList.add('floor');
@@ -379,16 +379,15 @@ class TearOffPad extends HTMLElement {
         ? +randomizer(110,140) 
         : -randomizer(100,140) 
 
-      if( oneHit === 1 &&
+      if( hitOnce === 1 &&
         ( ( curDir === "right" && e.clientX > middlePlusRandom  ) ||
           ( curDir === "left"  && e.clientX < middlePlusRandom) )  
         ){
-          oneHit = 0;
+          hitOnce = 0;
           setTransitionDuration(curPage, "0.02s")
           requestAnimationFrame(() => {
             curPage.style.transform = 'rotate(' + curDegree + 'deg)';
           });
-        //setTransitionDuration(curPage, "0s")
         animatePage();
       }
       if( lastMouseX === null ){
@@ -410,13 +409,10 @@ class TearOffPad extends HTMLElement {
       //   deleteKeyFrameByName(stylesheet.sheet, "swing")
       //   keyFrameHasBeenSet = 0;
       // }
-      else if ( oneHit === 0 && 
-        // (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
-        // (curDir === "left" && mouseX < lastMouseX - animationFactor )
+      else if ( hitOnce === 0 && 
         ( ( curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
           ( curDir === "left" && e.clientX < pages.getBoundingClientRect().right ) )
       ){
-        console.log("2")
         lastMouseX = mouseX;
         curDegree = calcDegFromCurMouse( mouseX );
         setTransitionDuration(curPage, "0.045s")
@@ -424,11 +420,9 @@ class TearOffPad extends HTMLElement {
           curPage.style.transform = 'rotate(' + curDegree + 'deg)';
         });
         lastDragPosition = Math.abs(curDegree);
-        //setTransitionDuration(curPage, "0s")
         if ( Math.abs(curDegree) >= maxTearDegree ) {
           animatePage();
         };
-        //keyFrameHasBeenSet = 0
       }
       else if ( 
         (curDir === "right" && e.clientX < pages.getBoundingClientRect().left ) ||
@@ -440,15 +434,12 @@ class TearOffPad extends HTMLElement {
             setTransitionDuration(curPage, "0.3s")
             curPage.style.transform = 'rotate(' + curStuck + 'deg)';
           });
-          //setTransitionDuration(curPage, "0s")
-
-          oneHit = 1;
+          hitOnce = 1;
         }
       // else if (
       //   (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
       //   (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
       // ){
-      //   console.log("3")
       //   setTransitionDuration(curPage, "0s")
       //   stuckDegree = curDir === "right" 
       //     ? -stuckDegree 
@@ -577,8 +568,8 @@ class TearOffPad extends HTMLElement {
     };
 
     function makeMobileFadeOutAnimations( e ){
-      // let yTranslation = e.touches[0].clientY
-      // let xTranslation = e.touches[0].clientX
+      // let yTranslation = e.changedTouches[0].clientY
+      // let xTranslation = e.changedTouches[0].clientX
       
       let transLateDegreePercent = 150
       let directions = ["left", "right"]
@@ -643,7 +634,6 @@ class TearOffPad extends HTMLElement {
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
-        //document.body.addEventListener('touchmove', function(e){ e.preventDefault(); });
         pages.addEventListener(startEventType, mobileDrag);
         refresh.addEventListener('click', mobileRefresh);
         imprint.addEventListener('click', mobileImprint);
