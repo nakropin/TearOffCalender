@@ -97,10 +97,6 @@
   .pages, .page, .tear, .floor{
     width: 37.5vh;
     height: 50vh;
-    /*
-
-    */
-
   }
   .pages{
     position: absolute;
