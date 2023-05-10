@@ -232,7 +232,7 @@ class TearOffPad extends HTMLElement {
     let curDir;
     let lastDragPosition = 0;
     let lastMouseX = null;
-    let keyFrameSetted = 0;
+    let keyFrameIsSet = 0;
     // TODO: let stuckdegree is the problem, must be const and from there initialized through different var
     let stuckDegree = 20;
     let minTearDegree = 0;
@@ -363,7 +363,7 @@ class TearOffPad extends HTMLElement {
     };
     
     function resetHelpers(){
-      keyFrameSetted = mouseXStart = lastDragPosition = 0;
+      hitOnce = keyFrameIsSet = mouseXStart = lastDragPosition = 0;
       lastMouseX = curDir = null;
       maxTearDegree = randomizer(30,60);
     };
@@ -385,13 +385,13 @@ class TearOffPad extends HTMLElement {
             ( curDir === "left"  && e.clientX < middlePlusRandom)    ) )
       {
           /* Interrupt Animation*/
-          setTransitionDuration(curPage, "0.045s")
+          setTransitionDuration(curPage, "0.145s")
           curPage.style.transform = 'rotate('+ curStuck+'deg)';
           curPage.style.animation = 'none';
           let stylesheet = shadow.querySelector("link[rel='stylesheet']");
           deleteKeyFrameByName(stylesheet.sheet, "swing")
           hitOnce = 0;
-          keyFrameSetted = 0;
+          keyFrameIsSet = 0;
           /* rotate, animate */
           setTransitionDuration(curPage, "0.02s")
           requestAnimationFrame(() => {
@@ -423,10 +423,10 @@ class TearOffPad extends HTMLElement {
       ){
         setTransitionDuration(curPage, "0s")
 
-        if (keyFrameSetted === 0) {
+        if (keyFrameIsSet === 0) {
           makeCurSwingAnimation(curPage, curStuck, lastDragPosition);
         }
-        keyFrameSetted = 1;
+        keyFrameIsSet = 1;
         /* Set Border, calc corresponding mouseX from lastDragPosition */
         lastDragPosition = curStuck;
         lastMouseX = calcMouseFromDegree( lastDragPosition );
