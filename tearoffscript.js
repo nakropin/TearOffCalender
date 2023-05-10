@@ -176,7 +176,7 @@ class TearOffPad extends HTMLElement {
     /* Button Functions */
 
     function refreshbtn(){
-      if ( renderPageCallCounter != 1 ){
+      if ( notFirstPage() ){
         renderPageCallCounter = 0;
         animatePage();
         removeAllFloorElements();
@@ -233,9 +233,7 @@ class TearOffPad extends HTMLElement {
     let lastDragPosition = 0;
     let lastMouseX = null;
     let keyFrameIsSet = 0;
-    // TODO: let stuckdegree is the problem, must be const and from there initialized through different var
     let stuckDegree = 20;
-    let minTearDegree = 0;
     let hitOnce = 0;
 
     function makeFloorElement( element ){
@@ -282,7 +280,7 @@ class TearOffPad extends HTMLElement {
         mouseY = e.clientY - centerY;
       }
       return {x:mouseX, y:mouseY};
-    }
+    };
 
     /* calc position along beziercurve */
     function getBezierPosition(points, progress) {
@@ -385,18 +383,18 @@ class TearOffPad extends HTMLElement {
             ( curDir === "left"  && e.clientX < middlePlusRandom)    ) )
       {
           /* Interrupt Animation*/
-          setTransitionDuration(curPage, "0.145s")
-          curPage.style.transform = 'rotate('+ curStuck+'deg)';
+          // setTransitionDuration(curPage, "0.145s");
+          // curPage.style.transform = 'rotate('+ curStuck+'deg)';
           curPage.style.animation = 'none';
           let stylesheet = shadow.querySelector("link[rel='stylesheet']");
-          deleteKeyFrameByName(stylesheet.sheet, "swing")
+          deleteKeyFrameByName(stylesheet.sheet, "swing");
           hitOnce = 0;
           keyFrameIsSet = 0;
           /* rotate, animate */
-          setTransitionDuration(curPage, "0.02s")
-          requestAnimationFrame(() => {
-            curPage.style.transform = 'rotate(' + curDegree + 'deg)';
-          });
+          // setTransitionDuration(curPage, "8.52s")
+          // requestAnimationFrame(() => {
+          //   curPage.style.transform = 'rotate(' + curStuck + 'deg)';
+          // });
           animatePage();
       }
       else if( lastMouseX === null ){
@@ -447,7 +445,7 @@ class TearOffPad extends HTMLElement {
         stuckDegreeTwo = stuckDegree+swingFactor;
       }
       let animationName = "swing";
-      let animationTime = "1s";
+      let animationTime = "0.7s";
       let keyframes = `@keyframes `+ animationName +`{
        20% { transform: rotate(${stuckDegreeOne}deg);}
        40% { transform: rotate(${stuckDegreeTwo}deg);}
@@ -458,7 +456,7 @@ class TearOffPad extends HTMLElement {
       let stylesheet = shadow.querySelector("link[rel='stylesheet']");
       stylesheet.sheet.insertRule(keyframes)
       requestAnimationFrame(() => {
-        element.style.animation = animationName + " " + animationTime + " " + "linear";
+        element.style.animation = animationName + " " + animationTime + " " + "ease-out";
       });
       element.addEventListener('animationend', () => {
         element.style.transform = 'rotate('+ stuckDegree+'deg)';
@@ -516,6 +514,10 @@ class TearOffPad extends HTMLElement {
       return renderPageCallCounter !== randomFiles.length;
     };
 
+    function notFirstPage(){
+      return renderPageCallCounter !== 1;
+    };
+
     function changePointer( option ) {
       option === "hand"
         ? document.body.style.cursor = 'pointer'
@@ -524,19 +526,20 @@ class TearOffPad extends HTMLElement {
 
     /* Animation + Buttons Mobile */
     let mobileAnimations = 0;
+    let swipeAnimationsSetter = 0;
 
     function mobileDrag( e ){
       if ( notLastPage() ) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
-        let mobileDir = typeof e.touches === "undefined"
-          ? "left"
-          : setDragDirection(e);
         setZIndex(curPage, 1);
-        curPage.setAttribute( "border", "1px solid black;" )      
-        makeMobileFadeOutAnimations(e);
+        curPage.setAttribute( "border", "1px solid black;" )     
+        if (swipeAnimationsSetter === 0){
+          makeMobileFadeOutAnimations();
+          swipeAnimationsSetter = 1;
+        }
         let animationTime = "0.5s";
         requestAnimationFrame(() => {
-          curPage.style.animation = "fadeout-" + mobileDir + " " + animationTime + " " + "linear";
+          curPage.style.animation = "fadeout-" + e + " " + animationTime + " " + "linear";
         });
         curPage.addEventListener( 'animationend', () => { curPage.remove() } );
         renderPage();
@@ -544,43 +547,54 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-    function makeMobileFadeOutAnimations( e ){
-      // let yTranslation = e.changedTouches[0].clientY
-      // let xTranslation = e.changedTouches[0].clientX
-      
+    function makeMobileFadeOutAnimations( ){
       let transLateDegreePercent = 150
-      let directions = ["left", "right"]
+      let directions = ["swipeleft", "swiperight", "swipeup", "swipedown"]
       if (mobileAnimations === 0){
         for (let i = 0; i < directions.length ; i++){
+          let curTransLateDegreePercent;
           let animationName = "fadeout-" + directions[i];
-          if( directions[i] === "right" ){ transLateDegreePercent = -transLateDegreePercent };
-          // TODO: translateY(`+ transLateDegreePercent +`%);
+          let axis;
+          if (directions[i] === "swipeup" || directions[i] === "swipedown"){
+            axis = "Y";
+          } else {
+            axis = "X";
+          }
+          if( directions[i] === "swipeleft" ||
+              directions[i] === "swipeup" ){ 
+            curTransLateDegreePercent = -transLateDegreePercent 
+          }
+          else if ( directions[i] === "swiperight" ||
+                    directions[i] === "swipedown") {
+            curTransLateDegreePercent = transLateDegreePercent
+          }
+
           let keyframes = `@keyframes `+ animationName +`{
             from {
-              transform: translateX(0%);
+              transform: translate`+ axis +`(0%);
               opacity: 1;
             }
             to {
-              transform: translateX(`+ transLateDegreePercent +`%);
+              transform: translate`+ axis +`(`+ curTransLateDegreePercent +`%);
               opacity: 0;
             }
           }`;
           let stylesheet = shadow.querySelector("link[rel='stylesheet']");
           stylesheet.sheet.insertRule(keyframes)
-        }
+         }
         mobileAnimations = 1;
       };
     };
 
-    function mobileImprint(e){
-      if (notLastPage()){
-        renderPageCallCounter = randomFiles.length-1
-        mobileDrag(e)
+    function mobileImprint(){
+      if ( notLastPage() ){
+        renderPageCallCounter = randomFiles.length-1;
+        mobileDrag("swipeup");
       }
     };
 
     function mobileRefresh(e){
-      if ( renderPageCallCounter != 1 ){
+      if (notFirstPage()){
         renderPageCallCounter = 0;
         mobileDrag(e);
         removeAllFloorElements();
@@ -611,7 +625,11 @@ class TearOffPad extends HTMLElement {
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
-        pages.addEventListener(startEventType, mobileDrag);
+        var hammerTime = new Hammer(pages);
+        hammerTime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+        hammerTime.on("swipeleft swiperight swipeup swipedown", function(ev) {
+          mobileDrag(ev.type);
+        });
         refresh.addEventListener('click', mobileRefresh);
         imprint.addEventListener('click', mobileImprint);
       }
