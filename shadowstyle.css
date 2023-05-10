@@ -78,3 +78,8 @@
         scale: 1.4;
     }
 }
+@media only screen and (orientation: portrait) and (max-width: 1000px) {
+    .pages {
+        top: 25vh;
+    }
+}
