@@ -191,7 +191,7 @@ class TearOffPad extends HTMLElement {
     function animationDelayIterator( animation ) {
       if( notLastPage() ){
         animation();
-        setTimeout( animationDelayIterator(animation), delay );
+        setTimeout( () => {animationDelayIterator(animation)}, delay );
       };
     };
 
