@@ -232,7 +232,7 @@ class TearOffPad extends HTMLElement {
     let curDir;
     let lastDragPosition = 0;
     let lastMouseX = null;
-    let keyFrameHasBeenSet = 0;
+    let keyFrameSetted = 0;
     // TODO: let stuckdegree is the problem, must be const and from there initialized through different var
     let stuckDegree = 20;
     let minTearDegree = 0;
@@ -363,7 +363,7 @@ class TearOffPad extends HTMLElement {
     };
     
     function resetHelpers(){
-      keyFrameHasBeenSet = mouseXStart = lastDragPosition = 0;
+      keyFrameSetted = mouseXStart = lastDragPosition = 0;
       lastMouseX = curDir = null;
       maxTearDegree = randomizer(30,60);
     };
@@ -377,36 +377,30 @@ class TearOffPad extends HTMLElement {
 
       let middlePlusRandom = (pages.offsetLeft + pages.offsetWidth / 2 )
       middlePlusRandom += curDir === "right"
-        ? +randomizer(110,140) 
-        : -randomizer(100,140) 
+        ? +randomizer(110,140)
+        : -randomizer(100,140);
 
       if( hitOnce === 1 &&
-        ( ( curDir === "right" && e.clientX > middlePlusRandom  ) ||
-          ( curDir === "left"  && e.clientX < middlePlusRandom) )
-        ){
+          ( ( curDir === "right" && e.clientX > middlePlusRandom) ||
+            ( curDir === "left"  && e.clientX < middlePlusRandom)    ) )
+      {
+          /* Interrupt Animation*/
+          setTransitionDuration(curPage, "0.045s")
+          curPage.style.transform = 'rotate('+ curStuck+'deg)';
+          curPage.style.animation = 'none';
+          let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+          deleteKeyFrameByName(stylesheet.sheet, "swing")
           hitOnce = 0;
+          keyFrameSetted = 0;
+          /* rotate, animate */
           setTransitionDuration(curPage, "0.02s")
           requestAnimationFrame(() => {
             curPage.style.transform = 'rotate(' + curDegree + 'deg)';
           });
-        animatePage();
+          animatePage();
       }
-      if( lastMouseX === null ){
+      else if( lastMouseX === null ){
         lastMouseX = mouseX;
-      }
-      /* TODO: fix interrupt */
-      else if ( keyFrameHasBeenSet === 1 && (
-        (curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
-        (curDir === "left"  && e.clientX < pages.getBoundingClientRect().right )   )
-      ){
-        console.log("1",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
-
-        setTransitionDuration(curPage, "0.045s")
-        curPage.style.transform = 'rotate('+ curStuck+'deg)';
-        curPage.style.animation = 'none';
-        let stylesheet = shadow.querySelector("link[rel='stylesheet']");
-        deleteKeyFrameByName(stylesheet.sheet, "swing")
-        keyFrameHasBeenSet = 0;
       }
       else if ( hitOnce === 0 && 
         ( ( curDir === "right" && e.clientX > pages.offsetLeft ) ||
@@ -423,27 +417,16 @@ class TearOffPad extends HTMLElement {
           animatePage();
         };
       }
-      // else if ( 
-      //   (curDir === "right" && e.clientX < pages.getBoundingClientRect().left ) ||
-      //   (curDir === "left" && e.clientX > pages.getBoundingClientRect().right ) )
-      // {
-      //   let curStuck = getCurrentStuckDegree( curDir );
-      //   requestAnimationFrame(() => {
-      //     setTransitionDuration(curPage, "0.3s")
-      //     curPage.style.transform = 'rotate(' + curStuck + 'deg)';
-      //   });
-      //   hitOnce = 1;
-      // }
       else if (
         (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
         (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
       ){
         setTransitionDuration(curPage, "0s")
 
-        if (keyFrameHasBeenSet === 0) {
+        if (keyFrameSetted === 0) {
           makeCurSwingAnimation(curPage, curStuck, lastDragPosition);
         }
-        keyFrameHasBeenSet = 1;
+        keyFrameSetted = 1;
         /* Set Border, calc corresponding mouseX from lastDragPosition */
         lastDragPosition = curStuck;
         lastMouseX = calcMouseFromDegree( lastDragPosition );
