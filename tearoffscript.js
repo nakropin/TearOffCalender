@@ -549,9 +549,9 @@ class TearOffPad extends HTMLElement {
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
-        //document.body.addEventListener('touchmove', function(e){ e.preventDefault(); });
+        document.body.addEventListener('touchmove', function(e){ e.preventDefault(); });
         pages.addEventListener(startEventType, mobileDrag);
-        refresh.addEventListener('click', refreshbtn);
+        refresh.addEventListener('click', mobileRefresh);
         imprint.addEventListener('click', mobileImprint);
       }
       else if ( deviceType === 'Desktop' ){
@@ -572,48 +572,50 @@ class TearOffPad extends HTMLElement {
         let mobileDir = typeof e.touches === "undefined"
           ? "left"
           : setDragDirection(e);
-        let transLateDegreePercent = 150
-        mobileDir === "right"
-          ? transLateDegreePercent = -transLateDegreePercent
-          : 0;
         zStyleSwitch(curPage, 1);
         curPage.setAttribute( "border", "1px solid black;" )      
-        //curPage.style.opacity = '0';
-        //curPage.style.transition = 'opacity 0.5s,  transform 0.5s';
-        //curPage.style.transform = 'translateX(' + transLateDegreePercent + '%)'
 
-        // if (mobileAnimations === 0){
-        let animationName = "fadeout-" + mobileDir;
+        makeMobileFadeOutAnimations();
+
         let animationTime = "0.5s";
-        let keyframes = `@keyframes `+ animationName +`{
-          from {
-            transform: translateX(0%);
-            opacity: 1;
-          }
-          to {
-            transform: translateX(`+ transLateDegreePercent +`%);
-            opacity: 0;
-          }
-        }`;
-  
-        let stylesheet = shadow.querySelector("link[rel='stylesheet']");
-        stylesheet.sheet.insertRule(keyframes)
-      //   mobileAnimations = 1;
-      // }
         requestAnimationFrame(() => {
-          curPage.style.animation = animationName + " " + animationTime + " " + "linear";
+          curPage.style.animation = "fadeout-" + mobileDir + " " + animationTime + " " + "linear";
         });
-  
+
         curPage.addEventListener('animationend', () => {
           curPage.remove();
-          // element.style.transform = 'rotate('+ stuckDegree+'deg)';
-          // element.style.animation = 'none';
-          deleteKeyFrameByName(stylesheet.sheet, animationName);
         });
-
 
         renderPage();
         makeFloorElement(curPage)
+      };
+    };
+
+    function makeMobileFadeOutAnimations(  ){
+      let transLateDegreePercent = 150
+      let directions = ["left", "right"]
+      if (mobileAnimations === 0){
+        for (let i = 0; i < directions.length ; i++){
+          let animationName = "fadeout-" + directions[i];
+          directions[i] === "right"
+            ? transLateDegreePercent = -transLateDegreePercent
+            : 0;
+
+          let keyframes = `@keyframes `+ animationName +`{
+            from {
+              transform: translateX(0%);
+              opacity: 1;
+            }
+            to {
+              transform: translateX(`+ transLateDegreePercent +`%);
+              opacity: 0;
+            }
+          }`;
+    
+          let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+          stylesheet.sheet.insertRule(keyframes)
+        }
+        mobileAnimations = 1;
       };
     };
 
@@ -623,6 +625,15 @@ class TearOffPad extends HTMLElement {
         mobileDrag(e)
       }
     };
+
+    function mobileRefresh(e){
+      if ( renderPageCallCounter != 1 ){
+        renderPageCallCounter = 0;
+        mobileDrag(e);
+        removeAllFloorElements();
+      };
+    }
+
   };
 };
 

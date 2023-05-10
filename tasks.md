@@ -98,3 +98,9 @@ newest:
   - [x] mobile can sidescroll/upside down when scrolling while transition to right
   - [ ] swing-problems
   - [ ] z-index pages/curPage behind 
+  - [x] blue element highlighting chrome android
+
+
+
+optimization
+ - [ ] optimize page layout so that it 
