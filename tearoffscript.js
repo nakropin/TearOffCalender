@@ -244,7 +244,6 @@ class TearOffPad extends HTMLElement {
     function getBezierCoordinates(e){ /* get mouseCoords at start */
       let mouseX, mouseY;
       let bezierRandomizer = 115;
-      console.log(e)
       if (e === undefined){
         let randomCoord = getRandomCoordinate();
         mouseX = randomCoord.x;
@@ -311,6 +310,8 @@ class TearOffPad extends HTMLElement {
         const bezier = getBezierCoordinates(event);
         let progress = 0;
         let curDegree = calcDegFromCurMouse(getCoordinates((event)).x);
+
+        if(isNaN(curDegree)){curDegree = Math.random()*5} /* catches first */
         curPage.style.transition = 'transform-origin 1s ease';
         curPage.style.transformOrigin = 'center';
 
@@ -379,7 +380,7 @@ class TearOffPad extends HTMLElement {
           requestAnimationFrame(() => {
             curPage.style.transform = 'rotate(' + curDegree + 'deg)';
           });
-
+        //setTransitionDuration(curPage, "0s")
         animatePage();
       }
       if( lastMouseX === null ){
@@ -415,6 +416,7 @@ class TearOffPad extends HTMLElement {
           curPage.style.transform = 'rotate(' + curDegree + 'deg)';
         });
         lastDragPosition = Math.abs(curDegree);
+        //setTransitionDuration(curPage, "0s")
         if ( Math.abs(curDegree) >= maxTearDegree ) {
           animatePage();
         };
@@ -430,6 +432,8 @@ class TearOffPad extends HTMLElement {
             setTransitionDuration(curPage, "0.3s")
             curPage.style.transform = 'rotate(' + curStuck + 'deg)';
           });
+          //setTransitionDuration(curPage, "0s")
+
           oneHit = 1;
         }
       // else if (

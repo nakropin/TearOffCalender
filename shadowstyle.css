@@ -99,12 +99,3 @@
     height: 382.7px;
   }
 }
-
-@keyframes test {
-  0%    { opacity: 0; }
-  20%   { opacity: 1; }
-  80%   { opacity: 0; }
-  100%  { opacity: 1; }
-}
-
-
