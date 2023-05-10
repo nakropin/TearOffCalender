@@ -311,7 +311,7 @@ class TearOffPad extends HTMLElement {
         let progress = 0;
         let curDegree = calcDegFromCurMouse(getCoordinates((event)).x);
 
-        if(isNaN(curDegree)){curDegree = Math.random()*5} /* catches first */
+        if(isNaN(curDegree)){curDegree = Math.random()*5} /* catches first page animation */
         curPage.style.transition = 'transform-origin 1s ease';
         curPage.style.transformOrigin = 'center';
 
