@@ -42,12 +42,6 @@ class TearOffPad extends HTMLElement {
     const tearOnLeave             = componentElement.getAttribute( 'data-tearonleave' );
     const clickToTear             = componentElement.getAttribute( 'data-clicktotear' );
 
-    /* tearMaxDegree and dragelementfactor need to be adjusted in combination */
-    // let tearMaxDegree;
-    // let dragElementFactor;
-    // let dragSettings = 1; 
-    // tearDragFactor(dragSettings);
-
     createBasicPage();
     randomBackgroundColor();
 
@@ -65,8 +59,7 @@ class TearOffPad extends HTMLElement {
     renderPage(); /* renders the first page */
     setEventListeners();
 
-    /* Functions */
-
+    /* Load Page and Images */
     function detectDeviceType(){
       const deviceType = /Kindle|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
         ? 'Mobile'
@@ -121,22 +114,6 @@ class TearOffPad extends HTMLElement {
       return randomizedList;
     };
 
-    function renderPage() {
-      const currentSrc = randomFiles[ renderPageCallCounter ];
-      if (renderPageCallCounter + 1 < randomFiles.length ){
-        let nextSrc = randomFiles[ renderPageCallCounter + 1 ];
-        pages.style.backgroundImage = ('url('+ nextSrc + ')');
-      }
-      const newPage = document.createElement('img');
-      newPage.classList.add('page');
-      newPage.src = currentSrc;
-      newPage.setAttribute('alt', setAltText());
-      pages.appendChild(newPage);
-      pages.setAttribute('title', pageImgTitle);
-      pages.setAttribute('tabindex', '0');
-      renderPageCallCounter++;
-    };
-    
     function setAltText(){
       const initialAltTexts = [ altTextFrontPage, altTextImages, altTextImprint ];
       let useAltTags = []
@@ -145,46 +122,8 @@ class TearOffPad extends HTMLElement {
       return result
     };
 
-    function imprintbtn() {
-      // TODO: putin fake dragElement for touch/mouse
-      // pointerdown -> pointermove -> pointerup
-      // only if Desktop?
-      animationDelayIterator();
-      turnOffEventListenersWhileEventAction();
-    };
-
-    /* recursively call animation */
-    function animationDelayIterator() {
-      if( notLastPage() ){
-        animatePage();
-        setTimeout(animationDelayIterator, delay);
-      };
-    };
-
-    function turnOffEventListenersWhileEventAction(){
-      const clickableElements = [ pages, refresh, imprint ];
-      clickableElements.forEach(e => e.setAttribute('disabled', 'disabled'));
-      const currentDelay = delay * ( ( randomFiles.length - renderPageCallCounter ) + 3 );
-      setTimeout(function() {
-        clickableElements.forEach(e => e.removeAttribute('disabled'));
-      }, currentDelay );
-    };
-
-    function refreshbtn(){
-      if ( renderPageCallCounter != 1 ){
-        renderPageCallCounter = 0;
-        animatePage();
-        removeAllFloorElements();
-      };
-    };
-
-    function removeAllFloorElements(){
-      shadow.querySelectorAll('.floor').forEach(e => e.remove());
-    };
-
     function randomBackgroundColor() {
       let randomColor = bgColors[ Math.floor( Math.random() * bgColors.length) ];
-      //TODO: let tearOffPadElement = document.getElementsByTagName("tear-off-pad")[0]
       document.body.style.background = randomColor;
     };
 
@@ -216,12 +155,67 @@ class TearOffPad extends HTMLElement {
       };
     };
 
+    /* Functions */
+    function renderPage() {
+      const currentSrc = randomFiles[ renderPageCallCounter ];
+      if (renderPageCallCounter + 1 < randomFiles.length ){
+        let nextSrc = randomFiles[ renderPageCallCounter + 1 ];
+        pages.style.backgroundImage = ('url('+ nextSrc + ')');
+      }
+      const newPage = document.createElement('img');
+      newPage.classList.add('page');
+      newPage.src = currentSrc;
+      newPage.setAttribute('alt', setAltText());
+      pages.appendChild(newPage);
+      pages.setAttribute('title', pageImgTitle);
+      pages.setAttribute('tabindex', '0');
+      renderPageCallCounter++;
+    };
+
+    /* Button Functions */
+
+    function refreshbtn(){
+      if ( renderPageCallCounter != 1 ){
+        renderPageCallCounter = 0;
+        animatePage();
+        removeAllFloorElements();
+      };
+    };
+
+    function imprintbtn() {
+      animationDelayIterator( animatePage );
+      turnOffEventListenersWhileEventAction();
+    };
+
+    /* recursively call animation */
+    function animationDelayIterator( animation ) {
+      if( notLastPage() ){
+        animation();
+        setTimeout( animationDelayIterator(animation), delay );
+      };
+    };
+
+    function turnOffEventListenersWhileEventAction(){
+      const clickableElements = [ pages, refresh, imprint ];
+      clickableElements.forEach(e => e.setAttribute('disabled', 'disabled'));
+      const currentDelay = delay * ( ( randomFiles.length - renderPageCallCounter ) + 3 );
+      setTimeout(function() {
+        clickableElements.forEach(e => e.removeAttribute('disabled'));
+      }, currentDelay );
+    };
+
+    function removeAllFloorElements(){
+      shadow.querySelectorAll('.floor').forEach(e => e.remove());
+    };
+
+    /* Desktop Animations */
+
     /* helpers */
     const width = window.innerWidth;
     const height = window.innerHeight;
     const centerX = width / 2;
     const centerY = height / 2;
-    const targetX = centerX / 8 * 4.5;
+    const targetX = centerX / 8 * 1.5; // changed from 5
     const targetY = centerY / 8 * 6; // changed from 7
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
     
@@ -231,6 +225,7 @@ class TearOffPad extends HTMLElement {
     let lastDragPosition = 0;
     let lastMouseX = null;
     let keyFrameHasBeenSet = 0;
+    let stuckDegree = 20;
 
     function makeFloorElement( element ){
       element.classList.add('floor');
@@ -306,7 +301,7 @@ class TearOffPad extends HTMLElement {
       removeTempEventListeners();
       if ( notLastPage() ) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
-        zStyleSwitch(curPage, 1);
+        setZIndex(curPage, 1);
         setTransitionDuration(curPage, "0.01s");
         curPage.setAttribute( "border", "1px solid black;" )      
         const bezier = getBezierCoordinates(event);
@@ -316,18 +311,18 @@ class TearOffPad extends HTMLElement {
         curPage.style.transformOrigin = 'center';
 
         const animateOnce = () => {
-          //console.log("curDir", curDir)
           let position = getBezierPosition(bezier, progress);
           let rotationAngle = Math.atan2(position.x, position.y) * progress;
           curDegree += rotationAngle;
           // optional: change RotateX Factor
-          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ 60*progress +'deg) rotateZ('+ curDegree+'deg)';
+          let rotateXFactor = 77
+          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree+'deg)';
           if (progress < 1) {
             progress += 0.016;
             requestAnimationFrame(animateOnce);
           } else {
             progress = 0;
-            zStyleSwitch(curPage, -1);
+            setZIndex(curPage, -1);
           };
         };
         animateOnce();
@@ -341,15 +336,18 @@ class TearOffPad extends HTMLElement {
       element.style.transitionDuration = value;
     };
 
-    function zStyleSwitch( element, value ){
+    function setZIndex( element, value ){
       element.style.zIndex = value;
     };
 
     function setDragDirection(e){
-        const rect = pages.getBoundingClientRect();
-        const leftDist = e.clientX - rect.left;
-        const rightDist = rect.right - e.clientX;
-        return leftDist < rightDist ? 'right' : 'left';
+      let touchEventX = deviceType === "Mobile"
+        ? e.touches[0].clientX
+        : e.clientX;
+      const rect = pages.getBoundingClientRect();
+      const leftDist = touchEventX - rect.left;
+      const rightDist = rect.right - touchEventX;
+      return leftDist < rightDist ? 'right' : 'left';
     };
     
     function resetHelpers(){
@@ -363,22 +361,34 @@ class TearOffPad extends HTMLElement {
       let mouseX = e.clientX - centerX;
       let animationFactor = 15; /* AnimationFactor sets how often DOM-transform is called */
       let curDegree;
+      console.log("0",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
 
       if (lastMouseX === null){
         lastMouseX = mouseX;
       }
-      /* TODO: interrupt */
+      /* TODO: fix interrupt */
       // else if ( keyFrameHasBeenSet === 1 && (
       //   (curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
-      //   (curDir === "left" && e.clientX < pages.getBoundingClientRect().right )   )
+      //   (curDir === "left"  && e.clientX < pages.getBoundingClientRect().right )   )
       // ){
-      //   // TODO: interrupt if curdir right and x> borderleft and ???
-
+      //   console.log("1",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
+      //   stuckDegree = curDir === "right" 
+      //     ? -stuckDegree 
+      //     : stuckDegree;
+      //   setTransitionDuration(curPage, "0.045s")
+      //   curPage.style.transform = 'rotate('+ stuckDegree+'deg)';
+      //   curPage.style.animation = 'none';
+      //   let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+      //   deleteKeyFrameByName(stylesheet.sheet, "swing")
+      //   keyFrameHasBeenSet = 0;
       // }
       else if ( 
+        // (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
+        // (curDir === "left" && mouseX < lastMouseX - animationFactor )
         (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
         (curDir === "left" && mouseX < lastMouseX - animationFactor )
       ){
+        console.log("2")
         lastMouseX = mouseX;
         curDegree = calcDegFromCurMouse( mouseX );
         setTransitionDuration(curPage, "0.045s")
@@ -389,79 +399,61 @@ class TearOffPad extends HTMLElement {
         if ( Math.abs(curDegree) >= maxTearDegree ) {
           animatePage();
         };
-        keyFrameHasBeenSet = 0
+        //keyFrameHasBeenSet = 0
       }
-      else if (
-        (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
-        (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
-      ){
-        setTransitionDuration(curPage, "0s")
-        let stuckDegree = 20;
-        stuckDegree = curDir === "right" 
-          ? -stuckDegree 
-          : stuckDegree;
-        if (keyFrameHasBeenSet === 0) {
-          makeCurSwingAnimation(curPage, stuckDegree, lastDragPosition);
-        }
-        /* Set Border, calc corresponding mouseX from lastDragPosition */
-        lastDragPosition = stuckDegree;
-        lastMouseX = calcMouseFromDegree( lastDragPosition );
-      };
+      // else if (
+      //   (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
+      //   (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
+      // ){
+      //   console.log("3")
+      //   setTransitionDuration(curPage, "0s")
+      //   stuckDegree = curDir === "right" 
+      //     ? -stuckDegree 
+      //     : stuckDegree;
+      //   if (keyFrameHasBeenSet === 0) {
+      //     makeCurSwingAnimation(curPage, stuckDegree, lastDragPosition);
+      //   }
+      //   keyFrameHasBeenSet = 1;
+      //   /* Set Border, calc corresponding mouseX from lastDragPosition */
+      //   lastDragPosition = stuckDegree;
+      //   lastMouseX = calcMouseFromDegree( lastDragPosition );
+      // };
     };
 
-
-    /* Watch Out for Whitespaces! */
-    function makeCurSwingAnimation(element, stuckDegree, lastDragPosition){
-      let swingFactor = 1.5;
-      let stuckDegreeOne;
-      let stuckDegreeTwo;
-      // console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
-      // TODO: check: should drag coming from right left first and vice versa
-      if (Math.abs(lastDragPosition) - Math.abs(stuckDegree)){
-        stuckDegreeOne = stuckDegree+swingFactor;
-        stuckDegreeTwo = stuckDegree-swingFactor;
-      }
-      else {
-        stuckDegreeOne = stuckDegree-swingFactor;
-        stuckDegreeTwo = stuckDegree+swingFactor;
-      }
-      
-      /* curDir = setDragDirection(e);
-      curPage.style.transformOrigin = 'top ' + curDir;
-      
-      let curDegree = calcDegFromCurMouse(curDir, mouseX);
-
-      curPage.style.transformOrigin = 'top ' + curDir;
-      curPage.style.transform = 'rotate(' + curDegree + 'deg)';
-      lastDragPosition = curDegree; */
-
-      let animationName = "swing";
-      let animationTime = "1s";
-      let keyframes = `@keyframes `+ animationName +`{
-       20% { transform: rotate(${stuckDegreeOne}deg);}
-       40% { transform: rotate(${stuckDegreeTwo}deg);}
-       60% { transform: rotate(${stuckDegreeOne}deg);}
-       80% { transform: rotate(${stuckDegreeTwo}deg);}
-      100% { transform: rotate(${stuckDegree}deg);}
-      }`;
-
-      let stylesheet = shadow.querySelector("link[rel='stylesheet']");
-      stylesheet.sheet.insertRule(keyframes)
-
-      requestAnimationFrame(() => {
-        element.style.animation = animationName + " " + animationTime + " " + "linear";
-      });
-
-      element.addEventListener('animationend', () => {
-        element.style.transform = 'rotate('+ stuckDegree+'deg)';
-        element.style.animation = 'none';
-        deleteKeyFrameByName(stylesheet.sheet, "swing")
-        //element.removeEventListener('animationend animationpause')
-        // curPage.style.animationPlayState = 'paused';
-        // deleteKeyFrameByName(stylesheet.sheet, "swing")
-      });
-      keyFrameHasBeenSet = 1;
-    };
+    // function makeCurSwingAnimation(element, stuckDegree, lastDragPosition){
+    //   let swingFactor = 1.5;
+    //   let stuckDegreeOne;
+    //   let stuckDegreeTwo;
+    //   // console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
+    //   // TODO: check: should drag coming from right left first and vice versa
+    //   if (Math.abs(lastDragPosition) - Math.abs(stuckDegree)){
+    //     stuckDegreeOne = stuckDegree+swingFactor;
+    //     stuckDegreeTwo = stuckDegree-swingFactor;
+    //   }
+    //   else {
+    //     stuckDegreeOne = stuckDegree-swingFactor;
+    //     stuckDegreeTwo = stuckDegree+swingFactor;
+    //   }
+    //   let animationName = "swing";
+    //   let animationTime = "1s";
+    //   let keyframes = `@keyframes `+ animationName +`{
+    //    20% { transform: rotate(${stuckDegreeOne}deg);}
+    //    40% { transform: rotate(${stuckDegreeTwo}deg);}
+    //    60% { transform: rotate(${stuckDegreeOne}deg);}
+    //    80% { transform: rotate(${stuckDegreeTwo}deg);}
+    //   100% { transform: rotate(${stuckDegree}deg);}
+    //   }`;
+    //   let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+    //   stylesheet.sheet.insertRule(keyframes)
+    //   requestAnimationFrame(() => {
+    //     element.style.animation = animationName + " " + animationTime + " " + "linear";
+    //   });
+    //   element.addEventListener('animationend', () => {
+    //     element.style.transform = 'rotate('+ stuckDegree+'deg)';
+    //     element.style.animation = 'none';
+    //     deleteKeyFrameByName(stylesheet.sheet, "swing");
+    //   });
+    // };
 
     function deleteKeyFrameByName(styleSheet, animationName){
       for (let i = 0; i < styleSheet.cssRules.length; i++) {
@@ -473,25 +465,18 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-    /* in this setup, difference in y-value through mousemove is measured so that
-       one can move up and down afterwards or vice versa and it still will tear the animation */
-
     function randomizer ( min, max ){
       return Math.floor(Math.random() * (max - min + 1)) + min;
     };
 
     function calcMouseFromDegree( degree ){
       let result = ( mouseXStart - ( 10 * degree ) )
-      // result === curDir === "right"
-      //   ? Math.abs( result ) 
-      //   : result;
       console.log(result)
       return result
     };
 
     function calcDegFromCurMouse( mouseX ) {
       let unsignedDegree = ( mouseXStart - mouseX ) / 10;
-      // let curDegree = curDir === "left" ? Math.abs(((unsignedDegree + (mouseY/ 12)) ) / dragElementFactor) : -Math.abs((unsignedDegree - (mouseAddY/ 12)) / dragElementFactor);
       let curDegree = curDir === "left"
         ? Math.abs( unsignedDegree ) 
         : -Math.abs( unsignedDegree );
@@ -509,11 +494,6 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-
-    function mobileAnimation(event){
-
-    }
-
     function notLastPage(){
       return renderPageCallCounter !== randomFiles.length;
     };
@@ -523,6 +503,73 @@ class TearOffPad extends HTMLElement {
         ? document.body.style.cursor = 'pointer'
         : document.body.style.cursor = 'auto';
     };    
+
+    /* Animation + Buttons Mobile */
+    let mobileAnimations = 0;
+
+    function mobileDrag(e){
+      if ( notLastPage() ) {
+        const curPage = shadow.querySelectorAll("[class='page']")[0];
+        let mobileDir = typeof e.touches === "undefined"
+          ? "left"
+          : setDragDirection(e);
+        setZIndex(curPage, 1);
+        curPage.setAttribute( "border", "1px solid black;" )      
+        makeMobileFadeOutAnimations(e);
+        let animationTime = "0.5s";
+        requestAnimationFrame(() => {
+          curPage.style.animation = "fadeout-" + mobileDir + " " + animationTime + " " + "linear";
+        });
+        curPage.addEventListener( 'animationend', () => { curPage.remove() } );
+        renderPage();
+        makeFloorElement(curPage)
+      };
+    };
+
+    function makeMobileFadeOutAnimations( e ){
+      // let yTranslation = e.touches[0].clientY
+      // let xTranslation = e.touches[0].clientX
+      
+      let transLateDegreePercent = 150
+      let directions = ["left", "right"]
+      if (mobileAnimations === 0){
+        for (let i = 0; i < directions.length ; i++){
+          let animationName = "fadeout-" + directions[i];
+          if( directions[i] === "right" ){ transLateDegreePercent = -transLateDegreePercent };
+          // TODO: translateY(`+ transLateDegreePercent +`%);
+          let keyframes = `@keyframes `+ animationName +`{
+            from {
+              transform: translateX(0%);
+              opacity: 1;
+            }
+            to {
+              transform: translateX(`+ transLateDegreePercent +`%);
+              opacity: 0;
+            }
+          }`;
+          let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+          stylesheet.sheet.insertRule(keyframes)
+        }
+        mobileAnimations = 1;
+      };
+    };
+
+    function mobileImprint(e){
+      if (notLastPage()){
+        renderPageCallCounter = randomFiles.length-1
+        mobileDrag(e)
+      }
+    };
+
+    function mobileRefresh(e){
+      if ( renderPageCallCounter != 1 ){
+        renderPageCallCounter = 0;
+        mobileDrag(e);
+        removeAllFloorElements();
+      };
+    }
+
+    /* EventListeners */
 
     function removeTempEventListeners(){
       document.removeEventListener(moveEventType, dragElement);
@@ -546,11 +593,12 @@ class TearOffPad extends HTMLElement {
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
-        // TODO: mobile animation
-        // get touchstart and animate on touchstart or touchend
-        pages.addEventListener(startEventType, mobileAnimation);
+        document.body.addEventListener('touchmove', function(e){ e.preventDefault(); });
+        pages.addEventListener(startEventType, mobileDrag);
+        refresh.addEventListener('click', mobileRefresh);
+        imprint.addEventListener('click', mobileImprint);
       }
-      if ( deviceType === 'Desktop' ){
+      else if ( deviceType === 'Desktop' ){
         pages.addEventListener(startEventType, startTransform);
         refresh.addEventListener('click', refreshbtn);
         imprint.addEventListener('click', imprintbtn);
@@ -558,30 +606,8 @@ class TearOffPad extends HTMLElement {
         document.addEventListener('contextmenu', event => event.preventDefault());
       };
     };
+
   };
 };
 
 customElements.define('tear-off-pad', TearOffPad);
-
-
-    // function responsiveEventHandler (e){
-    //   let x
-    //   let y;
-    //   if ( deviceType === 'Mobile' ){
-    //     x = e.changedTouches[0].clientX
-    //     y = e.changedTouches[0].clientY
-    //   }
-    //   else {
-    //     x = e.clientX
-    //     y = e.clientY
-    //   }
-    // return { x: x, y: y}
-    // }
-
-
-        // function tearDragFactor( dragSettings ){
-    //   tearMaxDegree = (dragSettings * 60);
-    //   dragElementFactor = (dragSettings * 2.3 );
-    //   console.log(tearMaxDegree, dragElementFactor)
-    //   //return {tearMaxDegree: tearMaxDegree, dragElementFactor: dragElementFactor};
-    // };
