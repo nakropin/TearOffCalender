@@ -215,7 +215,7 @@ class TearOffPad extends HTMLElement {
     const height = window.innerHeight;
     const centerX = width / 2;
     const centerY = height / 2;
-    const targetX = centerX / 8 * 2.5; // changed from 5
+    const targetX = centerX / 8 * 1.5; // changed from 5
     const targetY = centerY / 8 * 6; // changed from 7
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
     
@@ -315,7 +315,7 @@ class TearOffPad extends HTMLElement {
           let rotationAngle = Math.atan2(position.x, position.y) * progress;
           curDegree += rotationAngle;
           // optional: change RotateX Factor
-          let rotateXFactor = 75
+          let rotateXFactor = 77
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree+'deg)';
           if (progress < 1) {
             progress += 0.016;
@@ -383,6 +383,8 @@ class TearOffPad extends HTMLElement {
       //   keyFrameHasBeenSet = 0;
       // }
       else if ( 
+        // (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
+        // (curDir === "left" && mouseX < lastMouseX - animationFactor )
         (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
         (curDir === "left" && mouseX < lastMouseX - animationFactor )
       ){
@@ -397,7 +399,7 @@ class TearOffPad extends HTMLElement {
         if ( Math.abs(curDegree) >= maxTearDegree ) {
           animatePage();
         };
-        keyFrameHasBeenSet = 0
+        //keyFrameHasBeenSet = 0
       }
       // else if (
       //   (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
@@ -418,40 +420,40 @@ class TearOffPad extends HTMLElement {
       // };
     };
 
-    function makeCurSwingAnimation(element, stuckDegree, lastDragPosition){
-      let swingFactor = 1.5;
-      let stuckDegreeOne;
-      let stuckDegreeTwo;
-      // console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
-      // TODO: check: should drag coming from right left first and vice versa
-      if (Math.abs(lastDragPosition) - Math.abs(stuckDegree)){
-        stuckDegreeOne = stuckDegree+swingFactor;
-        stuckDegreeTwo = stuckDegree-swingFactor;
-      }
-      else {
-        stuckDegreeOne = stuckDegree-swingFactor;
-        stuckDegreeTwo = stuckDegree+swingFactor;
-      }
-      let animationName = "swing";
-      let animationTime = "1s";
-      let keyframes = `@keyframes `+ animationName +`{
-       20% { transform: rotate(${stuckDegreeOne}deg);}
-       40% { transform: rotate(${stuckDegreeTwo}deg);}
-       60% { transform: rotate(${stuckDegreeOne}deg);}
-       80% { transform: rotate(${stuckDegreeTwo}deg);}
-      100% { transform: rotate(${stuckDegree}deg);}
-      }`;
-      let stylesheet = shadow.querySelector("link[rel='stylesheet']");
-      stylesheet.sheet.insertRule(keyframes)
-      requestAnimationFrame(() => {
-        element.style.animation = animationName + " " + animationTime + " " + "linear";
-      });
-      element.addEventListener('animationend', () => {
-        element.style.transform = 'rotate('+ stuckDegree+'deg)';
-        element.style.animation = 'none';
-        deleteKeyFrameByName(stylesheet.sheet, "swing");
-      });
-    };
+    // function makeCurSwingAnimation(element, stuckDegree, lastDragPosition){
+    //   let swingFactor = 1.5;
+    //   let stuckDegreeOne;
+    //   let stuckDegreeTwo;
+    //   // console.log("curDir "+curDir,"lastDragPosition "+lastDragPosition, "stuckDegree " + stuckDegree)
+    //   // TODO: check: should drag coming from right left first and vice versa
+    //   if (Math.abs(lastDragPosition) - Math.abs(stuckDegree)){
+    //     stuckDegreeOne = stuckDegree+swingFactor;
+    //     stuckDegreeTwo = stuckDegree-swingFactor;
+    //   }
+    //   else {
+    //     stuckDegreeOne = stuckDegree-swingFactor;
+    //     stuckDegreeTwo = stuckDegree+swingFactor;
+    //   }
+    //   let animationName = "swing";
+    //   let animationTime = "1s";
+    //   let keyframes = `@keyframes `+ animationName +`{
+    //    20% { transform: rotate(${stuckDegreeOne}deg);}
+    //    40% { transform: rotate(${stuckDegreeTwo}deg);}
+    //    60% { transform: rotate(${stuckDegreeOne}deg);}
+    //    80% { transform: rotate(${stuckDegreeTwo}deg);}
+    //   100% { transform: rotate(${stuckDegree}deg);}
+    //   }`;
+    //   let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+    //   stylesheet.sheet.insertRule(keyframes)
+    //   requestAnimationFrame(() => {
+    //     element.style.animation = animationName + " " + animationTime + " " + "linear";
+    //   });
+    //   element.addEventListener('animationend', () => {
+    //     element.style.transform = 'rotate('+ stuckDegree+'deg)';
+    //     element.style.animation = 'none';
+    //     deleteKeyFrameByName(stylesheet.sheet, "swing");
+    //   });
+    // };
 
     function deleteKeyFrameByName(styleSheet, animationName){
       for (let i = 0; i < styleSheet.cssRules.length; i++) {
@@ -513,7 +515,7 @@ class TearOffPad extends HTMLElement {
           : setDragDirection(e);
         setZIndex(curPage, 1);
         curPage.setAttribute( "border", "1px solid black;" )      
-        makeMobileFadeOutAnimations();
+        makeMobileFadeOutAnimations(e);
         let animationTime = "0.5s";
         requestAnimationFrame(() => {
           curPage.style.animation = "fadeout-" + mobileDir + " " + animationTime + " " + "linear";
@@ -524,20 +526,24 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-    function makeMobileFadeOutAnimations(  ){
+    function makeMobileFadeOutAnimations( e ){
+      // let yTranslation = e.touches[0].clientY
+      // let xTranslation = e.touches[0].clientX
+      
       let transLateDegreePercent = 150
       let directions = ["left", "right"]
       if (mobileAnimations === 0){
         for (let i = 0; i < directions.length ; i++){
           let animationName = "fadeout-" + directions[i];
           if( directions[i] === "right" ){ transLateDegreePercent = -transLateDegreePercent };
+          // TODO: translateY(`+ transLateDegreePercent +`%);
           let keyframes = `@keyframes `+ animationName +`{
             from {
               transform: translateX(0%);
               opacity: 1;
             }
             to {
-              transform: translateX(`+ transLateDegreePercent +`%) translateY(`+ transLateDegreePercent +`%);
+              transform: translateX(`+ transLateDegreePercent +`%);
               opacity: 0;
             }
           }`;

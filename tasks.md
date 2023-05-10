@@ -100,7 +100,5 @@ newest:
   - [ ] z-index pages/curPage behind 
   - [x] blue element highlighting chrome android
 
-
-
 optimization
  - [ ] optimize page layout so that it 
