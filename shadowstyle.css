@@ -95,7 +95,18 @@
 /* Desktop */
 @media only screen and (min-width: 1000px) {
   .pages, .page, .tear, .floor{
-    width: 287px;
-    height: 382.7px;
+    width: 37.5vh;
+    height: 50vh;
+    /*
+
+    */
+
+  }
+  .pages{
+    position: absolute;
+    top: 16vh;
+    margin: 0 auto;
+    left: 25%;
+    right:25%;
   }
 }
