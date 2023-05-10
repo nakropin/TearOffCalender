@@ -183,10 +183,7 @@ class TearOffPad extends HTMLElement {
     };
 
     function imprintbtn() {
-      let animationtype = deviceType === "Mobile"
-        ? mobileDrag
-        : animatePage;
-      animationDelayIterator( animationtype );
+      animationDelayIterator( animatePage );
       turnOffEventListenersWhileEventAction();
     };
 
@@ -218,7 +215,7 @@ class TearOffPad extends HTMLElement {
     const height = window.innerHeight;
     const centerX = width / 2;
     const centerY = height / 2;
-    const targetX = centerX / 8 * 4.5;
+    const targetX = centerX / 8 * 2.5; // changed from 5
     const targetY = centerY / 8 * 6; // changed from 7
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
     
@@ -318,7 +315,8 @@ class TearOffPad extends HTMLElement {
           let rotationAngle = Math.atan2(position.x, position.y) * progress;
           curDegree += rotationAngle;
           // optional: change RotateX Factor
-          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ 60*progress +'deg) rotateZ('+ curDegree+'deg)';
+          let rotateXFactor = 75
+          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree+'deg)';
           if (progress < 1) {
             progress += 0.016;
             requestAnimationFrame(animateOnce);
@@ -369,21 +367,21 @@ class TearOffPad extends HTMLElement {
         lastMouseX = mouseX;
       }
       /* TODO: fix interrupt */
-      else if ( keyFrameHasBeenSet === 1 && (
-        (curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
-        (curDir === "left"  && e.clientX < pages.getBoundingClientRect().right )   )
-      ){
-        console.log("1",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
-        stuckDegree = curDir === "right" 
-          ? -stuckDegree 
-          : stuckDegree;
-        setTransitionDuration(curPage, "0.045s")
-        curPage.style.transform = 'rotate('+ stuckDegree+'deg)';
-        curPage.style.animation = 'none';
-        let stylesheet = shadow.querySelector("link[rel='stylesheet']");
-        deleteKeyFrameByName(stylesheet.sheet, "swing")
-        keyFrameHasBeenSet = 0;
-      }
+      // else if ( keyFrameHasBeenSet === 1 && (
+      //   (curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
+      //   (curDir === "left"  && e.clientX < pages.getBoundingClientRect().right )   )
+      // ){
+      //   console.log("1",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
+      //   stuckDegree = curDir === "right" 
+      //     ? -stuckDegree 
+      //     : stuckDegree;
+      //   setTransitionDuration(curPage, "0.045s")
+      //   curPage.style.transform = 'rotate('+ stuckDegree+'deg)';
+      //   curPage.style.animation = 'none';
+      //   let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+      //   deleteKeyFrameByName(stylesheet.sheet, "swing")
+      //   keyFrameHasBeenSet = 0;
+      // }
       else if ( 
         (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
         (curDir === "left" && mouseX < lastMouseX - animationFactor )
@@ -401,23 +399,23 @@ class TearOffPad extends HTMLElement {
         };
         keyFrameHasBeenSet = 0
       }
-      else if (
-        (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
-        (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
-      ){
-        console.log("3")
-        setTransitionDuration(curPage, "0s")
-        stuckDegree = curDir === "right" 
-          ? -stuckDegree 
-          : stuckDegree;
-        if (keyFrameHasBeenSet === 0) {
-          makeCurSwingAnimation(curPage, stuckDegree, lastDragPosition);
-        }
-        keyFrameHasBeenSet = 1;
-        /* Set Border, calc corresponding mouseX from lastDragPosition */
-        lastDragPosition = stuckDegree;
-        lastMouseX = calcMouseFromDegree( lastDragPosition );
-      };
+      // else if (
+      //   (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
+      //   (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
+      // ){
+      //   console.log("3")
+      //   setTransitionDuration(curPage, "0s")
+      //   stuckDegree = curDir === "right" 
+      //     ? -stuckDegree 
+      //     : stuckDegree;
+      //   if (keyFrameHasBeenSet === 0) {
+      //     makeCurSwingAnimation(curPage, stuckDegree, lastDragPosition);
+      //   }
+      //   keyFrameHasBeenSet = 1;
+      //   /* Set Border, calc corresponding mouseX from lastDragPosition */
+      //   lastDragPosition = stuckDegree;
+      //   lastMouseX = calcMouseFromDegree( lastDragPosition );
+      // };
     };
 
     function makeCurSwingAnimation(element, stuckDegree, lastDragPosition){
