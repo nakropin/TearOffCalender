@@ -121,12 +121,17 @@ class TearOffPad extends HTMLElement {
       return randomizedList;
     };
 
+    /*  */
     function renderPage() {
       const currentSrc = randomFiles[ renderPageCallCounter ];
       if (renderPageCallCounter + 1 < randomFiles.length ){
         let nextSrc = randomFiles[ renderPageCallCounter + 1 ];
         pages.style.backgroundImage = ('url('+ nextSrc + ')');
       }
+      // else{
+      //   let nextSrc = randomFiles[ renderPageCallCounter ];
+      //   pages.style.backgroundImage = ('url('+ nextSrc + ')');
+      // }
       const newPage = document.createElement('img');
       newPage.classList.add('page');
       newPage.src = currentSrc;
@@ -146,18 +151,18 @@ class TearOffPad extends HTMLElement {
     };
 
     function imprintbtn() {
-      // TODO: putin fake dragElement for touch/mouse
-      // pointerdown -> pointermove -> pointerup
-      // only if Desktop?
-      animationDelayIterator();
+      let animationtype = deviceType === "Mobile"
+        ? mobileDrag
+        : animatePage;
+      animationDelayIterator( animationtype );
       turnOffEventListenersWhileEventAction();
     };
 
     /* recursively call animation */
-    function animationDelayIterator() {
+    function animationDelayIterator( animation  ) {
       if( notLastPage() ){
-        animatePage();
-        setTimeout(animationDelayIterator, delay);
+        animation();
+        setTimeout( animationDelayIterator(animation), delay );
       };
     };
 
@@ -231,6 +236,7 @@ class TearOffPad extends HTMLElement {
     let lastDragPosition = 0;
     let lastMouseX = null;
     let keyFrameHasBeenSet = 0;
+    let stuckDegree = 20;
 
     function makeFloorElement( element ){
       element.classList.add('floor');
@@ -346,10 +352,13 @@ class TearOffPad extends HTMLElement {
     };
 
     function setDragDirection(e){
-        const rect = pages.getBoundingClientRect();
-        const leftDist = e.clientX - rect.left;
-        const rightDist = rect.right - e.clientX;
-        return leftDist < rightDist ? 'right' : 'left';
+      let touchEventX = deviceType === "Mobile"
+        ? e.touches[0].clientX
+        : e.clientX;
+      const rect = pages.getBoundingClientRect();
+      const leftDist = touchEventX - rect.left;
+      const rightDist = rect.right - touchEventX;
+      return leftDist < rightDist ? 'right' : 'left';
     };
     
     function resetHelpers(){
@@ -363,22 +372,32 @@ class TearOffPad extends HTMLElement {
       let mouseX = e.clientX - centerX;
       let animationFactor = 15; /* AnimationFactor sets how often DOM-transform is called */
       let curDegree;
+      console.log("0",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
 
       if (lastMouseX === null){
         lastMouseX = mouseX;
       }
-      /* TODO: interrupt */
-      // else if ( keyFrameHasBeenSet === 1 && (
-      //   (curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
-      //   (curDir === "left" && e.clientX < pages.getBoundingClientRect().right )   )
-      // ){
-      //   // TODO: interrupt if curdir right and x> borderleft and ???
-
-      // }
+      /* TODO: fix interrupt */
+      else if ( keyFrameHasBeenSet === 1 && (
+        (curDir === "right" && e.clientX > pages.getBoundingClientRect().left ) ||
+        (curDir === "left"  && e.clientX < pages.getBoundingClientRect().right )   )
+      ){
+        console.log("1",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
+        stuckDegree = curDir === "right" 
+          ? -stuckDegree 
+          : stuckDegree;
+        setTransitionDuration(curPage, "0.045s")
+        curPage.style.transform = 'rotate('+ stuckDegree+'deg)';
+        curPage.style.animation = 'none';
+        let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+        deleteKeyFrameByName(stylesheet.sheet, "swing")
+        keyFrameHasBeenSet = 0;
+      }
       else if ( 
         (curDir === "right" && mouseX > lastMouseX + animationFactor ) ||
         (curDir === "left" && mouseX < lastMouseX - animationFactor )
       ){
+        console.log("2")
         lastMouseX = mouseX;
         curDegree = calcDegFromCurMouse( mouseX );
         setTransitionDuration(curPage, "0.045s")
@@ -395,14 +414,15 @@ class TearOffPad extends HTMLElement {
         (curDir === "right" && e.clientX < pages.getBoundingClientRect().left) ||
         (curDir === "left" && e.clientX > pages.getBoundingClientRect().right)
       ){
+        console.log("3")
         setTransitionDuration(curPage, "0s")
-        let stuckDegree = 20;
         stuckDegree = curDir === "right" 
           ? -stuckDegree 
           : stuckDegree;
         if (keyFrameHasBeenSet === 0) {
           makeCurSwingAnimation(curPage, stuckDegree, lastDragPosition);
         }
+        keyFrameHasBeenSet = 1;
         /* Set Border, calc corresponding mouseX from lastDragPosition */
         lastDragPosition = stuckDegree;
         lastMouseX = calcMouseFromDegree( lastDragPosition );
@@ -426,15 +446,6 @@ class TearOffPad extends HTMLElement {
         stuckDegreeTwo = stuckDegree+swingFactor;
       }
       
-      /* curDir = setDragDirection(e);
-      curPage.style.transformOrigin = 'top ' + curDir;
-      
-      let curDegree = calcDegFromCurMouse(curDir, mouseX);
-
-      curPage.style.transformOrigin = 'top ' + curDir;
-      curPage.style.transform = 'rotate(' + curDegree + 'deg)';
-      lastDragPosition = curDegree; */
-
       let animationName = "swing";
       let animationTime = "1s";
       let keyframes = `@keyframes `+ animationName +`{
@@ -455,12 +466,8 @@ class TearOffPad extends HTMLElement {
       element.addEventListener('animationend', () => {
         element.style.transform = 'rotate('+ stuckDegree+'deg)';
         element.style.animation = 'none';
-        deleteKeyFrameByName(stylesheet.sheet, "swing")
-        //element.removeEventListener('animationend animationpause')
-        // curPage.style.animationPlayState = 'paused';
-        // deleteKeyFrameByName(stylesheet.sheet, "swing")
+        deleteKeyFrameByName(stylesheet.sheet, "swing");
       });
-      keyFrameHasBeenSet = 1;
     };
 
     function deleteKeyFrameByName(styleSheet, animationName){
@@ -509,11 +516,6 @@ class TearOffPad extends HTMLElement {
       };
     };
 
-
-    function mobileAnimation(event){
-
-    }
-
     function notLastPage(){
       return renderPageCallCounter !== randomFiles.length;
     };
@@ -546,17 +548,45 @@ class TearOffPad extends HTMLElement {
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
-        // TODO: mobile animation
-        // get touchstart and animate on touchstart or touchend
-        pages.addEventListener(startEventType, mobileAnimation);
+        pages.addEventListener(startEventType, mobileDrag);
+        refresh.addEventListener('click', refreshbtn);
+        imprint.addEventListener('click', mobileImprint);
       }
-      if ( deviceType === 'Desktop' ){
+      else if ( deviceType === 'Desktop' ){
         pages.addEventListener(startEventType, startTransform);
         refresh.addEventListener('click', refreshbtn);
         imprint.addEventListener('click', imprintbtn);
         /* deactivate rightclick */
         document.addEventListener('contextmenu', event => event.preventDefault());
       };
+    };
+
+    /* Mobile functions */
+    function mobileDrag(e){
+      if ( notLastPage() ) {
+        const curPage = shadow.querySelectorAll("[class='page']")[0];
+        let mobileDir = typeof e.touches === "undefined"
+          ? "left"
+          : setDragDirection(e);
+        
+        zStyleSwitch(curPage, 1);
+        curPage.setAttribute( "border", "1px solid black;" )      
+        curPage.style.transition = 'opacity 1s, transform 1s';
+        curPage.style.opacity = '0';
+        mobileDir === "right"
+          ? curPage.style.transform = 'translateX(-100%)'
+          : curPage.style.transform = 'translateX(100%)';
+        
+        renderPage();
+        makeFloorElement(curPage)
+      };
+    };
+
+    function mobileImprint(e){
+      if (notLastPage()){
+        renderPageCallCounter = randomFiles.length-1
+        mobileDrag(e)
+      }
     };
   };
 };
