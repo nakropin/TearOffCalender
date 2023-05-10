@@ -188,7 +188,7 @@ class TearOffPad extends HTMLElement {
     };
 
     /* recursively call animation */
-    function animationDelayIterator( animation  ) {
+    function animationDelayIterator( animation ) {
       if( notLastPage() ){
         animation();
         setTimeout( animationDelayIterator(animation), delay );
@@ -537,7 +537,7 @@ class TearOffPad extends HTMLElement {
               opacity: 1;
             }
             to {
-              transform: translateX(`+ transLateDegreePercent +`%);
+              transform: translateX(`+ transLateDegreePercent +`%) translateY(`+ transLateDegreePercent +`%);
               opacity: 0;
             }
           }`;
