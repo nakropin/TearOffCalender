@@ -364,12 +364,11 @@ class TearOffPad extends HTMLElement {
       let mouseX = e.clientX - centerX;
       let animationFactor = 15; /* AnimationFactor sets how often DOM-transform is called */
       let curDegree;
-      //console.log("0",e.clientX, pages.getBoundingClientRect().right, pages.getBoundingClientRect().left)
 
       let middlePlusRandom = (pages.offsetLeft + pages.offsetWidth / 2 )
       middlePlusRandom += curDir === "right"
-        ? +randomizer(50,120) 
-        : -randomizer(50,120) 
+        ? +randomizer(110,140) 
+        : -randomizer(100,140) 
 
       if( oneHit === 1 &&
         ( ( curDir === "right" && e.clientX > middlePlusRandom  ) ||
