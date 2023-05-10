@@ -490,7 +490,6 @@ class TearOffPad extends HTMLElement {
 
     function calcMouseFromDegree( degree ){
       let result = ( mouseXStart - ( 10 * degree ) )
-      console.log(result)
       return result
     };
 
