@@ -43,6 +43,7 @@ class TearOffPad extends HTMLElement {
     // const clickToTear             = componentElement.getAttribute( 'data-clicktotear' );
     /* should be let */
     const delay                   = parseInt(componentElement.getAttribute( 'data-imprintanimationdelay' ));
+    let curBgColor;
 
     createBasicPage();
     randomBackgroundColor();
@@ -54,7 +55,7 @@ class TearOffPad extends HTMLElement {
     buttonPosition( btnpos );
 
     const fileEnding              = ".svg";
-    const randomFiles             = makeRandomizedFileList();
+    let randomFiles               = makeRandomizedFileList();
     var renderPageCallCounter     = 0;
     
     renderPage(); /* renders the first page */
@@ -128,8 +129,17 @@ class TearOffPad extends HTMLElement {
     };
 
     function randomBackgroundColor() {
-      let randomColor = bgColors[ Math.floor( Math.random() * bgColors.length) ];
+      let curAllowedColors = [];
+      for(let i = 0; i < bgColors.length;i++){
+        if (bgColors[i] !== curBgColor){
+          curAllowedColors.push(bgColors[i])
+          console.log("Push")
+        }
+      }
+      let randomColor = curAllowedColors[ Math.floor( Math.random() * curAllowedColors.length) ];
+      curBgColor = randomColor;
       document.body.style.background = randomColor;
+      console.log(curBgColor)
     };
 
     function buttonPosition( position ){
@@ -180,6 +190,8 @@ class TearOffPad extends HTMLElement {
     /* Button Functions */
 
     function refreshbtn(){
+      randomBackgroundColor();
+      makeNewRandomizedFileList();
       if ( notFirstPage() ){
         renderPageCallCounter = 0;
         animatePage();
@@ -215,6 +227,10 @@ class TearOffPad extends HTMLElement {
     function removeAllFloorElements(){
       shadow.querySelectorAll('.floor').forEach(e => e.remove());
     };
+
+    function makeNewRandomizedFileList (){
+      randomFiles = makeRandomizedFileList()
+    }
 
     /* Desktop Animations */
 
@@ -596,6 +612,8 @@ class TearOffPad extends HTMLElement {
     };
 
     function mobileRefresh(e){
+      randomBackgroundColor();
+      makeNewRandomizedFileList()
       if (notFirstPage()){
         renderPageCallCounter = 0;
         mobileDrag("swipeup");
@@ -607,8 +625,6 @@ class TearOffPad extends HTMLElement {
 
     function removeTempEventListeners(){
       document.removeEventListener(moveEventType, dragElement);
-      // document.body.removeEventListener("mouseleave", animatePage);
-      // document.removeEventListener(endEventType, animatePage);
       changePointer(0);
       pages.addEventListener(startEventType, startTransform);
     };
@@ -616,14 +632,8 @@ class TearOffPad extends HTMLElement {
     function setTempEventListeners(){
       pages.removeEventListener(startEventType, startTransform);
       document.addEventListener(moveEventType, dragElement);
-      //setAdditionalEventListeners();
       changePointer("hand");
     };
-
-    // function setAdditionalEventListeners(){
-    //   // if (tearOnLeave === "on"){document.body.addEventListener("mouseleave", animatePage)}
-    //   // if (clickToTear === "on"){document.addEventListener(endEventType, animatePage)}
-    // };
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){

@@ -10,7 +10,7 @@ run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z
 * at all times drag speed defines the drag and the tear animation. tear animation is calculated with lastMousePoint and random.
   * if user moves mouse out of element bounds in start direction without reaching the maxTearDegree before, current Page will not tear but swing and hang in certain position.
   * if user moves back over element
-* refresh button lets user return to the original state of the tearoffpad. randomfilelist will not be generated anew, thus main use of the refresh button is to see the same pictures again from start.
+* refresh button lets user return to the original state of the tearoffpad. randomfilelist will be generated anew.
 * imprint button tears off every paper and takes user to imprint page.
 ## Mobile
 * Swipe left/right/up/down to tear a page off

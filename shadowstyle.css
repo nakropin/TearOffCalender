@@ -56,6 +56,9 @@
     z-index: 1;
     outline: black solid 0.5px;
 }
+.refresh, .imprint:hover {
+    cursor: pointer;
+}
 
 .pages, .page, .tear, .floor {
     width: 37.5vh;
