@@ -21,8 +21,6 @@ run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z
         data-pagesamount            = '26'
         data-buttonposition         = 'upperLeft'
         data-imprintanimationdelay  = '30'
-        data-tearonleave            = 'on'
-        data-clicktotear            = 'on'
         data-pageimgtitle           = 'Hover to drag and tear off current page.'
         data-refreshbuttonarialabel = 'Refresh tear-off pad and go to first page.'
         data-imprintbuttonarialabel = 'Tear off all pages and go to imprint.'

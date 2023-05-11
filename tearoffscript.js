@@ -39,8 +39,8 @@ class TearOffPad extends HTMLElement {
     const altTextFrontPage        = componentElement.getAttribute( 'data-alttextfrontpage' );
     const altTextImages           = componentElement.getAttribute( 'data-alttextimages' );
     const altTextImprint          = componentElement.getAttribute( 'data-alttextimprint' );
-    const tearOnLeave             = componentElement.getAttribute( 'data-tearonleave' );
-    const clickToTear             = componentElement.getAttribute( 'data-clicktotear' );
+    // const tearOnLeave             = componentElement.getAttribute( 'data-tearonleave' );
+    // const clickToTear             = componentElement.getAttribute( 'data-clicktotear' );
     /* should be let */
     const delay                   = parseInt(componentElement.getAttribute( 'data-imprintanimationdelay' ));
 
@@ -118,8 +118,12 @@ class TearOffPad extends HTMLElement {
     function setAltText(){
       const initialAltTexts = [ altTextFrontPage, altTextImages, altTextImprint ];
       let useAltTags = []
-      initialAltTexts.forEach(e => e === null ? useAltTags.push("An image which has not been described yet."): useAltTags.push(e))
-      const result = renderPageCallCounter === 0 ? useAltTags[0] : renderPageCallCounter != randomFiles.length-1 ? useAltTags[1] : useAltTags[2];
+      initialAltTexts.forEach(e => useAltTags.push(e))
+      const result = renderPageCallCounter === 0 
+        ? useAltTags[0] 
+        : renderPageCallCounter != randomFiles.length-1 
+          ? useAltTags[1] 
+          : useAltTags[2];
       return result
     };
 
@@ -187,10 +191,6 @@ class TearOffPad extends HTMLElement {
       animationDelayIterator( animatePage );
       turnOffEventListenersWhileEventAction();
     };
-
-    // function getDelay(){
-    //   return 
-    // }
 
     /* recursively call animation */
     function animationDelayIterator( animation ) {
@@ -369,7 +369,7 @@ class TearOffPad extends HTMLElement {
     function dragElement(e){ // maxTearDegree, curDir, lastMouseX, 
       const curPage = shadow.querySelectorAll("[class='page']")[0];
       let mouseX = e.clientX - centerX;
-      let animationFactor = 15; /* AnimationFactor sets how often DOM-transform is called */
+      // let animationFactor = 15; /* AnimationFactor sets how often DOM-transform is called, performance */
       let curDegree;
       let curStuck = getCurrentStuckDegree( curDir );
 
@@ -383,18 +383,18 @@ class TearOffPad extends HTMLElement {
             ( curDir === "left"  && e.clientX < middlePlusRandom)    ) )
       {
           /* Interrupt Animation*/
-          // setTransitionDuration(curPage, "0.145s");
-          // curPage.style.transform = 'rotate('+ curStuck+'deg)';
+          setTransitionDuration(curPage, "0.145s");
+          curPage.style.transform = 'rotate('+ curStuck+'deg)';
           curPage.style.animation = 'none';
           let stylesheet = shadow.querySelector("link[rel='stylesheet']");
           deleteKeyFrameByName(stylesheet.sheet, "swing");
           hitOnce = 0;
           keyFrameIsSet = 0;
           /* rotate, animate */
-          // setTransitionDuration(curPage, "8.52s")
-          // requestAnimationFrame(() => {
-          //   curPage.style.transform = 'rotate(' + curStuck + 'deg)';
-          // });
+          setTransitionDuration(curPage, "0.2s")
+          requestAnimationFrame(() => {
+            curPage.style.transform = 'rotate(' + curStuck + 'deg)';
+          });
           animatePage();
       }
       else if( lastMouseX === null ){
@@ -423,8 +423,8 @@ class TearOffPad extends HTMLElement {
 
         if (keyFrameIsSet === 0) {
           makeCurSwingAnimation(curPage, curStuck, lastDragPosition);
+          keyFrameIsSet = 1;
         }
-        keyFrameIsSet = 1;
         /* Set Border, calc corresponding mouseX from lastDragPosition */
         lastDragPosition = curStuck;
         lastMouseX = calcMouseFromDegree( lastDragPosition );
@@ -525,7 +525,6 @@ class TearOffPad extends HTMLElement {
     };    
 
     /* Animation + Buttons Mobile */
-    let mobileAnimations = 0;
     let swipeAnimationsSetter = 0;
 
     function mobileDrag( e ){
@@ -534,46 +533,43 @@ class TearOffPad extends HTMLElement {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         setZIndex(curPage, 1);
         curPage.setAttribute( "border", "1px solid black;" )     
-        if (swipeAnimationsSetter === 0){
-          makeMobileFadeOutAnimations();
-          swipeAnimationsSetter = 1;
-        }
+        makeMobileFadeOutAnimations( String(e) );
         let animationTime = "0.5s";
         requestAnimationFrame(() => {
-          curPage.style.animation = "fadeout-" + e + " " + animationTime + " " + "linear";
+          curPage.style.animation = "fadeout-" + String(e) + " " + animationTime + " " + "linear";
         });
         curPage.addEventListener( 'animationend', () => { 
           curPage.style.animation = 'none';
           curPage.remove()
+          let name = String("fadeout-" + e)
+          deleteKeyFrameByName(stylesheet.sheet, name);
         } );
         renderPage();
         makeFloorElement(curPage)
       };
     };
 
-    function makeMobileFadeOutAnimations( ){
+    function makeMobileFadeOutAnimations( e ){
       let transLateDegreePercent = 150
-      let directions = ["swipeleft", "swiperight", "swipeup", "swipedown"]
-      if (mobileAnimations === 0){
-        for (let i = 0; i < directions.length ; i++){
-          let curRandom = randomizer(-20,20);
+      if (swipeAnimationsSetter === 0){
+          let curRandom = randomizer(-150,150);
           let curTransLateDegreePercent;
-          let animationName = "fadeout-" + directions[i];
+          let animationName = "fadeout-" + e;
           let axis;
           let otherAxis;
-          if (directions[i] === "swipeup" || directions[i] === "swipedown"){
+          if (e === "swipeup" || e === "swipedown"){
             axis = "Y";
             otherAxis = "X";
           } else {
             axis = "X";
             otherAxis = "Y";
           }
-          if( directions[i] === "swipeleft" ||
-              directions[i] === "swipeup" ){ 
+          if( e === "swipeleft" ||
+              e === "swipeup" ){ 
             curTransLateDegreePercent = -transLateDegreePercent 
           }
-          else if ( directions[i] === "swiperight" ||
-                    directions[i] === "swipedown") {
+          else if ( e === "swiperight" ||
+                    e === "swipedown") {
             curTransLateDegreePercent = transLateDegreePercent
           }
 
@@ -589,8 +585,6 @@ class TearOffPad extends HTMLElement {
           }`;
           let stylesheet = shadow.querySelector("link[rel='stylesheet']");
           stylesheet.sheet.insertRule(keyframes)
-         }
-        mobileAnimations = 1;
       };
     };
 
@@ -604,7 +598,7 @@ class TearOffPad extends HTMLElement {
     function mobileRefresh(e){
       if (notFirstPage()){
         renderPageCallCounter = 0;
-        mobileDrag(e);
+        mobileDrag("swipeup");
         removeAllFloorElements();
       };
     }
@@ -613,8 +607,8 @@ class TearOffPad extends HTMLElement {
 
     function removeTempEventListeners(){
       document.removeEventListener(moveEventType, dragElement);
-      document.body.removeEventListener("mouseleave", animatePage);
-      document.removeEventListener(endEventType, animatePage);
+      // document.body.removeEventListener("mouseleave", animatePage);
+      // document.removeEventListener(endEventType, animatePage);
       changePointer(0);
       pages.addEventListener(startEventType, startTransform);
     };
@@ -626,10 +620,10 @@ class TearOffPad extends HTMLElement {
       changePointer("hand");
     };
 
-    function setAdditionalEventListeners(){
-      if (tearOnLeave === "on"){document.body.addEventListener("mouseleave", animatePage)}
-      if (clickToTear === "on"){document.addEventListener(endEventType, animatePage)}
-    };
+    // function setAdditionalEventListeners(){
+    //   // if (tearOnLeave === "on"){document.body.addEventListener("mouseleave", animatePage)}
+    //   // if (clickToTear === "on"){document.addEventListener(endEventType, animatePage)}
+    // };
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
