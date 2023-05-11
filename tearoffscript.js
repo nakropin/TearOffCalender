@@ -365,6 +365,7 @@ class TearOffPad extends HTMLElement {
 
     function setZIndex( element, value ){
       element.style.zIndex = value;
+      //element.style.transform = "translate3d(0,0,0) translateZ(0,0,"+value*100+"px)";
     };
 
     function setDragDirection(e){
@@ -633,14 +634,16 @@ class TearOffPad extends HTMLElement {
     function setTempEventListeners(){
       pages.removeEventListener(startEventType, startTransform);
       document.addEventListener(moveEventType, dragElement);
-      setAdditionalEventListeners();
+      //setAdditionalEventListeners();
       changePointer("hand");
     };
-
+/*
     function setAdditionalEventListeners(){
       if (tearOnLeave === "on"){document.body.addEventListener("mouseleave", animatePage)}
       if (clickToTear === "on"){document.addEventListener(endEventType, animatePage)}
     };
+
+ */
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
