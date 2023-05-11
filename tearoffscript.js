@@ -616,7 +616,7 @@ class TearOffPad extends HTMLElement {
     function setTempEventListeners(){
       pages.removeEventListener(startEventType, startTransform);
       document.addEventListener(moveEventType, dragElement);
-      setAdditionalEventListeners();
+      //setAdditionalEventListeners();
       changePointer("hand");
     };
 
