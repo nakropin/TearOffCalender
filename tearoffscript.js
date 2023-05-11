@@ -528,8 +528,9 @@ class TearOffPad extends HTMLElement {
     let swipeAnimationsSetter = 0;
 
     function mobileDrag( e ){
-      if ( notLastPage() ) {
-        let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+      let name = String("fadeout-" + e)
+      let stylesheet = shadow.querySelector("link[rel='stylesheet']");
+      if ( notLastPage()) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         setZIndex(curPage, 1);
         curPage.setAttribute( "border", "1px solid black;" )     
@@ -541,7 +542,6 @@ class TearOffPad extends HTMLElement {
         curPage.addEventListener( 'animationend', () => { 
           curPage.style.animation = 'none';
           curPage.remove()
-          let name = String("fadeout-" + e)
           deleteKeyFrameByName(stylesheet.sheet, name);
         } );
         renderPage();
@@ -552,7 +552,7 @@ class TearOffPad extends HTMLElement {
     function makeMobileFadeOutAnimations( e ){
       let transLateDegreePercent = 150
       if (swipeAnimationsSetter === 0){
-          let curRandom = randomizer(-150,150);
+          let curRandom = randomizer(-110,110);
           let curTransLateDegreePercent;
           let animationName = "fadeout-" + e;
           let axis;
