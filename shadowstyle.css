@@ -18,6 +18,7 @@
     height: 100%;
     will-change: transform;
     backface-visibility: visible;
+    perspective: 1400px;
 }
 
 .page {

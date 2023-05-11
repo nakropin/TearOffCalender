@@ -120,10 +120,10 @@ class TearOffPad extends HTMLElement {
       const initialAltTexts = [ altTextFrontPage, altTextImages, altTextImprint ];
       let useAltTags = []
       initialAltTexts.forEach(e => useAltTags.push(e))
-      const result = renderPageCallCounter === 0 
-        ? useAltTags[0] 
-        : renderPageCallCounter != randomFiles.length-1 
-          ? useAltTags[1] 
+      const result = renderPageCallCounter === 0
+        ? useAltTags[0]
+        : renderPageCallCounter != randomFiles.length-1
+          ? useAltTags[1]
           : useAltTags[2];
       return result
     };
@@ -240,7 +240,7 @@ class TearOffPad extends HTMLElement {
     const centerX = width / 2;
     const centerY = height / 2;
     const targetX = centerX / 8 * 1.5; // changed from 5
-    const targetY = centerY / 8 * 7.5; // changed from 7
+    const targetY = centerY / 8 * 7.25; // changed from 7
     let bezierPoints = [{ x: centerX, y: centerY }, { x: 0, y: 0 }, { x: 0, y: 0 }, { x: targetX, y: targetY }];
 
     let maxTearDegree = randomizer( 30, 50 );
@@ -300,11 +300,11 @@ class TearOffPad extends HTMLElement {
 
     /* calc position along beziercurve */
     function getBezierPosition(points, progress) {
-      var x = 0;
-      var y = 0;
-      var n = points.length - 1;
-      for (var i = 0; i <= n; i++) {
-        var coefficient = binomialCoefficient(n, i) * Math.pow(1 - progress, n - i) * Math.pow(progress, i);
+      let x = 0;
+      let y = 0;
+      const n = points.length - 1;
+      for (let i = 0; i <= n; i++) {
+        const coefficient = binomialCoefficient(n, i) * Math.pow(1 - progress, n - i) * Math.pow(progress, i);
         x += points[i].x * coefficient;
         y += points[i].y * coefficient;
       }
@@ -315,8 +315,8 @@ class TearOffPad extends HTMLElement {
     };
 
     function binomialCoefficient(n, k) {
-      var coefficient = 1;
-      for (var i = 1; i <= k; i++) {
+      let coefficient = 1;
+      for (let i = 1; i <= k; i++) {
         coefficient *= (n - i + 1) / i;
       };
       return coefficient;
@@ -342,7 +342,7 @@ class TearOffPad extends HTMLElement {
           let position = getBezierPosition( bezier, progress );
           let rotationAngle = Math.atan2( position.x, position.y ) * progress;
           curDegree += rotationAngle;
-          let rotateXFactor = 77
+          let rotateXFactor = 87;
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree + 'deg)';
           if (progress < 1) {
             progress += 0.016;
@@ -550,13 +550,13 @@ class TearOffPad extends HTMLElement {
       if ( notLastPage()) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         setZIndex(curPage, 1);
-        curPage.setAttribute( "border", "1px solid black;" )     
+        curPage.setAttribute( "border", "1px solid black;" )
         makeMobileFadeOutAnimations( String(e) );
         let animationTime = "0.5s";
         requestAnimationFrame(() => {
           curPage.style.animation = "fadeout-" + String(e) + " " + animationTime + " " + "linear";
         });
-        curPage.addEventListener( 'animationend', () => { 
+        curPage.addEventListener( 'animationend', () => {
           curPage.style.animation = 'none';
           curPage.remove()
           deleteKeyFrameByName(stylesheet.sheet, name);
@@ -582,8 +582,8 @@ class TearOffPad extends HTMLElement {
             otherAxis = "Y";
           }
           if( e === "swipeleft" ||
-              e === "swipeup" ){ 
-            curTransLateDegreePercent = -transLateDegreePercent 
+              e === "swipeup" ){
+            curTransLateDegreePercent = -transLateDegreePercent
           }
           else if ( e === "swiperight" ||
                     e === "swipedown") {
@@ -624,6 +624,8 @@ class TearOffPad extends HTMLElement {
 
     function removeTempEventListeners(){
       document.removeEventListener(moveEventType, dragElement);
+      document.body.removeEventListener("mouseleave", animatePage);
+      document.removeEventListener(endEventType, animatePage);
       changePointer(0);
       pages.addEventListener(startEventType, startTransform);
     };
@@ -631,7 +633,13 @@ class TearOffPad extends HTMLElement {
     function setTempEventListeners(){
       pages.removeEventListener(startEventType, startTransform);
       document.addEventListener(moveEventType, dragElement);
+      setAdditionalEventListeners();
       changePointer("hand");
+    };
+
+    function setAdditionalEventListeners(){
+      if (tearOnLeave === "on"){document.body.addEventListener("mouseleave", animatePage)}
+      if (clickToTear === "on"){document.addEventListener(endEventType, animatePage)}
     };
 
     function setEventListeners(){
