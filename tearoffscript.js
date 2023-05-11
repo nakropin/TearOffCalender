@@ -530,6 +530,7 @@ class TearOffPad extends HTMLElement {
 
     function mobileDrag( e ){
       if ( notLastPage() ) {
+        let stylesheet = shadow.querySelector("link[rel='stylesheet']");
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         setZIndex(curPage, 1);
         curPage.setAttribute( "border", "1px solid black;" )     
@@ -541,7 +542,10 @@ class TearOffPad extends HTMLElement {
         requestAnimationFrame(() => {
           curPage.style.animation = "fadeout-" + e + " " + animationTime + " " + "linear";
         });
-        curPage.addEventListener( 'animationend', () => { curPage.remove() } );
+        curPage.addEventListener( 'animationend', () => { 
+          curPage.style.animation = 'none';
+          curPage.remove()
+        } );
         renderPage();
         makeFloorElement(curPage)
       };
@@ -552,13 +556,17 @@ class TearOffPad extends HTMLElement {
       let directions = ["swipeleft", "swiperight", "swipeup", "swipedown"]
       if (mobileAnimations === 0){
         for (let i = 0; i < directions.length ; i++){
+          let curRandom = randomizer(-20,20);
           let curTransLateDegreePercent;
           let animationName = "fadeout-" + directions[i];
           let axis;
+          let otherAxis;
           if (directions[i] === "swipeup" || directions[i] === "swipedown"){
             axis = "Y";
+            otherAxis = "X";
           } else {
             axis = "X";
+            otherAxis = "Y";
           }
           if( directions[i] === "swipeleft" ||
               directions[i] === "swipeup" ){ 
@@ -571,11 +579,11 @@ class TearOffPad extends HTMLElement {
 
           let keyframes = `@keyframes `+ animationName +`{
             from {
-              transform: translate`+ axis +`(0%);
+              transform: translate`+ axis +`(0%) translate`+ otherAxis +`(0%);
               opacity: 1;
             }
             to {
-              transform: translate`+ axis +`(`+ curTransLateDegreePercent +`%);
+              transform: translate`+ axis +`(`+ curTransLateDegreePercent +`%) translate`+ otherAxis +`(`+ curRandom +`%);
               opacity: 0;
             }
           }`;

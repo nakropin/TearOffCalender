@@ -2,7 +2,6 @@
 <html lang='en' >
   <head>
     <link rel='preload' fetchpriority='high' href='img/first.svg' as='image' type='image/svg+xml'>
-    <!-- <link rel='preload' fetchpriority='high' href='img/last.svg' as='image' type='image/svg+xml'> -->
     <meta name='description' content='Tear-off pad animation.'>
     <meta name='viewport' content='width=device-width initial-scale=1.0'charset='UTF-8'>
     <title>Tear-off Pad</title>
@@ -16,6 +15,8 @@
       data-pagesamount            = '26'
       data-buttonposition         = 'upperLeft'
       data-imprintanimationdelay  = '20'
+      data-tearonleave            = 'on'
+      data-clicktotear            = 'on'
       data-pageimgtitle           = 'Hover to drag and tear off current page.'
       data-refreshbuttonarialabel = 'Refresh tear-off pad and go to first page.'
       data-imprintbuttonarialabel = 'Tear off all pages and go to imprint.'
@@ -24,7 +25,6 @@
       data-alttextimprint         = 'Imprint page.'
     >
     </tear-off-pad>
-    <!-- <script type="module" src='tearoffscript.js' async defer></script> -->
     <script src="https://hammerjs.github.io/dist/hammer.js"></script>
     <script type="text/javascript" src='tearoffscript.js'></script>
   </body>
