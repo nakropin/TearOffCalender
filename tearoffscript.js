@@ -327,6 +327,7 @@ class TearOffPad extends HTMLElement {
       if ( notLastPage() ) {
         const curPage = shadow.querySelectorAll("[class='page']")[0];
         setZIndex(curPage, 1);
+
         setTransitionDuration(curPage, "0.01s");
         curPage.setAttribute( "border", "1px solid black;" )      
         const bezier = getBezierCoordinates(event);
@@ -592,11 +593,9 @@ class TearOffPad extends HTMLElement {
           let keyframes = `@keyframes `+ animationName +`{
             from {
               transform: translate`+ axis +`(0%) translate`+ otherAxis +`(0%);
-              opacity: 1;
             }
             to {
               transform: translate`+ axis +`(`+ curTransLateDegreePercent +`%) translate`+ otherAxis +`(`+ curRandom +`%);
-              opacity: 0;
             }
           }`;
           let stylesheet = shadow.querySelector("link[rel='stylesheet']");
