@@ -346,8 +346,7 @@ class TearOffPad extends HTMLElement {
           let rotationAngle = Math.atan2( position.x, position.y ) * progress;
           curDegree += rotationAngle;
           let rotateXFactor = 87;
-          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree + 'deg) translateZ('+safariZindex+'px)';
-          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree + 'deg)';
+          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree + 'deg) translateZ('+safariZindex*10+'px)';
           if (progress < 1) {
             progress += 0.016;
             requestAnimationFrame(animateOnce);
