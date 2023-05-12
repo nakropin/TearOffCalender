@@ -56,7 +56,7 @@ class TearOffPad extends HTMLElement {
 
     const fileEnding              = ".svg";
     let randomFiles               = makeRandomizedFileList();
-    var renderPageCallCounter     = 0;
+    let renderPageCallCounter     = 0;
     
     renderPage(); /* renders the first page */
     setEventListeners();
@@ -80,9 +80,9 @@ class TearOffPad extends HTMLElement {
 
     function createBasicPage(){      /* TearOffPad: make Pages & Buttons */
       const pagesTag = shadow.appendChild( document.createElement('div') );
-      pagesTag.classList.add( "pages" );   
+      pagesTag.classList.add( "pages" );
       const buttons = [  [ 'imprint', imprintBtnAriaLabel, imgPath ],
-                         [ 'refresh', refreshBtnAriaLabel, imgPath ] ];
+        [ 'refresh', refreshBtnAriaLabel, imgPath ] ];
       buttons.forEach(e => makeButton( e[0], e[1], e[2] ))
     };
 
@@ -191,6 +191,7 @@ class TearOffPad extends HTMLElement {
 
     function refreshbtn(){
       randomBackgroundColor();
+      makeNewRandomizedFileList();
       if ( notFirstPage() ){
         makeNewRandomizedFileList();
         renderPageCallCounter = 0;
@@ -207,8 +208,8 @@ class TearOffPad extends HTMLElement {
     /* recursively call animation */
     function animationDelayIterator( animation ) {
       let curDelay = isNaN(delay)
-        ? 1000
-        : delay;
+          ? 1000
+          : delay;
       if( notLastPage() ){
         animation();
         setTimeout( () => {animationDelayIterator(animation)}, curDelay );
@@ -251,11 +252,13 @@ class TearOffPad extends HTMLElement {
     let keyFrameIsSet = 0;
     let stuckDegree = 20;
     let hitOnce = 0;
+    let safariZindex=0;
+
 
     function makeFloorElement( element ){
       element.classList.add('floor');
     };
-    
+
     function getRandomCoordinate() {
       let x = Math.floor(Math.random()* 1000);
       let y = Math.floor(Math.random()* 100);
@@ -322,7 +325,6 @@ class TearOffPad extends HTMLElement {
       return coefficient;
     };
 
-    
     function animatePage(  ) {
       removeTempEventListeners();
       if ( notLastPage() ) {
@@ -340,22 +342,24 @@ class TearOffPad extends HTMLElement {
         curPage.style.transformOrigin = 'center';
 
         const animateOnce = () => {
-          
           let position = getBezierPosition( bezier, progress );
           let rotationAngle = Math.atan2( position.x, position.y ) * progress;
           curDegree += rotationAngle;
           let rotateXFactor = 87;
-          pages.style.style = "0";
-          pages.style.zIndex = "5";
+          curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree + 'deg) translateZ('+safariZindex+'px)';
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree + 'deg)';
           if (progress < 1) {
             progress += 0.016;
             requestAnimationFrame(animateOnce);
           } else {
+            safariZindex += 0.01;
+
+            //curPage.style.transformStyle ="preserve-3d" ;
+            console.log(curPage);
+
             progress = 0;
             setZIndex(curPage, -1);
           };
-          
         };
         animateOnce();
         renderPage();
@@ -618,8 +622,8 @@ class TearOffPad extends HTMLElement {
 
     function mobileRefresh(e){
       randomBackgroundColor();
+      makeNewRandomizedFileList()
       if (notFirstPage()){
-        makeNewRandomizedFileList()
         renderPageCallCounter = 0;
         mobileDrag("swipeup");
         removeAllFloorElements();
@@ -630,6 +634,8 @@ class TearOffPad extends HTMLElement {
 
     function removeTempEventListeners(){
       document.removeEventListener(moveEventType, dragElement);
+      document.body.removeEventListener("mouseleave", animatePage);
+      document.removeEventListener(endEventType, animatePage);
       changePointer(0);
       pages.addEventListener(startEventType, startTransform);
     };
@@ -637,10 +643,16 @@ class TearOffPad extends HTMLElement {
     function setTempEventListeners(){
       pages.removeEventListener(startEventType, startTransform);
       document.addEventListener(moveEventType, dragElement);
+      //setAdditionalEventListeners();
       changePointer("hand");
     };
+/*
+    function setAdditionalEventListeners(){
+      if (tearOnLeave === "on"){document.body.addEventListener("mouseleave", animatePage)}
+      if (clickToTear === "on"){document.addEventListener(endEventType, animatePage)}
+    };
 
-
+ */
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){
