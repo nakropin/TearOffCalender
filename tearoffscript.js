@@ -191,8 +191,8 @@ class TearOffPad extends HTMLElement {
 
     function refreshbtn(){
       randomBackgroundColor();
-      makeNewRandomizedFileList();
       if ( notFirstPage() ){
+        makeNewRandomizedFileList();
         renderPageCallCounter = 0;
         animatePage();
         removeAllFloorElements();
@@ -322,6 +322,7 @@ class TearOffPad extends HTMLElement {
       return coefficient;
     };
 
+    
     function animatePage(  ) {
       removeTempEventListeners();
       if ( notLastPage() ) {
@@ -339,10 +340,13 @@ class TearOffPad extends HTMLElement {
         curPage.style.transformOrigin = 'center';
 
         const animateOnce = () => {
+          
           let position = getBezierPosition( bezier, progress );
           let rotationAngle = Math.atan2( position.x, position.y ) * progress;
           curDegree += rotationAngle;
           let rotateXFactor = 87;
+          pages.style.style = "0";
+          pages.style.zIndex = "5";
           curPage.style.transform = 'translate(' + position.x + 'px, ' + position.y + 'px) rotateX('+ rotateXFactor*progress +'deg) rotateZ('+ curDegree + 'deg)';
           if (progress < 1) {
             progress += 0.016;
@@ -351,6 +355,7 @@ class TearOffPad extends HTMLElement {
             progress = 0;
             setZIndex(curPage, -1);
           };
+          
         };
         animateOnce();
         renderPage();
@@ -612,8 +617,8 @@ class TearOffPad extends HTMLElement {
 
     function mobileRefresh(e){
       randomBackgroundColor();
-      makeNewRandomizedFileList()
       if (notFirstPage()){
+        makeNewRandomizedFileList()
         renderPageCallCounter = 0;
         mobileDrag("swipeup");
         removeAllFloorElements();
@@ -624,8 +629,6 @@ class TearOffPad extends HTMLElement {
 
     function removeTempEventListeners(){
       document.removeEventListener(moveEventType, dragElement);
-      document.body.removeEventListener("mouseleave", animatePage);
-      document.removeEventListener(endEventType, animatePage);
       changePointer(0);
       pages.addEventListener(startEventType, startTransform);
     };
@@ -633,14 +636,9 @@ class TearOffPad extends HTMLElement {
     function setTempEventListeners(){
       pages.removeEventListener(startEventType, startTransform);
       document.addEventListener(moveEventType, dragElement);
-      setAdditionalEventListeners();
       changePointer("hand");
     };
 
-    function setAdditionalEventListeners(){
-      if (tearOnLeave === "on"){document.body.addEventListener("mouseleave", animatePage)}
-      if (clickToTear === "on"){document.addEventListener(endEventType, animatePage)}
-    };
 
     function setEventListeners(){
       if ( deviceType === 'Mobile' ){

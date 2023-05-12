@@ -96,18 +96,16 @@ newest:
   - [x] last page takes a while to load on imprint ( mobile)
     - [x] problem still on for desktop 
   - [x] mobile can sidescroll/upside down when scrolling while transition to right
-  - [ ] swing-problems
-  - [ ] z-index pages/curPage behind 
+  - [x] swing-problems
   - [x] blue element highlighting chrome android
-
-optimization
-  - [ ] optimize page layout so that it
 
 css-task
   - [x] aspect ratio desktop
   - [x] different aspect ratio (90% width) für mobile
-    - [ ] (tablets)
+    - [x] (tablets)
 
 todo:
+  - [ ] z-index pages/curPage behind on Safari
   - [ ] decrease call values bei dem rotation degree
-  - [ ] 
+  - [ ] change swipeup as manual input to another move to circumvent double setting of keyframe
+  - [ ] background image proper load?
