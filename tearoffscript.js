@@ -370,6 +370,7 @@ class TearOffPad extends HTMLElement {
 
     function setZIndex( element, value ){
       element.style.zIndex = value;
+      //element.style.transform = "translate3d(0,0,0) translateZ(0,0,"+value*100+"px)";
     };
 
     function setDragDirection(e){
@@ -638,6 +639,7 @@ class TearOffPad extends HTMLElement {
       document.addEventListener(moveEventType, dragElement);
       changePointer("hand");
     };
+
 
 
     function setEventListeners(){
