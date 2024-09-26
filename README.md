@@ -1,5 +1,5 @@
-# tearoffpad
-tearoffpad is a simple web component that contains a tearoffpad animation. tearoffpad gives users the possibility to select sets of pictures in svg format. one picture per selected set will be randomly chosen to appear on tearoffpad in given order. tearoffpad provides an easy interface with custom attributes in the component html element. tearoffpad is written in plain js and does not use any frameworks.
+# tearoffcalender
+tearoffcalender is a simple web component that contains a tearoffpad animation. tearoffpad gives users the possibility to select sets of pictures in svg format. one picture per selected set will be randomly chosen to appear on tearoffpad in given order. tearoffpad provides an easy interface with custom attributes in the component html element. tearoffpad is written in plain js and does not use any frameworks.
 
 # generate mockdata
 run svgmockdatagenerator.py. overwrites all other svgs with filename "a-1" to "z-4" and "first", "last", "refresh", "imprint" (ending ".svg") in folder img/.
